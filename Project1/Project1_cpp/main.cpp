@@ -34,6 +34,7 @@ double forward_subt(double *a, double *b, double *c, double *f, int n)
 double backward_subt(double *b, double *c, double *f, double *v, int n)
 {
     // Function that uses backward subtitution to find new v
+    v[n-1] = f[n-1]/b[n-1];
     for (int i=n-2; i>-1; i--)
     {
         v[i] = 1/(b[i])*(f[i] - c[i]*v[i+1]);
@@ -43,7 +44,6 @@ int main()
 {
     int n = 10;         // number of gridpoints
 
-    //double *x[n], *a[n], *b[n], *c[n], *f[n], *v[n];  // Vector with n elements
     double *x, *a, *b, *c, *f, *v;  // Pointer of the arrays
     // Creating new arrays
     x = new double[n];
@@ -55,20 +55,8 @@ int main()
 
     // Filling out gridpoints for x, based on number of points
     fill_initial_arrays(x, a, b, c, f, n);
-
-    // Calculate the temporary values of b and f
-    for (int i=1; i<n; i++)
-    {
-        b[i] = b[i] - (c[i-1]*a[i])/b[i-1];
-        f[i] = f[i] - f[i-1]*(a[i]/b[i-1]);
-    }
-    // Calculate v_i values
-    v[n-1] = f[n-1]/b[n-1];
-    for (int i=n-2; i>-1; i--)
-    {
-        //v[i] = 1/(b[i])*(f[i] - c[i]*v[i+1]);
-        v[i] = new_v(b[i], c[i], f[i], v[i+1]);
-    }
+    forward_subt(a, b, c, f, n);
+    backward_subt(b, c, f, v, n);
 
     // Writing data to file
     ofstream datafile;
