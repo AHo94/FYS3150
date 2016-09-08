@@ -8,6 +8,7 @@ using std::setw;
 
 double fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, int n)
 {
+    // Function filling the initial arrays
     float L = 1;        // End point of x
     float h = L/(n-1);  // Value of h
     for (int i=0; i<n; i++)
@@ -22,6 +23,7 @@ double fill_initial_arrays(double *x, double *a, double *b, double *c, double *f
 
 double forward_subt(double *a, double *b, double *c, double *f, int n)
 {
+    // Function that uses forward subtitution to calculate new b and f
     for (int i=1; i<n; i++)
     {
         b[i] = b[i] - (c[i-1]*a[i])/b[i-1];
@@ -29,10 +31,13 @@ double forward_subt(double *a, double *b, double *c, double *f, int n)
     }
 }
 
-float new_v(float b, float c, float f,float v)
+double backward_subt(double *b, double *c, double *f, double *v, int n)
 {
-    // Function that calculates new v values
-    return (1/b)*(f - c*v);
+    // Function that uses backward subtitution to find new v
+    for (int i=n-2; i>-1; i--)
+    {
+        v[i] = 1/(b[i])*(f[i] - c[i]*v[i+1]);
+    }
 }
 int main()
 {
