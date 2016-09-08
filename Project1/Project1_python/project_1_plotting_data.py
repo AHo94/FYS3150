@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-file_directory = 'C:/Users/Alex/Documents/FYS3150/FYS3150_projects/build-Project_1_cpp-Desktop_Qt_5_7_0_MinGW_32bit-Debug'
+file_directory = 'C:/Users/Alex/Documents/FYS3150/FYS3150_projects/Project1/build-Project1_cpp-Desktop_Qt_5_7_0_MinGW_32bit-Debug'
 filename = 'project_1_data.txt'
 f = open(os.path.join(file_directory, filename), 'r')
 
