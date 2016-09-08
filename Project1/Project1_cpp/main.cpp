@@ -5,7 +5,7 @@
 using namespace std;
 using std::setw;
 
-double fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, int n)
+void fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, int n)
 {
     // Function filling the initial arrays
     float L = 1;        // End point of x
@@ -20,7 +20,7 @@ double fill_initial_arrays(double *x, double *a, double *b, double *c, double *f
     }
 }
 
-double forward_subt(double *a, double *b, double *c, double *f, int n)
+void forward_subt(double *a, double *b, double *c, double *f, int n)
 {
     // Function that uses forward subtitution to calculate new b and f
     for (int i=1; i<n; i++)
@@ -30,7 +30,7 @@ double forward_subt(double *a, double *b, double *c, double *f, int n)
     }
 }
 
-double backward_subt(double *b, double *c, double *f, double *v, int n)
+void backward_subt(double *b, double *c, double *f, double *v, int n)
 {
     // Function that uses backward subtitution to find new v
     v[n-1] = f[n-1]/b[n-1];     // Initial (last) value of v
