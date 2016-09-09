@@ -40,11 +40,11 @@ void backward_subt(double *b, double *c, double *f, double *v, int n)
     }
 }
 
-void write_file(double *x, double *v, int n)
+void write_file(double *x, double *v, int n, string filename)
 {
     // Function that writes data to a file
     ofstream datafile;
-    datafile.open("project_1_data.txt");
+    datafile.open(filename);
     datafile << "n = " << n << "\n";
     datafile << "x" << setw(15) << "v" << "\n";
     for (int i=0; i < n; i++)
@@ -70,8 +70,35 @@ int main()
     fill_initial_arrays(x, a, b, c, f, n);
     forward_subt(a, b, c, f, n);
     backward_subt(b, c, f, v, n);
-    write_file(x, v, n);
+    write_file(x, v, n, "Project1_data_n10.txt");
 
+    // Increase number of points to 100 and do same calculations
+    n = 100;
+    x = new double[n];
+    a = new double[n];
+    b = new double[n];
+    c = new double[n];
+    f = new double[n];
+    v = new double[n];
+
+    fill_initial_arrays(x, a, b, c, f, n);
+    forward_subt(a, b, c, f, n);
+    backward_subt(b, c, f, v, n);
+    write_file(x, v, n, "Project1_data_n100.txt");
+
+    // Increase n to 1000
+    n = 100;
+    x = new double[n];
+    a = new double[n];
+    b = new double[n];
+    c = new double[n];
+    f = new double[n];
+    v = new double[n];
+
+    fill_initial_arrays(x, a, b, c, f, n);
+    forward_subt(a, b, c, f, n);
+    backward_subt(b, c, f, v, n);
+    write_file(x, v, n, "Project1_data_n1000.txt");
     cout << "Sucess!" << endl;
     return 0;
 }
