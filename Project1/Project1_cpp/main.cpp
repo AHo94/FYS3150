@@ -16,27 +16,31 @@ void fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, 
         a[i] = -1;
         b[i] = 2;
         c[i] = -1;
-        f[i] = h*h*100*exp (x[i]);
+        f[i] = h*h*100*exp(-x[i]);
     }
 }
 
 void forward_subt(double *a, double *b, double *c, double *f, int n)
 {
     // Function that uses forward subtitution to calculate new b and f
+    float L = 1;
+    float h = L/(n-1);
     for (int i=1; i<n; i++)
     {
         b[i] = b[i] - (c[i-1]*a[i])/b[i-1];
-        f[i] = f[i] - f[i-1]*(a[i]/b[i-1]);
+        f[i] = f[i] - (f[i-1]*a[i])/b[i-1];
     }
 }
 
 void backward_subt(double *b, double *c, double *f, double *v, int n)
 {
     // Function that uses backward subtitution to find new v
+    float L = 1;
+    float h = L/(n-1);
     v[n-1] = f[n-1]/b[n-1];     // Initial (last) value of v
     for (int i=n-2; i>-1; i--)
     {
-        v[i] = 1/(b[i])*(f[i] - c[i]*v[i+1]);
+        v[i] = (1/b[i])*(f[i] - c[i]*v[i+1]);
     }
 }
 
@@ -87,7 +91,7 @@ int main()
     write_file(x, v, n, "Project1_data_n100.txt");
 
     // Increase n to 1000
-    n = 100;
+    n = 1000;
     x = new double[n];
     a = new double[n];
     b = new double[n];
