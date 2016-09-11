@@ -36,7 +36,7 @@ def save_and_plot(f):
 	plt.plot(x,u_exact,'r-')
 	plt.xlabel('x')
 	plt.ylabel('u')
-	plt.legend(['Exact solution','Numerical solution'])
+	plt.legend(['Numerical solution', 'Exact solution'])
 	plt.title('Plot of velocities, n = %g' %(n))
 
 save_and_plot(fn10)

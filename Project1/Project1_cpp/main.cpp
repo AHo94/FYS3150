@@ -20,27 +20,39 @@ void fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, 
     }
 }
 
-void forward_subt(double *a, double *b, double *c, double *f, int n)
+void forward_and_backward_subt(double *a, double *b, double *c, double *f, double *v, int n)
 {
-    // Function that uses forward subtitution to calculate new b and f
+    // Function solving forward and backward subtitution
+    // Assuming different values along the diagonal of the matrix
     float L = 1;
     float h = L/(n-1);
     for (int i=1; i<n; i++)
     {
-        b[i] = b[i] - (c[i-1]*a[i])/b[i-1];
+        b[i] = b[i] - (c[i-1]*a[i-1])/b[i-1];
         f[i] = f[i] - (f[i-1]*a[i])/b[i-1];
     }
-}
 
-void backward_subt(double *b, double *c, double *f, double *v, int n)
-{
-    // Function that uses backward subtitution to find new v
-    float L = 1;
-    float h = L/(n-1);
     v[n-1] = f[n-1]/b[n-1];     // Initial (last) value of v
     for (int i=n-2; i>-1; i--)
     {
         v[i] = (1/b[i])*(f[i] - c[i]*v[i+1]);
+    }
+}
+
+void forward_simplified(double *x, double *b, double *f, double *v, int n)
+{
+    float L = 1;
+    float h = L/(n-1);
+    for (int i=0; i<n+1; i++)
+    {
+        x[i] = i*(L/(n-1));
+        b[i] = -(i+1)/i;
+        f[i] = h*h*100*exp(-x[i]);
+    }
+
+    for (int i=1; i<n; i++)
+    {
+        cout << i << endl;
     }
 }
 
@@ -72,8 +84,7 @@ int main()
 
     // Solving the algorithms and write results of x and v to a file
     fill_initial_arrays(x, a, b, c, f, n);
-    forward_subt(a, b, c, f, n);
-    backward_subt(b, c, f, v, n);
+    forward_and_backward_subt(a, b, c, f, v, n);
     write_file(x, v, n, "Project1_data_n10.txt");
 
     // Increase number of points to 100 and do same calculations
@@ -86,8 +97,7 @@ int main()
     v = new double[n];
 
     fill_initial_arrays(x, a, b, c, f, n);
-    forward_subt(a, b, c, f, n);
-    backward_subt(b, c, f, v, n);
+    forward_and_backward_subt(a, b, c, f, v, n);
     write_file(x, v, n, "Project1_data_n100.txt");
 
     // Increase n to 1000
@@ -100,8 +110,7 @@ int main()
     v = new double[n];
 
     fill_initial_arrays(x, a, b, c, f, n);
-    forward_subt(a, b, c, f, n);
-    backward_subt(b, c, f, v, n);
+    forward_and_backward_subt(a, b, c, f, v, n);
     write_file(x, v, n, "Project1_data_n1000.txt");
     cout << "Sucess!" << endl;
     return 0;
