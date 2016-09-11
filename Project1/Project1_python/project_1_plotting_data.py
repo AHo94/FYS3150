@@ -6,9 +6,11 @@ file_directory = 'C:/Users/Alex/Documents/FYS3150/FYS3150_projects/Project1/buil
 filename_n10 = 'Project1_data_n10.txt'
 filename_n100 = 'Project1_data_n100.txt'
 filename_n1000 = 'Project1_data_n1000.txt'
+filename_simplified = 'Project1c_data_simplified.txt'
 fn10 = open(os.path.join(file_directory, filename_n10), 'r')
 fn100 = open(os.path.join(file_directory, filename_n100), 'r')
 fn1000 = open(os.path.join(file_directory, filename_n1000), 'r')
+f_simplified = open(os.path.join(file_directory, filename_simplified), 'r')
 
 
 def save_and_plot(f):
@@ -44,5 +46,6 @@ plt.figure()
 save_and_plot(fn100)
 plt.figure()
 save_and_plot(fn1000)	
-
+plt.figure()
+save_and_plot(f_simplified)
 plt.show()
