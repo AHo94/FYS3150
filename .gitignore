@@ -27,3 +27,9 @@
 *.exe
 *.out
 *.app
+
+# Latex files
+*.aux
+*.log
+*.synctex
+*.tex
