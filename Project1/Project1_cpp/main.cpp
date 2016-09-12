@@ -8,7 +8,8 @@ using std::setw;
 
 void fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, int n)
 {
-    // Function filling the initial arrays
+    /* Function filling the initial arrays
+    Will here assume that the values along the diagonal are the same */
     float L = 1;        // End point of x
     float h = L/(n-1);  // Value of h
     for (int i=0; i<n; i++)
@@ -23,8 +24,8 @@ void fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, 
 
 void forward_and_backward_subt(double *a, double *b, double *c, double *f, double *v, int n)
 {
-    // Function solving forward and backward subtitution
-    // Assuming different values along the diagonal of the matrix
+    /* Function solving forward and backward subtitution
+    Assuming different values along the diagonal of the matrix */
     float L = 1;
     for (int i=1; i<n; i++)
     {
@@ -40,6 +41,7 @@ void forward_and_backward_subt(double *a, double *b, double *c, double *f, doubl
 
 void forward_simplified(double *x, double *f, double *v, int n)
 {
+    // Simplified algorithm for a special case where the values along the diagonal are the same
     float L = 1;
     float h = L/(n-1);
     float float_converter = 1;  // Converts int to float value to prevent integer divison
@@ -143,11 +145,12 @@ int main()
     forward_and_backward_subt(a, b, c, f, v, n);
     write_file(x, v, n, "Project1_data_n1000.txt");
     */
+
     // Freeing memory for next task
     delete[]a;
     delete[]c;
     delete[]b;
-
+    // Solving for specialized algorithm, with n = 10^6
     n = pow(10,6);
     x = new double[n];
     f = new double[n];
