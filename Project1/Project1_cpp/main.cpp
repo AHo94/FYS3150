@@ -17,7 +17,7 @@ void fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, 
         a[i] = -1;
         b[i] = 2;
         c[i] = -1;
-        f[i] = h*h*100*exp(-x[i]);
+        f[i] = h*h*100*exp(-10*x[i]);
     }
 }
 
@@ -26,18 +26,15 @@ void forward_and_backward_subt(double *a, double *b, double *c, double *f, doubl
     // Function solving forward and backward subtitution
     // Assuming different values along the diagonal of the matrix
     float L = 1;
-    float h = L/(n-1);
     for (int i=1; i<n; i++)
     {
         b[i] = b[i] - (c[i-1]*a[i-1])/b[i-1];
-        f[i] = (f[i] - (f[i-1]*a[i])/b[i-1]);
+        f[i] = (f[i] - (f[i-1]*a[i-1])/b[i-1]);
     }
     v[n-1] = f[n-1]/b[n-1];     // Initial (last) value of v
     for (int i=n-2; i>-1; i--)
     {
        v[i] = (1/b[i])*(f[i] - c[i]*v[i+1]) ;
-       //v[i] = (1/b[i])*(h*h*(f[i+1]-f[i]) - (c[i] - b[i+1])*v[i+1]);
-       //v[i] = (h*h/b[i])*(f[i] - c[i]*f[i+1]/b[i+1]);
     }
 }
 
@@ -45,21 +42,23 @@ void forward_simplified(double *x, double *f, double *v, int n)
 {
     float L = 1;
     float h = L/(n-1);
+    float float_converter = 1;  // Converts int to float value to prevent integer divison
     for (int i=0; i<n+1; i++)
     {
         x[i] = i*(L/(n-1));
-        f[i] = h*h*100*exp(-x[i]);
+        f[i] = h*h*100*exp(-10*x[i]);
     }
-    //f_tild[0] = f[0];
+
     for (int i=1; i<n; i++)
     {
-        f[i] = f[i] + f[i-1]*L*(i-1)/i;
+        f[i] = f[i] + f[i-1]*float_converter*(i-1)/i;
     }
-    //v[n-1] = f_tild[n-1]/b[n-1];     // Initial (last) value of v
+    // Initial (last) value of v
     v[n-1] = f[n-1]*(L*n/(n-1));
+
     for (int i=n-2; i>-1; i--)
     {
-       v[i] = (L*(i)/(i+1))*(f[i] + v[i+1]);
+       v[i] = (float_converter*i/(i+1))*(f[i] + v[i+1]);
     }
     cout << v[0] << endl;
 
@@ -124,11 +123,11 @@ int main()
     write_file(x, v, n, "Project1_data_n1000.txt");
 
     // Freeing memory for next task
-    delete [] a;
-    delete [] c;
-    delete [] b;
+    delete[]a;
+    delete[]c;
+    delete[]b;
 
-    n = pow(10,2);
+    n = pow(10,3);
     x = new double[n];
     f = new double[n];
     v = new double[n];
