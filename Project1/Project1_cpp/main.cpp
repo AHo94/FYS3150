@@ -80,9 +80,30 @@ void write_file(double *x, double *v, int n, string filename)
 
 int main()
 {
-    int n = 10;       // number of gridpoints
+    //int n = 10;       // number of gridpoints
     double *x, *a, *b, *c, *f, *v;  // Pointer of the arrays
+    int filename_index = 0;     // Used to select filenames
+    // Array with filenames for the general case
+    char *filenames[] = {"Project1_data_n10.txt", "Project1_data_n100.txt", "Project1_data_n1000.txt"};
+    for (int n = 10; n < 1001; n = 10*n)
+    {
+        /* For loop runs through n = 10, 100, 100
+        Creating new arrays for new n */
+        x = new double[n];
+        a = new double[n];
+        b = new double[n];
+        c = new double[n];
+        f = new double[n];
+        v = new double[n];
 
+        // Solving the algorithms and write results of x and v to a file
+        fill_initial_arrays(x, a, b, c, f, n);
+        forward_and_backward_subt(a, b, c, f, v, n);
+        write_file(x, v, n, filenames[filename_index]);
+        filename_index = filename_index + 1;
+
+    }
+    /*
     // Creating new arrays
     x = new double[n];
     a = new double[n];
@@ -121,13 +142,13 @@ int main()
     fill_initial_arrays(x, a, b, c, f, n);
     forward_and_backward_subt(a, b, c, f, v, n);
     write_file(x, v, n, "Project1_data_n1000.txt");
-
+    */
     // Freeing memory for next task
     delete[]a;
     delete[]c;
     delete[]b;
 
-    n = pow(10,3);
+    n = pow(10,6);
     x = new double[n];
     f = new double[n];
     v = new double[n];
