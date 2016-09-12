@@ -39,7 +39,10 @@ def save_and_plot(f):
 	plt.xlabel('x')
 	plt.ylabel('u')
 	plt.legend(['Numerical solution', 'Exact solution'])
-	plt.title('Plot of velocities, n = %g' %(n))
+	if f == f_simplified:
+		plt.title('Plot of $v$ and $u$, special algorithm, , n = %g' %(n))
+	else:
+		plt.title('Plot of $v$ and $u$, general algorithm, , n = %g' %(n))
 
 save_and_plot(fn10)
 plt.figure()
