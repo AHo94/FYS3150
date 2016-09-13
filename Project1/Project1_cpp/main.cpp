@@ -26,7 +26,6 @@ void forward_and_backward_subst(double *a, double *b, double *c, double *f, doub
 {
     /* Function solving forward and backward substitution
     Assuming different values along the diagonal of the matrix */
-    float L = 1;
     for (int i=1; i<n; i++)
     {
         // Forward substitution
@@ -89,7 +88,7 @@ int main()
     double *x, *a, *b, *c, *f, *v;  // Pointer of the arrays
     int filename_index = 0;     // Used to select filenames
     // Array with filenames for the general case
-    char *filenames[] = {"Project1_data_n10.txt", "Project1_data_n100.txt", "Project1_data_n1000.txt"};
+    char const *filenames[] = {"Project1_data_n10.txt", "Project1_data_n100.txt", "Project1_data_n1000.txt"};
     for (int n = 10; n < 1001; n = 10*n)
     {
         /* For loop runs through n = 10, 100, 100
@@ -154,7 +153,6 @@ int main()
     delete[]a;
     delete[]c;
     delete[]b;
-    delete[]filenames;
     // Solving for specialized algorithm, with n = 10^6
 
     int n = pow(10,6);
