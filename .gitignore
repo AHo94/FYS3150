@@ -33,3 +33,5 @@
 *.log
 *.synctex
 *.tex
+*.dvi
+*.synctex.gz
