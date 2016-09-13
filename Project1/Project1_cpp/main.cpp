@@ -55,7 +55,7 @@ void forward_simplified(double *x, double *f, double *v, int n)
 
     for (int i=1; i<n; i++)
     {
-        f[i] = f[i] + f[i-1]*float_converter*(i-1)/i;
+        f[i] = f[i] + f[i-1]*float_converter*(i)/(i+1);
     }
     // Initial (last) value of v
     v[n-1] = f[n-1]*(L*n/(n-1));
@@ -84,6 +84,7 @@ void write_file(double *x, double *v, int n, string filename)
 
 int main()
 {
+    // TASK B)
     //int n = 10;       // number of gridpoints
     double *x, *a, *b, *c, *f, *v;  // Pointer of the arrays
     int filename_index = 0;     // Used to select filenames
@@ -148,6 +149,7 @@ int main()
     write_file(x, v, n, "Project1_data_n1000.txt");
     */
 
+    // TASK C)
     // Freeing memory for next task
     delete[]a;
     delete[]c;
