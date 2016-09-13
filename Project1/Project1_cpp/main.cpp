@@ -22,20 +22,22 @@ void fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, 
     }
 }
 
-void forward_and_backward_subt(double *a, double *b, double *c, double *f, double *v, int n)
+void forward_and_backward_subst(double *a, double *b, double *c, double *f, double *v, int n)
 {
-    /* Function solving forward and backward subtitution
+    /* Function solving forward and backward substitution
     Assuming different values along the diagonal of the matrix */
     float L = 1;
     for (int i=1; i<n; i++)
     {
+        // Forward substitution
         b[i] = b[i] - (c[i-1]*a[i-1])/b[i-1];
         f[i] = (f[i] - (f[i-1]*a[i-1])/b[i-1]);
     }
     v[n-1] = f[n-1]/b[n-1];     // Initial (last) value of v
-    for (int i=n-2; i>-1; i--)
+    for (int i=n-1; i>-1; i--)
     {
-       v[i] = (1/b[i])*(f[i] - c[i]*v[i+1]) ;
+       // Backward substitution
+       v[i-1] = (1/b[i-1])*(f[i-1] - c[i-1]*v[i]) ;
     }
 }
 
@@ -100,7 +102,7 @@ int main()
 
         // Solving the algorithms and write results of x and v to a file
         fill_initial_arrays(x, a, b, c, f, n);
-        forward_and_backward_subt(a, b, c, f, v, n);
+        forward_and_backward_subst(a, b, c, f, v, n);
         write_file(x, v, n, filenames[filename_index]);
         filename_index = filename_index + 1;
 
@@ -116,7 +118,7 @@ int main()
 
     // Solving the algorithms and write results of x and v to a file
     fill_initial_arrays(x, a, b, c, f, n);
-    forward_and_backward_subt(a, b, c, f, v, n);
+    forward_and_backward_subst(a, b, c, f, v, n);
     write_file(x, v, n, "Project1_data_n10.txt");
 
     // Increase number of points to 100 and do same calculations
@@ -129,7 +131,7 @@ int main()
     v = new double[n];
 
     fill_initial_arrays(x, a, b, c, f, n);
-    forward_and_backward_subt(a, b, c, f, v, n);
+    forward_and_backward_subst(a, b, c, f, v, n);
     write_file(x, v, n, "Project1_data_n100.txt");
 
     // Increase n to 1000
@@ -142,7 +144,7 @@ int main()
     v = new double[n];
 
     fill_initial_arrays(x, a, b, c, f, n);
-    forward_and_backward_subt(a, b, c, f, v, n);
+    forward_and_backward_subst(a, b, c, f, v, n);
     write_file(x, v, n, "Project1_data_n1000.txt");
     */
 
@@ -150,8 +152,10 @@ int main()
     delete[]a;
     delete[]c;
     delete[]b;
+    delete[]filenames;
     // Solving for specialized algorithm, with n = 10^6
-    n = pow(10,6);
+
+    int n = pow(10,6);
     x = new double[n];
     f = new double[n];
     v = new double[n];
@@ -163,5 +167,7 @@ int main()
     delete [] x;
     delete [] f;
     delete [] v;
+
+
     return 0;
 }
