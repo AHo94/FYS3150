@@ -3,9 +3,9 @@ import numpy as np
 import os
 
 file_directory = 'C:/Users/Alex/Documents/FYS3150/FYS3150_projects/Project1/build-Project1_cpp-Desktop_Qt_5_7_0_MinGW_32bit-Debug'
-filename_n10 = 'Project1_data_n10.txt'
-filename_n100 = 'Project1_data_n100.txt'
-filename_n1000 = 'Project1_data_n1000.txt'
+filename_n10 = 'General_data_n10.txt'
+filename_n100 = 'General_data_n100.txt'
+filename_n1000 = 'General_data_n1000.txt'
 filename_simplified = 'Project1c_data_simplified.txt'
 filename_relative_error = 'Project1d_relative_error.txt'
 fn10 = open(os.path.join(file_directory, filename_n10), 'r')
