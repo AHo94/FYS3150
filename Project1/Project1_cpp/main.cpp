@@ -92,13 +92,12 @@ int main()
     start = clock();
     int n;                   // number of gridpoints
     double *x, *a, *b, *c, *f, *v;  // Pointer of the arrays
-    int filename_index = 0;         // Used to select filenames
-    // Array with filenames for the general case
-    char const *filenames[] = {"Project1_data_n10.txt", "Project1_data_n100.txt", "Project1_data_n1000.txt"};
-    for (n = 10; n < 1001; n = 10*n)
+    string filename = "General_data_n";
+    for (int i=0; i <= 3; i++)
     {
-        /* For loop runs through n = 10, 100, 100
-        Creating new arrays for new n */
+        /* For loop that solves the general method
+        Uses values of n = 10, 100, 1000 */
+        n = pow(10.0,i);
         x = new double[n];
         a = new double[n];
         b = new double[n];
@@ -106,55 +105,17 @@ int main()
         f = new double[n];
         v = new double[n];
 
+        string fileout = filename;
+        string argument = to_string(n);
+        fileout.append(argument);
+        fileout.append(".txt");
+
         // Solving the algorithms and write results of x and v to a file
         fill_initial_arrays(x, a, b, c, f, n);
         forward_and_backward_subst(a, b, c, f, v, n);
-        write_file(x, v, n, filenames[filename_index]);
-
-        // Index for filenames increases by 1 to make sure we get seperate files
-        filename_index = filename_index + 1;
+        write_file(x, v, n, fileout);
 
     }
-    /*
-    // Creating new arrays
-    x = new double[n];
-    a = new double[n];
-    b = new double[n];
-    c = new double[n];
-    f = new double[n];
-    v = new double[n];
-
-    // Solving the algorithms and write results of x and v to a file
-    fill_initial_arrays(x, a, b, c, f, n);
-    forward_and_backward_subst(a, b, c, f, v, n);
-    write_file(x, v, n, "Project1_data_n10.txt");
-
-    // Increase number of points to 100 and do same calculations
-    n = 100;
-    x = new double[n];
-    a = new double[n];
-    b = new double[n];
-    c = new double[n];
-    f = new double[n];
-    v = new double[n];
-
-    fill_initial_arrays(x, a, b, c, f, n);
-    forward_and_backward_subst(a, b, c, f, v, n);
-    write_file(x, v, n, "Project1_data_n100.txt");
-
-    // Increase n to 1000
-    n = 1000;
-    x = new double[n];
-    a = new double[n];
-    b = new double[n];
-    c = new double[n];
-    f = new double[n];
-    v = new double[n];
-
-    fill_initial_arrays(x, a, b, c, f, n);
-    forward_and_backward_subst(a, b, c, f, v, n);
-    write_file(x, v, n, "Project1_data_n1000.txt");
-    */
 
     // TASK C)
     // Freeing memory for next task
@@ -162,6 +123,7 @@ int main()
     delete[]c;
    // delete[]b;
     // Solving for specialized algorithm, with n = 10^6s
+    /*
     n = pow(10,6);
     x = new double[n];
     f = new double[n];
@@ -181,7 +143,7 @@ int main()
 
 //    forward_simplified(x, f, v, n);
 //    write_file(x, v, n, "Project1d_relative_error.txt");
-
+    */
     cout << "Sucess!" << endl;
     delete [] x;
     delete [] f;
