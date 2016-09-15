@@ -1,5 +1,5 @@
-# First line is the value of n, number of points plotted, respectively 
-1000000           1000
+# First line is the value of n 
+1000000
 0              0
 0.001000001    0.008950489
 0.002000002    0.017801903
