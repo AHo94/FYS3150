@@ -73,17 +73,22 @@ void write_file(double *x, double *v, int n, string filename)
     // Function that writes data of x and v to a file
     ofstream datafile;
     datafile.open(filename);
-    int max_points = 1000;
-
-    datafile << "# First line is the value of n, number of points plotted, respectively \n" ;
-    datafile << n << setw(15) << n/max_points << "\n";
+    int max_points = 1000;  // Saving up to 1000 points
+    datafile << "# First line is the value of n \n" ;
+    datafile << n << "\n";
     int step;
     if(n > max_points)
     {
+        /*
+        Creating an if-test to reduce the number of points saved.
+        Saving at most 1000 points, if we have more points, we will do n/max_points jumps
+        between the intervals. e.g: n = 10^4, then we save every 10 points.
+        */
         step = n/max_points;
     }
     else
     {
+        //  Saves every point if n < max_points
         step = 1;
     }
     for (int i=0; i < n; i=i+step)
@@ -124,19 +129,16 @@ int main()
         fill_initial_arrays(x, a, b, c, f, n);
         forward_and_backward_subst(a, b, c, f, v, n);
         write_file(x, v, n, fileout);
-
     }
 
     // TASK C)
     // Freeing memory for next task
     delete[]a;
     delete[]c;
-    // Solving for specialized algorithm, with n = 10^6s
     string filename_simplified = "Simplified_data_n";
     for (int i=1; i <= 6; i++)
     {
-        /* For loop that solves the general method
-        Uses values of n = 10, 100, 1000 */
+        // For loop that runs through exponents from i=1 to i=6
         n = pow(10,i);
         x = new double[n];
         f = new double[n];
@@ -158,8 +160,8 @@ int main()
     string filename_error = "Error_data_n";
     for (int i=1; i <= 7; i++)
     {
-        /* For loop that solves the general method
-        Uses values of n = 10, 100, 1000 */
+        // For loop that runs through the exponents from i=1 to i=7
+
         n = pow(10,i);
         x = new double[n];
         f = new double[n];
