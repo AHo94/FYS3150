@@ -3,6 +3,7 @@
 #include <math.h>   // For mathematical expression, i.e exp
 #include <fstream>  // Writing to file
 #include <iomanip>  // setw identitation for output file
+#include <time.h>
 using namespace std;
 using std::setw;
 
@@ -41,7 +42,7 @@ void forward_and_backward_subst(double *a, double *b, double *c, double *f, doub
     }
 }
 
-void forward_simplified(double *x, double *f, double *v, int n)
+void forward_simplified(double *x, double *b, double *f, double *v, int n)
 {
     // Simplified algorithm for a special case where the values along the diagonal are the same
     float L = 1;            // End point of x
@@ -51,19 +52,22 @@ void forward_simplified(double *x, double *f, double *v, int n)
     {
         x[i] = i*(L/(n-1));
         f[i] = h*h*100*exp(-10*x[i]);
+        b[i] = float_converter*(i+1)/i;
     }
 
     for (int i=1; i<n; i++)
     {
         // Forward substitution
-        f[i] = f[i] + f[i-1]*float_converter*(i)/(i+1);
+        //f[i] = f[i] + f[i-1]*float_converter*(i)/(i+1);
+        f[i] = f[i] + f[i-1]/b[i];
     }
-
-    v[n-1] = f[n-1]*(L*n/(n-1));    // Initial (last) value of v
+    //v[n-1] = f[n-1]/(L*n/(n-1));
+    v[n-1] = f[n-1]/(b[n-1]);    // Initial (last) value of v
     for (int i=n-2; i>-1; i--)
     {
         // Backward substitution
-        v[i] = (float_converter*i/(i+1))*(f[i] + v[i+1]);
+        //v[i] = (float_converter*i/(i+1))*(f[i] + v[i+1]);
+        v[i] = (f[i] + v[i+1])/b[i];
     }
 }
 
@@ -84,6 +88,8 @@ void write_file(double *x, double *v, int n, string filename)
 int main()
 {
     // TASK B)
+    clock_t start, finish;
+    start = clock();
     int n;                   // number of gridpoints
     double *x, *a, *b, *c, *f, *v;  // Pointer of the arrays
     int filename_index = 0;         // Used to select filenames
@@ -154,31 +160,34 @@ int main()
     // Freeing memory for next task
     delete[]a;
     delete[]c;
-    delete[]b;
-    // Solving for specialized algorithm, with n = 10^6
+   // delete[]b;
+    // Solving for specialized algorithm, with n = 10^6s
     n = pow(10,6);
     x = new double[n];
     f = new double[n];
     v = new double[n];
+    b = new double[n];
 
-    forward_simplified(x, f, v, n);
+    forward_simplified(x, b, f, v, n);
     write_file(x, v, n, "Project1c_data_simplified.txt");
 
 
-    // TASK D)
-    n = pow(10,3);
-    x = new double[n];
-    f = new double[n];
-    v = new double[n];
+//    // TASK D)
+//    n = pow(10,6);
+//    x = new double[n];
+//    f = new double[n];
+//    v = new double[n];
+//    b = new double[n];
 
-    forward_simplified(x, f, v, n);
-    write_file(x, v, n, "Project1d_relative_error.txt");
+//    forward_simplified(x, f, v, n);
+//    write_file(x, v, n, "Project1d_relative_error.txt");
 
     cout << "Sucess!" << endl;
     delete [] x;
     delete [] f;
     delete [] v;
-
+    finish = clock();
+    cout << "Time elapsed: " << ((finish-start)/CLOCKS_PER_SEC) << "s" << endl;;
 
     return 0;
 }
