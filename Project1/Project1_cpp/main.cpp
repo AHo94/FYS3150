@@ -48,7 +48,7 @@ void forward_simplified(double *x, double *b, double *f, double *v, int n)
     float L = 1;            // End point of x
     float h = L/(n-1);      // Steplength h
     float float_converter = 1;  // Converts int to float value to prevent integer divison
-    for (int i=0; i<n+1; i++)
+    for (int i=0; i<n; i++)
     {
         x[i] = i*(L/(n-1));
         f[i] = h*h*100*exp(-10*x[i]);
@@ -58,15 +58,12 @@ void forward_simplified(double *x, double *b, double *f, double *v, int n)
     for (int i=1; i<n; i++)
     {
         // Forward substitution
-        //f[i] = f[i] + f[i-1]*float_converter*(i)/(i+1);
         f[i] = f[i] + f[i-1]/b[i];
     }
-    //v[n-1] = f[n-1]/(L*n/(n-1));
     v[n-1] = f[n-1]/(b[n-1]);    // Initial (last) value of v
     for (int i=n-2; i>-1; i--)
     {
         // Backward substitution
-        //v[i] = (float_converter*i/(i+1))*(f[i] + v[i+1]);
         v[i] = (f[i] + v[i+1])/b[i];
     }
 }
@@ -78,20 +75,20 @@ void write_file(double *x, double *v, int n, string filename)
     datafile.open(filename);
     int max_points = 1000;
 
-    datafile << "n = " << n << "\n";
-    datafile << "x" << setw(15) << "v" << "\n";
-    int i;
+    datafile << "# First line is the value of n, number of points plotted, respectively \n" ;
+    datafile << n << setw(15) << n/max_points << "\n";
+    int step;
     if(n > max_points)
     {
-
+        step = n/max_points;
     }
     else
     {
-        int step = i++
+        step = 1;
     }
-    for (i=0; i < n; step)
+    for (int i=0; i < n; i=i+step)
     {
-        datafile << x[i] << setw(15) << v[i] << "\n";
+        datafile << setprecision(8) << x[i] << setw(15) << setprecision(8) << v[i] << "\n";
     }
     datafile.close();
 }
@@ -122,8 +119,6 @@ int main()
         string argument = to_string(n);
         fileout.append(argument);
         fileout.append(".txt");
-        fileout = filename + to_string(n) + ".txt";
-
 
         // Solving the algorithms and write results of x and v to a file
         fill_initial_arrays(x, a, b, c, f, n);
@@ -136,24 +131,57 @@ int main()
     // Freeing memory for next task
     delete[]a;
     delete[]c;
-    delete[]b;
     // Solving for specialized algorithm, with n = 10^6s
-//    n = pow(10,6);
-//    x = new double[n];
-//    f = new double[n];
-//    v = new double[n];
-//    b = new double[n];
-//    forward_simplified(x, b, f, v, n);
-//    write_file(x, v, n, "Project1c_data_simplified.txt");
+    string filename_simplified = "Simplified_data_n";
+    for (int i=1; i <= 6; i++)
+    {
+        /* For loop that solves the general method
+        Uses values of n = 10, 100, 1000 */
+        n = pow(10,i);
+        x = new double[n];
+        f = new double[n];
+        v = new double[n];
+        b = new double[n];
 
+        // Adds something extra to the filename to distinguis between the files
+        string fileout = filename_simplified;
+        string argument = to_string(n);
+        fileout.append(argument);
+        fileout.append(".txt");
 
-//    // TASK D)
+        // Solving the algorithms and write results of x and v to a file
+        forward_simplified(x, b, f, v, n);
+        write_file(x, v, n, fileout);
+    }
+
+    // TASK D)
+    string filename_error = "Error_data_n";
+    for (int i=1; i <= 7; i++)
+    {
+        /* For loop that solves the general method
+        Uses values of n = 10, 100, 1000 */
+        n = pow(10,i);
+        x = new double[n];
+        f = new double[n];
+        v = new double[n];
+        b = new double[n];
+
+        // Adds something extra to the filename to distinguis between the files
+        string fileout = filename_error;
+        string argument = to_string(n);
+        fileout.append(argument);
+        fileout.append(".txt");
+
+        // Solving the algorithms and write results of x and v to a file
+        forward_simplified(x, b, f, v, n);
+        write_file(x, v, n, fileout);
+    }
+
 //    n = pow(10,7);
 //    x = new double[n];
 //    f = new double[n];
 //    v = new double[n];
 //    b = new double[n];
-
 //    forward_simplified(x, b, f, v, n);
 //    write_file(x, v, n, "Project1d_relative_error.txt");
 
