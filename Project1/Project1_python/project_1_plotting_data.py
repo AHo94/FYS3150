@@ -39,13 +39,13 @@ def save_and_plot(filename_open, simplified_plot):
 		i += 1
 	filename.close()
 	n = int(data[0][0])
-	step = int(data[0][1])
 	x = np.zeros(n)
 	v = np.zeros(n)
-	if step <= 1:
+	if n <= 1000:
 		maxpoints = n
-	elif step > 1:
+	elif n > 1000:
 		maxpoints = 1000
+
 	for j in range(0,maxpoints,1):
 		x[j] = float(data[j+1][0])
 		v[j] = float(data[j+1][1])
@@ -80,14 +80,13 @@ def relative_error(error_list):
 			i += 1
 		filename.close()
 		n = int(data[0][0])
-		step = int(data[0][1])
 		v = np.zeros(n)
 		x = np.zeros(n)
 		h = 1.0/(n-1)
 
-		if step <= 1:
+		if n <= 1000:
 			maxpoints = n
-		elif step > 1:
+		elif n > 1000:
 			maxpoints = 1000
 
 		for j in range(0,maxpoints,1):
