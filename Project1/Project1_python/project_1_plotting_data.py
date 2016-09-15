@@ -39,17 +39,17 @@ def save_and_plot(filename_open, simplified_plot):
 		i += 1
 	filename.close()
 	n = int(data[0][0])
-	x = np.zeros(n)
-	v = np.zeros(n)
 	if n <= 1000:
 		maxpoints = n
 	elif n > 1000:
 		maxpoints = 1000
 
+	v = np.zeros(maxpoints+2)
+	x = np.zeros(maxpoints+2)
+	x[-1] = 1
 	for j in range(0,maxpoints,1):
-		x[j] = float(data[j+1][0])
-		v[j] = float(data[j+1][1])
-
+		x[j+1] = float(data[j+1][0])
+		v[j+1] = float(data[j+1][1])
 	u_exact = 1-(1-np.exp(-10))*x - np.exp(-10*x)
 
 	plt.plot(x,v,'b-')
@@ -80,23 +80,24 @@ def relative_error(error_list):
 			i += 1
 		filename.close()
 		n = int(data[0][0])
-		v = np.zeros(n)
-		x = np.zeros(n)
-		h = 1.0/(n-1)
 
 		if n <= 1000:
 			maxpoints = n
 		elif n > 1000:
 			maxpoints = 1000
+		v = np.zeros(maxpoints+2)
+		x = np.zeros(maxpoints+2)
+		x[-1] = 1
+		h = 1.0/(n+1)
 
 		for j in range(0,maxpoints,1):
-			x[j] = float(data[j+1][0])
-			v[j] = float(data[j+1][1])
+			x[j+1] = float(data[j+1][0])
+			v[j+1] = float(data[j+1][1])
 
 		u_exact = 1-(1-np.exp(-10))*x - np.exp(-10*x)
 
 		h_values[h_count] = np.log(h)/np.log(10)
-		rel_error[h_count] = np.max(np.log(np.abs((v[1:999]-u_exact[1:999])/u_exact[1:999]))/np.log(10))
+		rel_error[h_count] = np.max(np.log(np.abs((v[1:-1]-u_exact[1:-1])/u_exact[1:-1]))/np.log(10))
 		h_count += 1
 
 	
