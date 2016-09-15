@@ -35,7 +35,7 @@ void forward_and_backward_subst(double *a, double *b, double *c, double *f, doub
         f[i] = (f[i] - (f[i-1]*a[i-1])/b[i-1]);
     }
     v[n-1] = f[n-1]/b[n-1];     // Initial (last) value of v
-    for (int i=n-1; i>-1; i--)
+    for (int i=n-1; i>0; i--)
     {
         // Backward substitution
         v[i-1] = (1/b[i-1])*(f[i-1] - c[i-1]*v[i]) ;
@@ -76,9 +76,20 @@ void write_file(double *x, double *v, int n, string filename)
     // Function that writes data of x and v to a file
     ofstream datafile;
     datafile.open(filename);
+    int max_points = 1000;
+
     datafile << "n = " << n << "\n";
     datafile << "x" << setw(15) << "v" << "\n";
-    for (int i=0; i < n; i++)
+    int i;
+    if(n > max_points)
+    {
+
+    }
+    else
+    {
+        int step = i++
+    }
+    for (i=0; i < n; step)
     {
         datafile << x[i] << setw(15) << v[i] << "\n";
     }
@@ -87,17 +98,18 @@ void write_file(double *x, double *v, int n, string filename)
 
 int main()
 {
+
     // TASK B)
     clock_t start, finish;
     start = clock();
     int n;                   // number of gridpoints
-    double *x, *a, *b, *c, *f, *v;  // Pointer of the arrays
-    string filename = "General_data_n";
-    for (int i=0; i <= 3; i++)
+    double *x, *a, *b, *c, *f, *v;          // Pointers for array
+    string filename = "General_data_n";    // Filename of our general algorithm
+    for (int i=1; i <= 3; i++)
     {
         /* For loop that solves the general method
         Uses values of n = 10, 100, 1000 */
-        n = pow(10.0,i);
+        n = (int) pow(10.0,i);
         x = new double[n];
         a = new double[n];
         b = new double[n];
@@ -105,10 +117,13 @@ int main()
         f = new double[n];
         v = new double[n];
 
+        // Adds something extra to the filename to distinguis between the files
         string fileout = filename;
         string argument = to_string(n);
         fileout.append(argument);
         fileout.append(".txt");
+        fileout = filename + to_string(n) + ".txt";
+
 
         // Solving the algorithms and write results of x and v to a file
         fill_initial_arrays(x, a, b, c, f, n);
@@ -121,35 +136,32 @@ int main()
     // Freeing memory for next task
     delete[]a;
     delete[]c;
-   // delete[]b;
+    delete[]b;
     // Solving for specialized algorithm, with n = 10^6s
-    /*
-    n = pow(10,6);
-    x = new double[n];
-    f = new double[n];
-    v = new double[n];
-    b = new double[n];
-
-    forward_simplified(x, b, f, v, n);
-    write_file(x, v, n, "Project1c_data_simplified.txt");
-
-
-//    // TASK D)
 //    n = pow(10,6);
 //    x = new double[n];
 //    f = new double[n];
 //    v = new double[n];
 //    b = new double[n];
+//    forward_simplified(x, b, f, v, n);
+//    write_file(x, v, n, "Project1c_data_simplified.txt");
 
-//    forward_simplified(x, f, v, n);
+
+//    // TASK D)
+//    n = pow(10,7);
+//    x = new double[n];
+//    f = new double[n];
+//    v = new double[n];
+//    b = new double[n];
+
+//    forward_simplified(x, b, f, v, n);
 //    write_file(x, v, n, "Project1d_relative_error.txt");
-    */
+
     cout << "Sucess!" << endl;
     delete [] x;
     delete [] f;
     delete [] v;
     finish = clock();
     cout << "Time elapsed: " << ((finish-start)/CLOCKS_PER_SEC) << "s" << endl;;
-
     return 0;
 }
