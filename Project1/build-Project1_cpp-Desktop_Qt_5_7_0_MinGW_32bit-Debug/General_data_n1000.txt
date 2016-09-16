@@ -1,4 +1,4 @@
-# First line is the value of n 
+# First line is the value of n. First column is the values of x, second is values of v. 
 1000
 0.000999001     0.00894125
 0.001998      0.0177837
