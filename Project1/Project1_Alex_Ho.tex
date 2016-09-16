@@ -35,7 +35,7 @@ We will in this project solve the one-dimensional Poisson equation, given as
 \begin{align}
 -u''(x) = f(x)
 \end{align}
-numerically, with Dirichlet boundary conditions by rewriting the Poisson equation to a set of linear equations. In this project, we will also focus on memory allocation and floating point operations in our numerical algorithm.  The method section is divided in multiple parts, where each part has a different task to be solved.
+numerically, with Dirichlet boundary conditions by rewriting the Poisson equation to a set of linear equations. In this project, we will also focus on memory allocation, floating point operations in our numerical algorithm and compare the algorithms that we use in the project.  The method section is divided in multiple parts, where each part has a different task to be solved.
 \section{Method}
 \subsection*{a) Rewriting to a set of linear equations}
 We can discretize the Poisson equation as
@@ -55,7 +55,7 @@ Since this is for $i = 1,2,..,n$, one can write this as a set of linear equation
 \vdots \nonumber \\
 2v_n - v_{n-1} = \tilde{f}_n
 \end{align}
-Here I have set $v_0 = v_{n+1} = 0$ as they are $"$outside" our range of values. We can clearly see a pattern here. This set of linear equation can be written in the form
+We know from the boundary conditions that $v_0 = v_{n+1} = 0$, so we do not include them in the algorithm. We can clearly see a pattern here. This set of linear equation can be written in the form
 \begin{align}
 \mathbf{A}\mathbf{v} = \mathbf{\tilde{f}}
 \end{align}
@@ -198,24 +198,113 @@ With the non diagonal elements as $a_i = c_i = -1$ and $b_i = 2$. With the initi
 The next step in the forward substitution algorithm is then
 \begin{align}
 F_i &= \tilde{f}_i - F_{i-1}\frac{a_{i-1}}{\tilde{b}_{i-1}}  \nonumber \\
-\implies F_i &= \tilde{f}_i + \frac{F_{i-1}}{\tilde{b}_i}, \quad \text{for } i=2,...,n
+\implies F_i &= \tilde{f}_i + \frac{F_{i-1}}{\tilde{b}_{i-1}}, \quad \text{for } i=2,...,n
 \end{align}
 Where the initial value is $F_1 = \tilde{f}_1$. Finally, the backward substitution algorithm can be simplified to
 \begin{align}
 v_{i-1} &= \frac{1}{\tilde{b}_{i-1}}(F_{i-1}-c_{i-1}v_i) \nonumber \\
-\implies v_{i-1} &= \frac{1}{\tilde{b}_i}(F_{i-1} + v_i), \quad \text{for } i = n, n-1, ..., 2
+\implies v_{i-1} &= \frac{1}{\tilde{b}_{i-1}}(F_{i-1} + v_i), \quad \text{for } i = n, n-1, ..., 2
 \end{align}
-The number of FLOPS for all three steps is $2$ FLOPS. Each of them do one addition and one division. However, since the values of $\tilde{b}_i$ is calculated beforehand, we do not have to take into account the calculations of these values, as they can be vectorized and quickly calculated in C++. Therefore, the number of FLOPS is only calculated by the second part of the forward substitution and backward substitution. Because of this, and keeping in mind that we are solving these equations $n$ times, then the total number of FLOPS is $4n$ FLOPS.
+With the initial value $v_{n} = F_n/\tilde{b}_n$. The number of FLOPS for all three steps is $2$ FLOPS. Each of them do one addition and one division. However, since the values of $\tilde{b}_i$ is calculated beforehand, we do not have to take into account the calculations of these values, as they can be vectorized and quickly calculated in C++. Therefore, the number of FLOPS is only calculated by the second part of the forward substitution and backward substitution. Because of this, and keeping in mind that we are solving these equations $n$ times, then the total number of FLOPS is $4n$ FLOPS.
 
 \subsection*{d) Calculating relative error}
+We are tasked to calculate the relative error given as
+\begin{align*}
+\epsilon_i = log_{10}\left(\frac{v_i - u_i}{u_i} \right)
+\end{align*}
+as a function of $log_{10}(h)$. Different values of $h$ corresponds to different values of $n$. We will in this project use the values of $n$ from $n=10$ up to $n=10^7$.
 
 \subsection*{e) LU-decomposition}
+The LU-decomposition is done by using the \textit{lib.cpp} file that is provided this course. 
 
 \section{Implementation}
 I have used both C++ and Python to solve this project. The strategy is to use C++ to develop and algorithm, do the calculations and save the results to a text file. Once I have the results, I use Python to plot the values that was calculated in C++. All files for this project can be found in the GitHub repository \url{https://github.com/AHo94/FYS3150_Projects/tree/master/Project1}.
 
+For the general algorithm, I will assume that the values along the diagonal are the same. This is to compare the results between the general and special method.
+
+Since we are only calculating the values of $i=1,...,n$, I have ignored the points at $i=0$ and $i=n+1$ in the C++ program. To compensate for that (and also to make sure we have the boundaries), I will have to add these points after the data calculations. This is done in the Python script, where I increase the array by $2$ and then set the boundary conditions.
+
+One important note is that the indexes in C++ and Python runs through $i=0$ to $i=n-1$. So equations like equation (32) has to be modified with respect to this, so calculating   $\tilde{b}_i$ for the special case is in C++
+\begin{align}
+\tilde{b}_i = \frac{i+2}{i+1}, \quad \text{for } i=0,1,...,n-1
+\end{align}
+
 \section{Results}
+Figure (1) and (2) shows the results of the dataset in the general algorithm. As we can see, the algorithm starts to converge from below to the exact solution. As we increase the number of points, the algorithm yields practically the same data points as the exact solution. Plots for $n=10^4, 10^5$ and $10^6$ can be found in the GitHub repository under  the Data\_plots folder.
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.5]{Data_plots/General_data_n10.png}
+\includegraphics[scale=0.5]{Data_plots/General_data_n100.png}
+\caption{Graphs showing the results of the general algorithm as a function of $x$, for $n =$ 10 and 100}
+\end{figure}
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.5]{Data_plots/General_data_n1000.png}
+\caption{Graph showing the result of the general algorithm  as a function of $x$, with $n=$1000}
+\end{figure}
+
+Figure (3) and (4) shows the results from the specialized algorithm, where we know the diagonal elements beforehand. There is in fact nothing different here as both methods gave the same results (see table 1). 
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.5]{Data_plots/Simplified_data_n10.png}
+\includegraphics[scale=0.5]{Data_plots/Simplified_data_n100.png}
+\caption{Graphs showing the results of the specialized algorithm as a function of $x$, for $n =$ 10 and 100}
+\end{figure}
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.5]{Data_plots/Simplified_data_n1000.png}
+\caption{Graph showing the result of the specialized algorithm as a function of $x$ with $n=$1000}
+\end{figure}
+
+Figure (5) Shows the relative error between $u_i$ and $v_i$ for different step lengths (equivalent to different values of $n$). Both axes are plotting in $log_{10}$ scale. The results seems a little weird to me, as I expect more of a $v$-like shape for the relative error. Table (1) shows the values of the relative error.
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.5]{Data_plots/Relative_error.png}
+\caption{Plot of the relative error as a function of $log_{10}(h)$}
+\end{figure}
+
+The LU-decomposition has not been plotted, as the dataset from this algorithm is exactly the same as the general and special algorithm that I developed. Table (1) shows the calculated data from these methods. The dataset can be found in the following GitHub link: \url{https://github.com/AHo94/FYS3150_Projects/tree/master/Project1/build-Project1_cpp-Desktop_Qt_5_7_0_MinGW_32bit-Debug} 
+
+\begin{table}
+\begin{center}
+	\begin{tabular}{| l | l | l | l |}
+		$x$ & $v_g$ & $v_s$ & $v_{LUD}$ \\ \hline
+		0.0909091 & 0.472737 & 0.472737 & 0.472737 \\
+		0.181818  & 0.612506 & 0.612506 & 0.612506 \\
+		0.272727 &  0.618127 & 0.618127& 0.618127\\
+		0.363636 &  0.5697 & 0.5697& 0.5697\\
+		0.454545 &  0.499497 & 0.499497& 0.499497\\
+		0.545455 &  0.420522 & 0.420522& 0.420522\\
+		0.636364 &  0.338012 & 0.338012& 0.338012\\
+		0.727273 &  0.254078 & 0.254078& 0.254078\\
+		0.818182 &  0.169571 & 0.169571& 0.169571\\
+		0.909091 &  0.0848319 & 0.0848319& 0.0848319 \\ \hline
+	\end{tabular}
+\caption{Comparison of calculated data between the general $v_g$ algorithm, special $v_s$ algorithm and LU-decomposition $v_{LUD}$ for $n=10$ points.}
+\end{center}
+\end{table}
+
+The CPU time of these three methods are shown in blue text below:
+\begin{lstlisting}
+@Time elapsed for general algorithm: 5.3e-005s
+Time elapsed for specialized algorithm: 1e-005s
+Time elapsed for LU-decomp: 14s@
+\end{lstlisting}
+For the special algorithm, I have only calculated the CPU time for the $n=10,100,1000$ calculations it has done and ignored calculations with $n=10^4, 10^5, 10^6$. It would obviously take a longer time to compute the data if we have more points, so comparing the same amount of calculations would set a better example.
+
+As we can see, the general algorithm takes slightly more time to finish compared to the special algorithm. This is not surprising to us, as the special method do less FLOPS. The LU-decomposition, on the other hand, takes a lot longer time to finish its calculation in comparison to the two previously mentioned other methods.
+
 \section{Conclusion}
+From the results, we can clearly see that using LU-decomposition is not an ideal way to solve our linear equations, given that we know that our matrix $\mathbf{A}$ is a tridiagonal matrix. The best method for our matrix $\mathbf{A}$ was the specialized method that we implemented. 
+
+However, the algorithm for the special case was not a whole lot faster than the general algorithm. So, even if the elements along the diagonal were not the same, the general algorithm would still work incredibly well if our matrix is tridiagonal.
+
+But what happens if the matrix is no longer tridiagonal? The general algorithm will no longer work, and we would have to use LU-decomposition to solve the linear equations.
 \section{References}
-M. Hjort-Jensen, 2015, \textit{Computational Physics}, accessible at course GitHub repository; \url{https://github.com/CompPhysics/ComputationalPhysics/tree/master/doc/Lectures}, 551 pages.
+M. Hjort-Jensen, 2015, \textit{Computational Physics}, accessible at course GitHub repository; \url{https://github.com/CompPhysics/ComputationalPhysics/tree/master/doc/Lectures} (as of 14.09.16), 551 pages.
 \end{document}
