@@ -13,7 +13,6 @@ double f_tild(double x, float h){
     return h*h*100*exp(-10*x);
 }
 
-
 void fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, int n, float L){
     /* Function filling the initial arrays
     Will here assume that the values along the diagonal are the same
@@ -119,80 +118,87 @@ int main()
     int n;                                // number of gridpoints
     float L = 1;                          // Endpoint of x
     double *x, *a, *b, *c, *f, *v;        // Pointers for array
-//    start = clock();
-//    string filename = "General_data_n";   // Filename of our general algorithm
-//    for (int i=1; i <= 3; i++){
-//        /* For loop that solves the general method
-//        Uses values of n = 10, 100, 1000 */
-//        n = (int) pow(10.0,i);
-//        x = new double[n];
-//        a = new double[n];
-//        b = new double[n];
-//        c = new double[n];
-//        f = new double[n];
-//        v = new double[n];
+    start = clock();
+    string filename = "General_data_n";   // Filename of our general algorithm
+    for (int i=1; i <= 3; i++){
+        /* For loop that solves the general method
+        Uses values of n = 10, 100, 1000 */
+        n = (int) pow(10.0,i);
+        x = new double[n];
+        a = new double[n];
+        b = new double[n];
+        c = new double[n];
+        f = new double[n];
+        v = new double[n];
 
-//        // Adds something extra to the filename to distinguis between the files
-//        string fileout = filename;
-//        string argument = to_string(n);
-//        fileout.append(argument);
-//        fileout.append(".txt");
+        // Adds something extra to the filename to distinguis between the files
+        string fileout = filename;
+        string argument = to_string(n);
+        fileout.append(argument);
+        fileout.append(".txt");
 
-//        // Solving the algorithms and write results of x and v to a file
-//        fill_initial_arrays(x, a, b, c, f, n, L);
-//        forward_and_backward_subst(a, b, c, f, v, n);
-//        write_file(x, v, n, fileout);
-//    }
-//    finish = clock();
-//    cout << "Time elapsed for general algorithm: " << ((finish-start)/CLOCKS_PER_SEC) << "s" << endl;
+        // Solving the algorithms and write results of x and v to a file
+        fill_initial_arrays(x, a, b, c, f, n, L);
+        forward_and_backward_subst(a, b, c, f, v, n);
+        write_file(x, v, n, fileout);
+    }
+    finish = clock();
+    cout << "Time elapsed for general algorithm: " << ((finish-start)/(double)(CLOCKS_PER_SEC)/1000) << "s" << endl;
 
-//    // TASK C) - Simplified algorithm
-//    // Freeing memory for next task
-//    delete[]a;
-//    delete[]c;
-//    start = clock();
-//    string filename_simplified = "Simplified_data_n";   // Filename for simplified algorithm
-//    for (int i=1; i <= 6; i++){
-//        // For loop that runs through exponents from i=1 to i=6
-//        n = pow(10,i);
-//        x = new double[n];
-//        f = new double[n];
-//        v = new double[n];
-//        b = new double[n];
+    // TASK C) - Simplified algorithm
+    // Freeing memory for next task
+    delete[]a;
+    delete[]c;
+    start = clock();
+    string filename_simplified = "Simplified_data_n";   // Filename for simplified algorithm
+    for (int i=1; i <= 6; i++){
+        // For loop that runs through exponents from i=1 to i=6
+        n = pow(10,i);
+        x = new double[n];
+        f = new double[n];
+        v = new double[n];
+        b = new double[n];
 
-//        // Adds something extra to the filename to distinguis between the files
-//        string fileout = filename_simplified;
-//        string argument = to_string(n);
-//        fileout.append(argument);
-//        fileout.append(".txt");
+        // Adds something extra to the filename to distinguis between the files
+        string fileout = filename_simplified;
+        string argument = to_string(n);
+        fileout.append(argument);
+        fileout.append(".txt");
 
-//        // Solving the algorithms and write results of x and v to a file
-//        simplified_algorithm(x, b, f, v, n, L/(n+1));
-//        write_file(x, v, n, fileout);
-//    }
-//    finish = clock();
-//    cout << "Time elapsed for specialized algorithm: " << ((finish-start)/CLOCKS_PER_SEC) << "s" << endl;
-//    // TASK D) - Calculate relative error
-//    string filename_error = "Error_data_n";     // Filename for relative error data
-//    for (int i=1; i <= 7; i++){
-//        // For loop that runs through the exponents from i=1 to i=7
-//        n = pow(10,i);
-//        x = new double[n];
-//        f = new double[n];
-//        v = new double[n];
-//        b = new double[n];
+        if (i==3){
+            // Stops clock for the specialized algorithm to compare the CPU time with the general algorithm.
+            finish = clock();
+            cout << "Time elapsed for specialized algorithm: "
+                 << ((finish-start)/double(CLOCKS_PER_SEC)/1000) << "s" << endl;
+        }
 
-//        // Adds something extra to the filename to distinguis between the files
-//        string fileout = filename_error;
-//        string argument = to_string(n);
-//        fileout.append(argument);
-//        fileout.append(".txt");
+        // Solving the algorithms and write results of x and v to a file
+        simplified_algorithm(x, b, f, v, n, L/(n+1));
+        write_file(x, v, n, fileout);
+    }
+    //finish = clock();
+    //cout << "Time elapsed for specialized algorithm: " << ((finish-start)/double(CLOCKS_PER_SEC)/1000) << "s" << endl;
+    // TASK D) - Calculate relative error
+    string filename_error = "Error_data_n";     // Filename for relative error data
+    for (int i=1; i <= 7; i++){
+        // For loop that runs through the exponents from i=1 to i=7
+        n = pow(10,i);
+        x = new double[n];
+        f = new double[n];
+        v = new double[n];
+        b = new double[n];
 
-//        /* Solving the algorithms and write results of x and v to a file
-//           Using simplified algorithm */
-//        simplified_algorithm(x, b, f, v, n, L/(n+1));
-//        write_file(x, v, n, fileout);
-//    }
+        // Adds something extra to the filename to distinguis between the files
+        string fileout = filename_error;
+        string argument = to_string(n);
+        fileout.append(argument);
+        fileout.append(".txt");
+
+        /* Solving the algorithms and write results of x and v to a file
+           Using simplified algorithm */
+        simplified_algorithm(x, b, f, v, n, L/(n+1));
+        write_file(x, v, n, fileout);
+    }
 
     // TASK E) - LU-decomposition
     double **A, d;
@@ -228,10 +234,12 @@ int main()
         write_file(x, f, n, fileout);
     }
     finish = clock();
-    cout << "Time elapsed for LU-decomp: " << ((finish-start)/CLOCKS_PER_SEC) << "s" << endl;
+    cout << "Time elapsed for LU-decomp: " << ((finish-start)/(CLOCKS_PER_SEC)) << "s" << endl;
     cout << "Program finished" << endl;
     delete [] x;
     delete [] f;
     delete [] v;
+    delete [] b;
+    delete [] A;
     return 0;
 }
