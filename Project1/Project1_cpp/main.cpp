@@ -8,6 +8,10 @@
 using namespace std;
 using std::setw;
 
+double f_tild(double x){
+    // Calculates the function f_tilde for a given x value
+    return h*h*100*exp(-10*x)
+}
 
 
 void fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, int n)
@@ -22,7 +26,8 @@ void fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, 
         a[i] = -1;
         b[i] = 2;
         c[i] = -1;
-        f[i] = h*h*100*exp(-10*x[i]);
+        //f[i] = h*h*100*exp(-10*x[i]);
+        f[i] = f_tild(x[i]);
     }
 }
 
@@ -50,7 +55,8 @@ void forward_simplified(double *x, double *b, double *f, double *v, int n)
     float float_converter = 1;  // Converts int to float value to prevent integer divison
     for (int i=0; i<n; i++){
         x[i] = (i+1)*h;
-        f[i] = h*h*100*exp(-10*x[i]);
+        //f[i] = h*h*100*exp(-10*x[i]);
+        f[i] = f_tild(x[i]);
         b[i] = float_converter*(i+1)/i;
     }
 
@@ -91,6 +97,24 @@ void write_file(double *x, double *v, int n, string filename)
     }
     datafile.close();
 }
+
+void create_tridiagonal_matrix(double **A, int n){
+    // Function that fills a given nxn matrix and fills the diagonals
+    for (int i=0; i<n; i++) {
+        for (int j=0; j<n; j++) {
+            if (i==j) {
+                A[i][j] = 2;
+            } else if (i==j-1) {
+                A[i][j] = -1;
+            } else if (i==j+1) {
+                A[i][j] = -1;
+            } else{
+                A[i][j] = 0;
+            }
+        }
+    }
+}
+
 
 // Run main program
 int main()
@@ -176,38 +200,19 @@ int main()
     // TASK E) - LU-decomposition
     n = 10;
     double **A, *D;
-    A = new double*[n];
-    //D = new double[n];
-    for (int i=0; i<n; i++) {
-        A[i] = new double[n];
 
-    }
-    for (int i=0; i<n; i++) {
-        for (int j=0; j<n; j++) {
-            if (i==j) {
-                A[i][j] = 2;
-            } else if (i==j-1) {
-                A[i][j] = -1;
-            } else if (i==j+1) {
-                A[i][j] = -1;
-            } else{
-                A[i][j] = 0;
-            }
+    for (int i=1; i<=3; i++){
+        n = pow(10,i);
+        for (int i=0; i<n; i++) {
+            A[i] = new double[n];
         }
+        int index[n];
+        double d;
+
+        // Uses lib.cpp to compute LU-decompositiion
+        ludcmp(A,n,index,&d);
+        lubksb(A,n,index, f);
     }
-    cout << "matrix created" << endl;
-//    for (int i=0; i<n; i++){
-//        cout << A[i][0] <<" "
-//        << A[i][1] <<" "
-//        << A[i][2] <<" "
-//        << A[i][3] <<" "
-//        << A[i][4] <<" "
-//        << A[i][5] <<" "
-//        << A[i][6] <<" "
-//        << A[i][7] <<" "
-//        << A[i][8] <<" "
-//        << A[i][9] << endl;
-//    }
 
     float L = 1;        // End point of x
     float h = L/(n+1);  // Steplength h
@@ -217,26 +222,14 @@ int main()
         x[i] = (i+1)*h;
         f[i] = h*h*100*exp(-10*x[i]);
     }
-    cout << "for loop done" << endl;
 
     int index[n];
     double d;
-    cout << "a" << endl;
     ludcmp(A,n,index,&d);
-    cout << "b" << endl;
     lubksb(A,n,index, f);
 
     for (int i=0; i<n; i++){
-        cout << A[i][0] << setw(5)
-        << A[i][1] << setw(5)
-        << A[i][2] << setw(5)
-        << A[i][3] << setw(5)
-        << A[i][4] << setw(5)
-        << A[i][5] << setw(5)
-        << A[i][6] << setw(5)
-        << A[i][7] << setw(5)
-        << A[i][8] << setw(5)
-        << A[i][9] << endl;
+        cout << f[i] << endl;
     }
 
     cout << "Sucess!" << endl;
