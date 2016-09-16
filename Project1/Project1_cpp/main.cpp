@@ -227,11 +227,11 @@ int main()
 
         write_file(x, f, n, fileout);
     }
+    finish = clock();
     cout << "Time elapsed for LU-decomp: " << ((finish-start)/CLOCKS_PER_SEC) << "s" << endl;
     cout << "Program finished" << endl;
     delete [] x;
     delete [] f;
     delete [] v;
-    finish = clock();
     return 0;
 }
