@@ -99,6 +99,11 @@ def relative_error(error_list):
 		rel_error[h_count] = np.max(np.log(np.abs((v[1:-1]-u_exact[1:-1])/u_exact[1:-1]))/np.log(10))
 		h_count += 1
 
+	outfile = open("../Data_plots/Relative_error_h_data.txt", "w")
+	outfile.write('# Left column is the relative error values, right column is h values. Data of n=10 \n')
+	for j in range(len(rel_error)):
+		outfile.write(str(rel_error[j]) + '   ' +str(h_values[j]) + '\n')
+	outfile.close()
 	plt.plot(h_values, rel_error, 'g-o')
 	plt.xlabel('$log_{10}(h)$')
 	plt.ylabel('Relative error, in $log_{10}$ scale')
