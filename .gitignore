@@ -34,3 +34,6 @@
 *.synctex
 *.dvi
 *.synctex.gz
+
+# Unknown file
+*.db
