@@ -205,7 +205,7 @@ Where the initial value is $F_1 = \tilde{f}_1$. Finally, the backward substituti
 v_{i-1} &= \frac{1}{\tilde{b}_{i-1}}(F_{i-1}-c_{i-1}v_i) \nonumber \\
 \implies v_{i-1} &= \frac{1}{\tilde{b}_i}(F_{i-1} + v_i), \quad \text{for } i = n, n-1, ..., 2
 \end{align}
-The number of FLOPS for all three steps is $2$ FLOPS. Each of them do one addition and one division. Since we are solving these equations $n$ times, then the total is $6n$ FLOPS.
+The number of FLOPS for all three steps is $2$ FLOPS. Each of them do one addition and one division. However, since the values of $\tilde{b}_i$ is calculated beforehand, we do not have to take into account the calculations of these values, as they can be vectorized and quickly calculated in C++. Therefore, the number of FLOPS is only calculated by the second part of the forward substitution and backward substitution. Because of this, and keeping in mind that we are solving these equations $n$ times, then the total number of FLOPS is $4n$ FLOPS.
 
 \subsection*{d) Calculating relative error}
 
