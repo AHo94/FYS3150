@@ -8,18 +8,17 @@
 using namespace std;
 using std::setw;
 
-double f_tild(double x){
+double f_tild(double x, float h){
     // Calculates the function f_tilde for a given x value
-    return h*h*100*exp(-10*x)
+    return h*h*100*exp(-10*x);
 }
 
 
-void fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, int n)
+void fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, int n, float L)
 {
     /* Function filling the initial arrays
     Will here assume that the values along the diagonal are the same
     to make sure that the algorithm works with the specialized case*/
-    float L = 1;        // End point of x
     float h = L/(n+1);  // Steplength h
     for (int i=0; i<n; i++){
         x[i] = (i+1)*h;
@@ -27,7 +26,7 @@ void fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, 
         b[i] = 2;
         c[i] = -1;
         //f[i] = h*h*100*exp(-10*x[i]);
-        f[i] = f_tild(x[i]);
+        f[i] = f_tild(x[i], h);
     }
 }
 
@@ -47,16 +46,15 @@ void forward_and_backward_subst(double *a, double *b, double *c, double *f, doub
     }
 }
 
-void forward_simplified(double *x, double *b, double *f, double *v, int n)
+void simplified_algorithm(double *x, double *b, double *f, double *v, int n, float h)
 {
     // Simplified algorithm for a special case where the values along the diagonal are the same
-    float L = 1;            // End point of x
-    float h = L/(n+1);      // Steplength h
+    //float h = L/(n+1);
     float float_converter = 1;  // Converts int to float value to prevent integer divison
     for (int i=0; i<n; i++){
         x[i] = (i+1)*h;
         //f[i] = h*h*100*exp(-10*x[i]);
-        f[i] = f_tild(x[i]);
+        f[i] = f_tild(x[i], h);
         b[i] = float_converter*(i+1)/i;
     }
 
@@ -123,79 +121,82 @@ int main()
     // TASK B) - General Algorithm
     clock_t start, finish;
     int n;                                // number of gridpoints
+    float L = 1;                          // Endpoint of x
     double *x, *a, *b, *c, *f, *v;        // Pointers for array
     start = clock();
-//    string filename = "General_data_n";   // Filename of our general algorithm
-//    for (int i=1; i <= 3; i++){
-//        /* For loop that solves the general method
-//        Uses values of n = 10, 100, 1000 */
-//        n = (int) pow(10.0,i);
-//        x = new double[n];
-//        a = new double[n];
-//        b = new double[n];
-//        c = new double[n];
-//        f = new double[n];
-//        v = new double[n];
+    string filename = "General_data_n";   // Filename of our general algorithm
+    for (int i=1; i <= 3; i++){
+        /* For loop that solves the general method
+        Uses values of n = 10, 100, 1000 */
+        n = (int) pow(10.0,i);
+        x = new double[n];
+        a = new double[n];
+        b = new double[n];
+        c = new double[n];
+        f = new double[n];
+        v = new double[n];
 
-//        // Adds something extra to the filename to distinguis between the files
-//        string fileout = filename;
-//        string argument = to_string(n);
-//        fileout.append(argument);
-//        fileout.append(".txt");
+        // Adds something extra to the filename to distinguis between the files
+        string fileout = filename;
+        string argument = to_string(n);
+        fileout.append(argument);
+        fileout.append(".txt");
 
-//        // Solving the algorithms and write results of x and v to a file
-//        fill_initial_arrays(x, a, b, c, f, n);
-//        forward_and_backward_subst(a, b, c, f, v, n);
-//        write_file(x, v, n, fileout);
-//    }
+        // Solving the algorithms and write results of x and v to a file
+        fill_initial_arrays(x, a, b, c, f, n, L);
+        forward_and_backward_subst(a, b, c, f, v, n);
+        write_file(x, v, n, fileout);
+    }
     finish = clock();
     cout << "Time elapsed for general algorithm: " << ((finish-start)/CLOCKS_PER_SEC) << "s" << endl;
-//    // TASK C) - Simplified algorithm
-//    // Freeing memory for next task
-//    delete[]a;
-//    delete[]c;
+
+    // TASK C) - Simplified algorithm
+    // Freeing memory for next task
+    delete[]a;
+    delete[]c;
     start = clock();
-//    string filename_simplified = "Simplified_data_n";   // Filename for simplified algorithm
-//    for (int i=1; i <= 6; i++){
-//        // For loop that runs through exponents from i=1 to i=6
-//        n = pow(10,i);
-//        x = new double[n];
-//        f = new double[n];
-//        v = new double[n];
-//        b = new double[n];
+    string filename_simplified = "Simplified_data_n";   // Filename for simplified algorithm
+    for (int i=1; i <= 6; i++){
+        // For loop that runs through exponents from i=1 to i=6
+        n = pow(10,i);
+        x = new double[n];
+        f = new double[n];
+        v = new double[n];
+        b = new double[n];
 
-//        // Adds something extra to the filename to distinguis between the files
-//        string fileout = filename_simplified;
-//        string argument = to_string(n);
-//        fileout.append(argument);
-//        fileout.append(".txt");
+        // Adds something extra to the filename to distinguis between the files
+        string fileout = filename_simplified;
+        string argument = to_string(n);
+        fileout.append(argument);
+        fileout.append(".txt");
 
-//        // Solving the algorithms and write results of x and v to a file
-//        forward_simplified(x, b, f, v, n);
-//        write_file(x, v, n, fileout);
-//    }
+        // Solving the algorithms and write results of x and v to a file
+        simplified_algorithm(x, b, f, v, n, L/(n+1));
+        write_file(x, v, n, fileout);
+    }
     finish = clock();
     cout << "Time elapsed for specialized algorithm: " << ((finish-start)/CLOCKS_PER_SEC) << "s" << endl;
-//    // TASK D) - Calculate relative error
-//    string filename_error = "Error_data_n";     // Filename for relative error data
-//    for (int i=1; i <= 7; i++){
-//        // For loop that runs through the exponents from i=1 to i=7
-//        n = pow(10,i);
-//        x = new double[n];
-//        f = new double[n];
-//        v = new double[n];
-//        b = new double[n];
+    // TASK D) - Calculate relative error
+    string filename_error = "Error_data_n";     // Filename for relative error data
+    for (int i=1; i <= 7; i++){
+        // For loop that runs through the exponents from i=1 to i=7
+        n = pow(10,i);
+        x = new double[n];
+        f = new double[n];
+        v = new double[n];
+        b = new double[n];
 
-//        // Adds something extra to the filename to distinguis between the files
-//        string fileout = filename_error;
-//        string argument = to_string(n);
-//        fileout.append(argument);
-//        fileout.append(".txt");
+        // Adds something extra to the filename to distinguis between the files
+        string fileout = filename_error;
+        string argument = to_string(n);
+        fileout.append(argument);
+        fileout.append(".txt");
 
-//        // Solving the algorithms and write results of x and v to a file
-//        forward_simplified(x, b, f, v, n);
-//        write_file(x, v, n, fileout);
-//    }
+        /* Solving the algorithms and write results of x and v to a file
+           Using simplified algorithm */
+        simplified_algorithm(x, b, f, v, n, L/(n+1));
+        write_file(x, v, n, fileout);
+    }
 
     // TASK E) - LU-decomposition
     n = 10;
@@ -208,19 +209,17 @@ int main()
         }
         int index[n];
         double d;
+        x = new double[n];
+        f = new double[n];
+        for (int i=0; i<n; i++){
+            x[i] = (i+1)*h;
+            f[i] = f(x[i], h)
+        }
 
-        // Uses lib.cpp to compute LU-decompositiion
+        /* Uses lib.cpp to compute LU-decompositiion
+           Results are overwritten in the f variable */
         ludcmp(A,n,index,&d);
         lubksb(A,n,index, f);
-    }
-
-    float L = 1;        // End point of x
-    float h = L/(n+1);  // Steplength h
-    x = new double[n];
-    f = new double[n];
-    for (int i=0; i<n; i++){
-        x[i] = (i+1)*h;
-        f[i] = h*h*100*exp(-10*x[i]);
     }
 
     int index[n];
