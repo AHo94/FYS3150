@@ -16,14 +16,13 @@ double f_tild(double x, float h){
 void fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, int n, float L){
     /* Function filling the initial arrays
     Will here assume that the values along the diagonal are the same
-    to make sure that the algorithm works with the specialized case*/
-    float h = L/(n+1);  // Steplength h
+    to make sure that the algorithm works with the specialized case */
+    float h = L/(n+1);       // Steplength h
     for (int i=0; i<n; i++){
         x[i] = (i+1)*h;
         a[i] = -1;
         b[i] = 2;
         c[i] = -1;
-        //f[i] = h*h*100*exp(-10*x[i]);
         f[i] = f_tild(x[i], h);
     }
 }
@@ -43,25 +42,23 @@ void forward_and_backward_subst(double *a, double *b, double *c, double *f, doub
     }
 }
 
-void simplified_algorithm(double *x, double *b, double *f, double *v, int n, float h){
+void simplified_algorithm(double *x, double *b, double *f, double *v, int n, float L){
     // Simplified algorithm for a special case where the values along the diagonal are the same
-    //float h = L/(n+1);
-    float float_converter = 1;  // Converts int to float value to prevent integer divison
+    float h = L/(n+1);            // Steplength h
     for (int i=0; i<n; i++){
         x[i] = (i+1)*h;
-        //f[i] = h*h*100*exp(-10*x[i]);
         f[i] = f_tild(x[i], h);
-        b[i] = float_converter*(i+1)/i;
+        b[i] = float(i+2)/(i+1);    // Turning (i+2) to a float to prevent integer division
     }
-
     for (int i=1; i<n; i++){
         // Forward substitution
         f[i] = f[i] + f[i-1]/b[i];
     }
     v[n-1] = f[n-1]/(b[n-1]);    // Initial (last) value of v
-    for (int i=n-2; i>-1; i--){
+    for (int i=n-1; i>0; i--){
         // Backward substitution
-        v[i] = (f[i] + v[i+1])/b[i];
+        //v[i] = (f[i] + v[i+1])/b[i];
+        v[i-1] = (f[i-1] + v[i])/b[i-1];
     }
 }
 
@@ -70,7 +67,7 @@ void write_file(double *x, double *v, int n, string filename){
     ofstream datafile;
     datafile.open(filename);
     int max_points = 1000;  // Saving up to 1000 points
-    datafile << "# First line is the value of n \n" ;
+    datafile << "# First line is the value of n. First column is the values of x, second is values of v. \n" ;
     datafile << n << "\n";
     int step;
     if(n > max_points){
@@ -110,9 +107,7 @@ void create_tridiagonal_matrix(double **A, int n){
 
 
 // Run main program
-int main()
-{
-
+int main(){
 //    // TASK B) - General Algorithm
     clock_t start, finish;
     int n;                                // number of gridpoints
@@ -171,13 +166,11 @@ int main()
             cout << "Time elapsed for specialized algorithm: "
                  << ((finish-start)/double(CLOCKS_PER_SEC)/1000) << "s" << endl;
         }
-
         // Solving the algorithms and write results of x and v to a file
-        simplified_algorithm(x, b, f, v, n, L/(n+1));
+        simplified_algorithm(x, b, f, v, n, L);
         write_file(x, v, n, fileout);
     }
-    //finish = clock();
-    //cout << "Time elapsed for specialized algorithm: " << ((finish-start)/double(CLOCKS_PER_SEC)/1000) << "s" << endl;
+
     // TASK D) - Calculate relative error
     string filename_error = "Error_data_n";     // Filename for relative error data
     for (int i=1; i <= 7; i++){
@@ -196,7 +189,7 @@ int main()
 
         /* Solving the algorithms and write results of x and v to a file
            Using simplified algorithm */
-        simplified_algorithm(x, b, f, v, n, L/(n+1));
+        simplified_algorithm(x, b, f, v, n, L);
         write_file(x, v, n, fileout);
     }
 
@@ -215,9 +208,10 @@ int main()
         //double d;
         x = new double[n];
         f = new double[n];
+        float h = L/(n+1);
         for (int i=0; i<n; i++){
-            x[i] = (i+1)*(L/(n+1));
-            f[i] = f_tild(x[i], L/(n+1));
+            x[i] = (i+1)*h;
+            f[i] = f_tild(x[i], h);
         }
 
         /* Uses lib.cpp to compute LU-decompositiion
