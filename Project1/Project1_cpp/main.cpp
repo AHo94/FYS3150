@@ -12,7 +12,6 @@ double f_tild(double x, float h){
     // Calculates the function f_tilde for a given x value
     return h*h*100*exp(-10*x);
 }
-
 void fill_initial_arrays(double *x, double *a, double *b, double *c, double *f, int n, float L){
     /* Function filling the initial arrays
     Will here assume that the values along the diagonal are the same
@@ -33,7 +32,7 @@ void forward_and_backward_subst(double *a, double *b, double *c, double *f, doub
     for (int i=1; i<n; i++){
         // Forward substitution
         b[i] = b[i] - (c[i-1]*a[i-1])/b[i-1];
-        f[i] = (f[i] - (f[i-1]*a[i-1])/b[i-1]);
+        f[i] = f[i] - (f[i-1]*a[i-1])/b[i-1];
     }
     v[n-1] = f[n-1]/b[n-1];     // Initial (last) value of v
     for (int i=n-1; i>0; i--){
@@ -52,7 +51,7 @@ void simplified_algorithm(double *x, double *b, double *f, double *v, int n, flo
     }
     for (int i=1; i<n; i++){
         // Forward substitution
-        f[i] = f[i] + f[i-1]/b[i];
+        f[i] = f[i] + f[i-1]/b[i-1];
     }
     v[n-1] = f[n-1]/(b[n-1]);    // Initial (last) value of v
     for (int i=n-1; i>0; i--){
