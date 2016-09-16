@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-
 file_directory = 'C:/Users/Alex/Documents/FYS3150/FYS3150_projects/Project1/build-Project1_cpp-Desktop_Qt_5_7_0_MinGW_32bit-Debug'
 
 # Defines lists that contains the number of points used
@@ -55,8 +54,8 @@ def save_and_plot(filename_open, simplified_plot):
 	plt.plot(x,v,'b-')
 	plt.hold("on")
 	plt.plot(x,u_exact,'r-')
-	plt.xlabel('x')
-	plt.ylabel('u')
+	plt.xlabel('$x$')
+	plt.ylabel('$u$ (and $v$)')
 	plt.legend(['Numerical solution', 'Exact solution'])
 	if simplified_plot == True:
 		plt.title('Plot of $v$ and $u$, special algorithm, , n = %g' %(n))
@@ -100,21 +99,25 @@ def relative_error(error_list):
 		rel_error[h_count] = np.max(np.log(np.abs((v[1:-1]-u_exact[1:-1])/u_exact[1:-1]))/np.log(10))
 		h_count += 1
 
-	
-	plt.figure()
 	plt.plot(h_values, rel_error, 'g-o')
 	plt.xlabel('$log_{10}(h)$')
 	plt.ylabel('Relative error, in $log_{10}$ scale')
 	plt.title('Relative error')
 # Plots the figures
-"""
+
 for file_gen in filename_general:
-	plt.figure()
+	fig1 = plt.figure()
 	save_and_plot(file_gen, False)
+	figname_gen = file_gen.replace('.txt', '.png')
+	fig1.savefig('../Data_plots/'+figname_gen)
 
 for file_simpl in filename_simplified:
-	plt.figure()
+	fig2 = plt.figure()
 	save_and_plot(file_simpl, True)
-"""
-relative_error(filename_error)	
-plt.show()
+	figname_simpl = file_simpl.replace('.txt', '.png')
+	fig2.savefig('../Data_plots/'+figname_simpl)
+
+fig_err = plt.figure()
+relative_error(filename_error)
+fig_err.savefig('../Data_plots/Relative_error.png')
+#plt.show()
