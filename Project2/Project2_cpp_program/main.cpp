@@ -1,20 +1,21 @@
 #include <iostream>
 #include <cmath>
 #include <math.h>
+#include <algorithm>
 //#include <armadillo>
 
 
 using namespace std;
 //using namespace arma;
 
-void initialize_matrix(double **A, double **R, double *d, double *rho, int n){
+void initialize_matrix(double **A, double **R, double *d, double *rho, double rho_max, int n){
     /* This function initializes the initial matrix A for the project.
        Does not calculate the values along the off-diagonal as they are the same.
     */
-    double h = (50.0/(n+1));
+    double h = (rho_max/(n+1));
     for (int i=0; i<n; i++){
         // Creates the rho gridpoints
-        rho[i+1] = rho[i] + i*h;
+        rho[i] = (i+1)*h;
     }
 
     for (int i=0; i<n; i++){
@@ -44,7 +45,7 @@ void initialize_matrix(double **A, double **R, double *d, double *rho, int n){
 
 double max_offdiag(double **A, int p, int q, int n){
     // Finds the max value along the off diagonal
-    double max_value;
+    double max_value=0;
     for (int i=0; i<n; i++){
         for (int j=i+1; j<n; j++){
             double a_ij = fabs(A[i][j]);
@@ -57,9 +58,10 @@ double max_offdiag(double **A, int p, int q, int n){
 }
 
 void Jacobi_rotation(double **A, double **R, int k, int l, int n){
+    /* Jacobi method */
     double s, c; // Sine and cosine functions
     if (A[k][l] != 0.0) {
-        double t, tau;
+        double t=0, tau=0;
         tau = (A[l][l] - A[k][k])/(2*A[k][l]);
 
         if (tau >= 0){
@@ -75,7 +77,7 @@ void Jacobi_rotation(double **A, double **R, int k, int l, int n){
         c = 1.0;
         s = 0.0;
     }
-    double a_kk, a_ll, a_ik, a_il, r_ik, r_il;
+    double a_kk=0, a_ll=0, a_ik=0, a_il=0, r_ik=0, r_il=0;
     a_kk = A[k][k];
     a_ll = A[l][l];
     A[k][k] = c*c*a_kk - 2*c*s*A[k][l] + s*s*a_ll;
@@ -104,7 +106,8 @@ int main(){
     //A = mat (1,2);
     double tolerance = 1.0e-8;
     double *d, *rho, **A, **R;
-    int n = 5;
+    int n = 20;
+    double rho_max = 40;
     d = new double[n];
     rho = new double[n];
     A = new double*[n];
@@ -115,7 +118,7 @@ int main(){
     }
 
     initialize_matrix(A, R, d, rho, n);
-
+    /*
     for (int k=0; k<n; k++){
         cout << A[k][0] << " " << A[k][1] << " " << A[k][2] << " " << A[k][3] << " " << A[k][4] << endl;
     }
@@ -124,37 +127,41 @@ int main(){
     for (int k=0; k<n; k++){
         cout << R[k][0] << " " << R[k][1] << " " << R[k][2] << " " << R[k][3] << " " << R[k][4] << endl;
     }
-
-   // delete[]d;
-   // delete[]rho;
-    int p, q;
+    */
+    delete[]d;
+    delete[]rho;
     double max_diag;
     int iterations = 0;
-    int maxiter = 40;
+    int maxiter = 5000;
     max_diag = 1;
-
+    double *lambda;
+    lambda = new double[n];
     while (max_diag > tolerance && iterations <= maxiter){
+        int p = 0;
+        int q = 0;
         max_diag = max_offdiag(A, p, q, n);
         for (int i=0; i<n; i++){
             for (int j=0; j<n; j++){
-                if (max_diag == fabs(A[i][j])){
+                if (fabs(max_diag - fabs(A[i][j])) < tolerance){
                     p=i;
                     q=j;
                 }
             }
         }
-        /*
-        for (int k=0; k<n; k++){
-            cout << A[k][0] << " " << A[k][1] << " " << A[k][2] << " " << A[k][3] << " " << A[k][4] << endl;
-        }
-        cout << "\n" << endl;
-        */
-        //cout << p << "  "<< q << endl;
         Jacobi_rotation(A, R, p, q, n);
         iterations++;
     }
     cout <<"Number of iterations: " << iterations << endl;
+    for (int i=0; i<n; i++){
+        lambda[i] = A[i][i];
+    }
 
+    // Sorting eigenvalues from lowest to highest
+    std::sort(lambda, lambda+n);
+    for (int i=0; i<5; i++){
+        // Printing the 5 smallest eigenvalues
+        cout << lambda[i] << endl;
+    }
 
     //delete[]d;
     //delete[]e;
