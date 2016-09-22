@@ -115,7 +115,7 @@ int main(){
     }
 
     initialize_matrix(A, R, d, rho, n);
-    /*
+
     for (int k=0; k<n; k++){
         cout << A[k][0] << " " << A[k][1] << " " << A[k][2] << " " << A[k][3] << " " << A[k][4] << endl;
     }
@@ -124,23 +124,22 @@ int main(){
     for (int k=0; k<n; k++){
         cout << R[k][0] << " " << R[k][1] << " " << R[k][2] << " " << R[k][3] << " " << R[k][4] << endl;
     }
-    cout << "pls" << endl;
-    */
+
    // delete[]d;
    // delete[]rho;
     int p, q;
     double max_diag;
     int iterations = 0;
-    int maxiter = 1000;
+    int maxiter = 40;
     max_diag = 1;
 
     while (max_diag > tolerance && iterations <= maxiter){
         max_diag = max_offdiag(A, p, q, n);
         for (int i=0; i<n; i++){
             for (int j=0; j<n; j++){
-                if (max_diag == fabs(A[i][j]))
-                {
-                    p=i, q=j;
+                if (max_diag == fabs(A[i][j])){
+                    p=i;
+                    q=j;
                 }
             }
         }
@@ -150,7 +149,7 @@ int main(){
         }
         cout << "\n" << endl;
         */
-        //cout << p << " "<<q<<endl;
+        //cout << p << "  "<< q << endl;
         Jacobi_rotation(A, R, p, q, n);
         iterations++;
     }
