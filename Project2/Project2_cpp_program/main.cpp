@@ -215,52 +215,6 @@ int main(){
     
     // 2c) Interacting case:
     cout << "Calculating interacting case... \n" << endl;
-//    double omega_r = 1;
-//    d = new double[n];
-//    rho = new double[n];
-//    A = new double*[n];
-//    R = new double*[n];
-//    for (int i=0; i<n; i++){
-//        A[i] = new double[n];
-//        R[i] = new double[n];
-//    }
-//    initialize_matrix(A, R, d, rho, rho_max, n, omega_r);
-
-//    delete[]rho;
-//    delete[]d;
-
-//    max_diag = 1;
-//    iterations = 0;
-//    while (max_diag > tolerance && iterations <= maxiter){
-//        int p = 0;
-//        int q = 0;
-//        max_diag = max_offdiag(A, p, q, n);
-//        for (int i=0; i<n; i++){
-//            for (int j=0; j<n; j++){
-//                if (fabs(max_diag - fabs(A[i][j])) < tolerance){
-//                    p=i;
-//                    q=j;
-//                }
-//            }
-//        }
-//        Jacobi_rotation(A, R, p, q, n);
-//        iterations++;
-//    }
-
-//    lambda = new double[n];
-//    cout <<"Number of iterations: " << iterations << endl;
-//    for (int i=0; i<n; i++){
-//        lambda[i] = A[i][i];
-//    }
-//    // Sorting eigenvalues from lowest to highest
-//    std::sort(lambda, lambda+n);
-//    cout << "Lowest 3 eigenvalues are: " << endl;
-//    for (int i=0; i<3; i++){
-//        // Printing the 3 smallest eigenvalues
-//        cout << lambda[i] << endl;
-//    }
-//    cout << "" <<endl;
-//    orthogonal_test(R, n);
 
     double omegas[] = {0.01, 0.5, 1, 5};
     for (int i=0; i<4; i++){
