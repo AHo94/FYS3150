@@ -131,11 +131,9 @@ void orthogonal_test(double **R, int n){
             w1 = R[i];
             w2 = R[j];
             if (fabs(std::inner_product(w1, w1+n, w2, 0)) < 1e-10){
-                //cout << "Orthogonality conserved" << endl;
                 N_orthogonal++;
             }
             else{
-                //cout << "Orthogonality not conserved" << endl;
                 N_non_orthogonal++;
             }
         }
@@ -148,7 +146,10 @@ void orthogonal_test(double **R, int n){
 }
 
 void Smallest_eigenvector(double **A, double *lambda, int *vector_index, int n){
-    // Attempting to implement a way to check which eigenvector corresponds to which eigenvalue
+    /* This function finds the matrix index of the smallest eigenvector.
+     * Compares the eigenvalues of the sorted eigenvalue array and the eigenvalue matrix.
+     * Gives the index if the values are the same, or within a small tolerance.
+    */
     double tolerance = 1.0e-10;
     for (int j=0; j<3; j++){
         for (int i=0; i<n; i++){
@@ -170,7 +171,6 @@ void write_file(double **R, double *rho, double rho_max, double omega, int n, in
     datafile << " The other rows contains the data to be plotted \n";
     datafile << "# First column contains rho values. The other values contains smallest 3 eigenvectors \n";
     datafile << n << setw(15) << rho_max << setw(15) << omega << "\n";
-    //int step;
     for (int i=0; i<n; i++){
         datafile << rho[i] << setw(15)
                  << pow(R[i][min1], 2) << setw(15)
@@ -207,6 +207,7 @@ int main(){
         int q = 0;
         max_diag = max_offdiag(A, p, q, n);
 
+        // For loop that finds the index of the max_diagonal value in the matrix A.
         for (int i=0; i<n; i++){
             for (int j=0; j<n; j++){
                 if (fabs(max_diag - fabs(A[i][j])) < tolerance){
@@ -234,11 +235,11 @@ int main(){
     }
     orthogonal_test(R, n);
     
-    // 2c) Interacting case:
+    // --- Interacting case ---
     cout << "Calculating interacting case... \n" << endl;
 
     double omegas[] = {0.01, 0.5, 1, 5};
-    int *vector_index;
+    int *vector_index;   // An array that stores the indices from the matrix R where the smallest eigenvector is
     vector_index = new int[3];
     string filename = "Eigenvector_data_omega_";
     for (int i=0; i<4; i++){
@@ -285,7 +286,6 @@ int main(){
         }
         Smallest_eigenvector(A, lambda, vector_index, n);
         orthogonal_test(R, n);
-        cout << "SMALLEST VECTOR INDICES " << vector_index[0] << " " << vector_index[1]<< " " << vector_index[2] << endl;
 
         string fileout = filename;
         stringstream stream;
