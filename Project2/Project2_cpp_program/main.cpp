@@ -3,28 +3,37 @@
 #include <math.h>
 #include <algorithm>
 #include <numeric>
-#include <armadillo>
+//#include <armadillo>
 
 
 using namespace std;
-using namespace arma;
+//using namespace arma;
 
-void initialize_matrix(double **A, double **R, double *d, double *rho, double rho_max, int n){
+void initialize_matrix(double **A, double **R, double *d, double *rho, double rho_max, int n, double omega=0){
     /* This function initializes the initial matrix A and R for the project.
        Does not calculate the values along the off-diagonal as they are the same.
-       Matrix R is the identity matrix
+       Matrix R is the identity matrix.
+       Omega is an optional argument. If omega = 0 we look at the non interacting case,
+       if omega != 0 we look at the interactng case.
     */
     double h = (rho_max/(n+1));
     for (int i=0; i<n; i++){
         // Creates the rho gridpoints
         rho[i] = (i+1)*h;
     }
-
-    for (int i=0; i<n; i++){
-        // Calculates the values along the diagonal
-        d[i] = 2.0/(h*h) + pow(rho[i], 2);
+    // Calculates the values along the diagonal, depending if we have interacting or non interacting case
+    if (omega == 0){
+        // For non interacting case, single electron.
+        for (int i=0; i<n; i++){
+            d[i] = 2.0/(h*h) + pow(rho[i], 2);
+        }
     }
-
+    else{
+        // For interacting case, two electrons.
+        for (int i=0; i<n; i++){
+            d[i] = 2.0/(h*h) + (omega*rho[i], 2) + 1.0/rho[i];
+        }
+    }
     // Starts filling the matrix elements.
     for (int i=0; i<n; i++){
         for (int j=0; j<n; j++){
@@ -52,7 +61,9 @@ double max_offdiag(double **A, int p, int q, int n){
         for (int j=i+1; j<n; j++){
             double a_ij = fabs(A[i][j]);
             if (a_ij > max_value){
-                max_value = a_ij; p = i, q = j;
+                max_value = a_ij;
+                p = i;
+                q = j;
             }
         }
     }
@@ -134,7 +145,6 @@ void Jacobi_rotation(double **A, double **R, int k, int l, int n){
     return;
 }
 
-
 int main(){
     /*
     mat A = randu<mat>(5,5);
@@ -162,8 +172,8 @@ int main(){
     initialize_matrix(A, R, d, rho, rho_max, n);
 
     // Deleting unused arrays
-    delete[]d;
-    delete[]rho;
+    //delete[]d;
+    //delete[]rho;
 
     double max_diag = 1;
     int iterations = 0;
@@ -173,6 +183,7 @@ int main(){
         int p = 0;
         int q = 0;
         max_diag = max_offdiag(A, p, q, n);
+
         for (int i=0; i<n; i++){
             for (int j=0; j<n; j++){
                 if (fabs(max_diag - fabs(A[i][j])) < tolerance){
@@ -198,11 +209,41 @@ int main(){
         // Printing the 5 smallest eigenvalues
         cout << lambda[i] << endl;
     }
-    cout << "\n" << endl;
+    cout << "" <<endl;
     orthogonal_test(R, n);
     
     // 2c) Interacting case:
+    cout << "\nCalculating interacting case" << endl;
     double omega_r = 1;
-    
+    d = new double[n];
+    rho = new double[n];
+    A = new double*[n];
+    R = new double*[n];
+    for (int i=0; i<n; i++){
+        A[i] = new double[n];
+        R[i] = new double[n];
+    }
+    initialize_matrix(A, R, d, rho, rho_max, n, omega_r);
+
+    delete[]rho;
+    delete[]d;
+
+    max_diag = 1;
+    iterations = 0;
+    while (max_diag > tolerance && iterations <= maxiter){
+        int p = 0;
+        int q = 0;
+        max_diag = max_offdiag(A, p, q, n);
+        for (int i=0; i<n; i++){
+            for (int j=0; j<n; j++){
+                if (fabs(max_diag - fabs(A[i][j])) < tolerance){
+                    p=i;
+                    q=j;
+                }
+            }
+        }
+        Jacobi_rotation(A, R, p, q, n);
+        iterations++;
+    }
     return 0;
 }
