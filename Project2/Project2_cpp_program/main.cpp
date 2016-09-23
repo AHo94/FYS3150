@@ -114,7 +114,6 @@ void Jacobi_rotation(double **A, double **R, int k, int l, int n){
         R[i][k] = c*r_ik - s*r_il;
         R[i][l] = c*r_il + s*r_ik;
     }
-    //orthogonal_test(R, n);
     return;
 }
 
@@ -158,7 +157,7 @@ int main(){
     int n = 10;
     double rho_max = 6.0;
 
-    cout << "Doing a " << n << "x" << n << " matrix (n = "<< n << ")" << endl;
+    cout << "Using a " << n << "x" << n << " matrix (n = "<< n << ")" << endl;
     cout << "with rho_max = " << rho_max << "\n" << endl;
 
     d = new double[n];
@@ -171,11 +170,6 @@ int main(){
     }
 
     initialize_matrix(A, R, d, rho, rho_max, n);
-
-    // Deleting unused arrays
-    //delete[]d;
-    //delete[]rho;
-
     double max_diag = 1;
     int iterations = 0;
     int maxiter = 5000;
@@ -210,7 +204,6 @@ int main(){
         // Printing the 3 smallest eigenvalues
         cout << lambda[i] << endl;
     }
-    //cout << "" <<endl;
     orthogonal_test(R, n);
     
     // 2c) Interacting case:
@@ -218,7 +211,6 @@ int main(){
 
     double omegas[] = {0.01, 0.5, 1, 5};
     for (int i=0; i<4; i++){
-        //double omega_r = omegas[i];
         cout << "Calculating for the case with omega = " << omegas[i] << endl;
         d = new double[n];
         rho = new double[n];
@@ -229,9 +221,6 @@ int main(){
             R[i] = new double[n];
         }
         initialize_matrix(A, R, d, rho, rho_max, n, omegas[i]);
-
-        //delete[]rho;
-        //delete[]d;
 
         max_diag = 1;
         iterations = 0;
@@ -260,10 +249,8 @@ int main(){
         std::sort(lambda, lambda+n);
         cout << "Lowest 3 eigenvalues are: " << endl;
         for (int i=0; i<3; i++){
-            // Printing the 3 smallest eigenvalues
             cout << lambda[i] << endl;
         }
-        //cout << "" <<endl;
         orthogonal_test(R, n);
     }
     return 0;
