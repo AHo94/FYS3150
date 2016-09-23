@@ -62,7 +62,7 @@ plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$')
 plt.legend(['$\omega=0.01$','$\omega=0.5$','$\omega=1$', '$\omega=5$'])
 plt.hold("off")
 #plt.legend(['$\omega=$%g','$\omega=$%g','$\omega=$%g', '$\omega=$%g' %(omega1,omega2,omega3,omega4)])
-
+"""
 fig2 = plt.figure()
 plt.plot(rho, o1_eig2, 'b-')
 plt.hold("on")
@@ -86,5 +86,5 @@ plt.ylabel('$|\psi|^2$')
 plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$')
 plt.legend(['$\omega=0.01$','$\omega=0.5$','$\omega=1$', '$\omega=5$'])
 plt.hold("off")
-
+"""
 plt.show()
