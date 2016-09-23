@@ -6,11 +6,8 @@
 #include <fstream>  // Writing to file
 #include <iomanip>  // setw identitation for output file
 #include <sstream>
-//#include <armadillo>
-
 
 using namespace std;
-//using namespace arma;
 
 void initialize_matrix(double **A, double **R, double *d, double *rho, double rho_max, int n, double omega=0){
     /* This function initializes the initial matrix A and R for the project.
@@ -176,24 +173,17 @@ void write_file(double **R, double *rho, double rho_max, double omega, int n, in
     //int step;
     for (int i=0; i<n; i++){
         datafile << rho[i] << setw(15)
-                 << pow(R[min1][i], 2) << setw(15)
-                 << pow(R[min2][i] ,2) << setw(15)
-                 << pow(R[min3][i], 2) << "\n";
+                 << pow(R[i][min1], 2) << setw(15)
+                 << pow(R[i][min2] ,2) << setw(15)
+                 << pow(R[i][min3], 2) << "\n";
     }
     datafile.close();
 }
 
 int main(){
-    /*
-    mat A = randu<mat>(5,5);
-    mat B = randu<mat>(5,5);
-    cout << A*B << endl;
-
-    return 0;
-    */
     double *d, *rho, **A, **R;
     int n = 100;
-    double rho_max = 6.0;
+    double rho_max = 10.0;
 
     cout << "Using a " << n << "x" << n << " matrix (n = "<< n << ")" << endl;
     cout << "with rho_max = " << rho_max << "\n" << endl;
@@ -210,7 +200,7 @@ int main(){
     initialize_matrix(A, R, d, rho, rho_max, n);
     double max_diag = 1;
     int iterations = 0;
-    int maxiter = 5000;
+    int maxiter = 200000;
     double tolerance = 1.0e-8;
     while (max_diag > tolerance && iterations <= maxiter){
         int p = 0;
