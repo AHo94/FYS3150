@@ -9,8 +9,9 @@ using namespace std;
 //using namespace arma;
 
 void initialize_matrix(double **A, double **R, double *d, double *rho, double rho_max, int n){
-    /* This function initializes the initial matrix A for the project.
+    /* This function initializes the initial matrix A and R for the project.
        Does not calculate the values along the off-diagonal as they are the same.
+       Matrix R is the identity matrix
     */
     double h = (rho_max/(n+1));
     for (int i=0; i<n; i++){
@@ -57,8 +58,28 @@ double max_offdiag(double **A, int p, int q, int n){
     return max_value;
 }
 
+void orthogonal_test(double **R, int n){
+    double *w1, *w2;
+    w1 = new double[n];
+    w2 = new double[n];
+    for (int i=0; i<n; i++){
+        for (int j=i+1; j<n; j++){
+            w1 = R[i];
+            w2 = R[j];
+            if (fabs(w1*w2 - 1) < 1e-10){
+                cout << "Orthogonality conserved" << endl;
+            }
+            else{
+                cout << "Orthogonality not conserved" << endl;
+            }
+        }
+    }
+    delete[]w1;
+    delete[]w2;
+}
+
 void Jacobi_rotation(double **A, double **R, int k, int l, int n){
-    /* Jacobi method */
+    // Jacobi rotation algorithm
     double s, c; // Sine and cosine functions
     if (A[k][l] != 0.0) {
         double t=0, tau=0;
@@ -77,6 +98,7 @@ void Jacobi_rotation(double **A, double **R, int k, int l, int n){
         c = 1.0;
         s = 0.0;
     }
+    // Doing new rotation to get new matrix A
     double a_kk=0, a_ll=0, a_ik=0, a_il=0, r_ik=0, r_il=0;
     a_kk = A[k][k];
     a_ll = A[l][l];
@@ -93,20 +115,23 @@ void Jacobi_rotation(double **A, double **R, int k, int l, int n){
             A[i][l] = c*a_il + s*a_ik;
             A[l][i] = A[i][l];
         }
+        // Saving eigenvectors
         r_ik = R[i][k];
         r_il = R[i][l];
         R[i][k] = c*r_ik - s*r_il;
         R[i][l] = c*r_il + s*r_ik;
     }
+    orthogonal_test(R, n);
     return;
 }
+
 
 int main(){
     //double A;
     //A = mat (1,2);
     double tolerance = 1.0e-8;
     double *d, *rho, **A, **R;
-    int n = 20;
+    int n = 30;
     double rho_max = 40;
     d = new double[n];
     rho = new double[n];
@@ -117,25 +142,15 @@ int main(){
         R[i] = new double[n];
     }
 
-    initialize_matrix(A, R, d, rho, n);
-    /*
-    for (int k=0; k<n; k++){
-        cout << A[k][0] << " " << A[k][1] << " " << A[k][2] << " " << A[k][3] << " " << A[k][4] << endl;
-    }
-    cout << "\n" << endl;
+    initialize_matrix(A, R, d, rho, rho_max, n);
 
-    for (int k=0; k<n; k++){
-        cout << R[k][0] << " " << R[k][1] << " " << R[k][2] << " " << R[k][3] << " " << R[k][4] << endl;
-    }
-    */
+    // Deleting unused arrays
     delete[]d;
     delete[]rho;
-    double max_diag;
+
+    double max_diag = 1;
     int iterations = 0;
     int maxiter = 5000;
-    max_diag = 1;
-    double *lambda;
-    lambda = new double[n];
     while (max_diag > tolerance && iterations <= maxiter){
         int p = 0;
         int q = 0;
@@ -151,21 +166,20 @@ int main(){
         Jacobi_rotation(A, R, p, q, n);
         iterations++;
     }
+
+    double *lambda;
+    lambda = new double[n];
     cout <<"Number of iterations: " << iterations << endl;
     for (int i=0; i<n; i++){
         lambda[i] = A[i][i];
     }
-
     // Sorting eigenvalues from lowest to highest
     std::sort(lambda, lambda+n);
+    cout << "Lowest 5 eigen values is: " << endl;
     for (int i=0; i<5; i++){
         // Printing the 5 smallest eigenvalues
         cout << lambda[i] << endl;
     }
 
-    //delete[]d;
-    //delete[]e;
-    //delete[]rho;
-    //delete[]A;
     return 0;
 }
