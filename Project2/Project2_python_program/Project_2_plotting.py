@@ -25,6 +25,7 @@ def save_and_plot(filename_open):
 	filename.close()
 	n = int(data[0][0])
 	rho_max = float(data[0][1])
+	omega = float(data[0][2])
 	rho = np.zeros(n+2)
 	rho[-1] = rho_max
 	eig1 = np.zeros(n+2)
@@ -36,9 +37,10 @@ def save_and_plot(filename_open):
 		eig2[j+1] = float(data[j+1][2])
 		eig3[j+1] = float(data[j+1][3])
 
-	plt.plot(rho, np.abs(eig1)**2, 'b-')
+	plt.plot(rho, eig1, 'b-')
 	plt.xlabel(r'$\rho$')
 	plt.ylabel('$|\psi|^2$')
+	plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$, with $\omega$ = %.g' %(omega))
 
 save_and_plot(omega_filenames[0])
 """
