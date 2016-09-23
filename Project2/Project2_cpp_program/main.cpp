@@ -34,7 +34,7 @@ void initialize_matrix(double **A, double **R, double *d, double *rho, double rh
     else{
         // For interacting case, two electrons.
         for (int i=0; i<n; i++){
-            d[i] = 2.0/(h*h) + omega*omega*(rho[i], 2) + 1.0/rho[i];
+            d[i] = 2.0/(h*h) + omega*omega*pow(rho[i], 2) + 1.0/rho[i];
         }
     }
     // Starts filling the matrix elements.
@@ -150,67 +150,36 @@ void orthogonal_test(double **R, int n){
     delete[]w2;
 }
 
-void Smallest_eigenvector(double **A, double **R, double *lambda, int n){
+void Smallest_eigenvector(double **A, double *lambda, int *vector_index, int n){
     // Attempting to implement a way to check which eigenvector corresponds to which eigenvalue
     double tolerance = 1.0e-10;
-    double *new_vector, *eigenvalue_vector;
-    for (int i=0; i<n; i++){
-        int counter = 0;
-        new_vector = new double[n];
-        eigenvalue_vector = new double[n];
-        for (int j=0; j<n; j++){
-            new_vector[j] = A[j][i]*R[i][j];
-            eigenvalue_vector[j] = lambda[j]*R[i][j];
-        }
-        for (int k=0; k<n; k++){
-            double value = new_vector[k] - eigenvalue_vector[k];
-            cout << "value = " << value << endl;;
-            if (fabs(value) < tolerance){
-                counter++;
+    for (int j=0; j<3; j++){
+        for (int i=0; i<n; i++){
+            if (fabs(lambda[j] - A[i][i]) < tolerance){
+                vector_index[j] = i;
             }
-        }
-        if (counter == 10){
-            cout << "This did work" << endl;
-        }
-        else{
-            cout << counter << endl;
-            cout << "Did not work" << endl;
         }
     }
 }
 
-void write_file(double **R, double *rho, double rho_max, int n, string filename){
+void write_file(double **R, double *rho, double rho_max, double omega, int n, int *vector_index, string filename){
     // Function that writes eigenvector and rho data to an output file.
     ofstream datafile;
     datafile.open(filename);
-    int max_points = 1000;  // Saving up to 1000 points
-    datafile << "# First row is the n value and the rho_max value. The other rows contains the data to be plotted \n";
+    int min1 = vector_index[0];
+    int min2 = vector_index[1];
+    int min3 = vector_index[2];
+    datafile << "# First row contains the n, rho_max and omega values respectively.";
+    datafile << " The other rows contains the data to be plotted \n";
     datafile << "# First column contains rho values. The other values contains smallest 3 eigenvectors \n";
-    datafile << n << setw(15) << rho_max << "\n";
+    datafile << n << setw(15) << rho_max << setw(15) << omega << "\n";
     //int step;
     for (int i=0; i<n; i++){
         datafile << rho[i] << setw(15)
-                 << pow(R[0][i], 1) << setw(15)
-                 << pow(R[1][i] ,1) << setw(15)
-                 << pow(R[2][i], 1) << "\n";
+                 << pow(R[min1][i], 2) << setw(15)
+                 << pow(R[min2][i] ,2) << setw(15)
+                 << pow(R[min3][i], 2) << "\n";
     }
-
-//    if(n > max_points){
-//        /*
-//        Creating an if-test to reduce the number of points saved.
-//        Saving at most 1000 points, if we have more points, we will do n/max_points jumps
-//        between the intervals. e.g: n = 10^4, then we save every 10 points.
-//        */
-//        step = n/max_points;
-//    }
-//    else{
-//        //  Saves every point if n < max_points
-//        step = 1;
-//    }
-//    for (int i=0; i < n; i=i+step){
-//        datafile << x[i] << setw(15)  << v[i] << "\n";
-//    }
-
     datafile.close();
 }
 
@@ -279,6 +248,8 @@ int main(){
     cout << "Calculating interacting case... \n" << endl;
 
     double omegas[] = {0.01, 0.5, 1, 5};
+    int *vector_index;
+    vector_index = new int[3];
     string filename = "Eigenvector_data_omega_";
     for (int i=0; i<4; i++){
         cout << "Calculating for the case with omega = " << omegas[i] << endl;
@@ -322,8 +293,9 @@ int main(){
         for (int i=0; i<3; i++){
             cout << lambda[i] << endl;
         }
-        //Smallest_eigenvector(A, R, lambda, n);
+        Smallest_eigenvector(A, lambda, vector_index, n);
         orthogonal_test(R, n);
+        cout << "SMALLEST VECTOR INDICES " << vector_index[0] << " " << vector_index[1]<< " " << vector_index[2] << endl;
 
         string fileout = filename;
         stringstream stream;
@@ -331,7 +303,7 @@ int main(){
         string argument = stream.str();
         fileout.append(argument);
         fileout.append(".txt");
-        write_file(R, rho, rho_max, n, fileout);
+        write_file(R, rho, rho_max, omegas[i], n, vector_index, fileout);
     }
     return 0;
 }
