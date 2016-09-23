@@ -31,7 +31,7 @@ void initialize_matrix(double **A, double **R, double *d, double *rho, double rh
     else{
         // For interacting case, two electrons.
         for (int i=0; i<n; i++){
-            d[i] = 2.0/(h*h) + (omega*rho[i], 2) + 1.0/rho[i];
+            d[i] = 2.0/(h*h) + omega*omega*(rho[i], 2) + 1.0/rho[i];
         }
     }
     // Starts filling the matrix elements.
@@ -70,33 +70,6 @@ double max_offdiag(double **A, int p, int q, int n){
     return max_value;
 }
 
-void orthogonal_test(double **R, int n){
-    // Function that checks if the final eigenvectors are orthogonal
-    double *w1, *w2;
-    w1 = new double[n];
-    w2 = new double[n];
-    int N_orthogonal = 0;
-    int N_non_orthogonal = 0;
-    for (int i=0; i<n; i++){
-        for (int j=i+1; j<n; j++){
-            w1 = R[i];
-            w2 = R[j];
-            if (fabs(std::inner_product(w1, w1+n, w2, 0)) < 1e-10){
-                //cout << "Orthogonality conserved" << endl;
-                N_orthogonal++;
-            }
-            else{
-                //cout << "Orthogonality not conserved" << endl;
-                N_non_orthogonal++;
-            }
-        }
-    }
-    cout << "Possible number of orthogonal vectors: " << 0.5*n*(n-1) << endl;
-    cout << "Number of orthogonal vectors: " << N_orthogonal << endl;
-    cout << "Number of non-orthogonal vectors: " << N_non_orthogonal << endl;
-    delete[]w1;
-    delete[]w2;
-}
 
 void Jacobi_rotation(double **A, double **R, int k, int l, int n){
     // Jacobi rotation algorithm
@@ -145,6 +118,34 @@ void Jacobi_rotation(double **A, double **R, int k, int l, int n){
     return;
 }
 
+void orthogonal_test(double **R, int n){
+    // Function that checks if the final eigenvectors are orthogonal
+    double *w1, *w2;
+    w1 = new double[n];
+    w2 = new double[n];
+    int N_orthogonal = 0;
+    int N_non_orthogonal = 0;
+    for (int i=0; i<n; i++){
+        for (int j=i+1; j<n; j++){
+            w1 = R[i];
+            w2 = R[j];
+            if (fabs(std::inner_product(w1, w1+n, w2, 0)) < 1e-10){
+                //cout << "Orthogonality conserved" << endl;
+                N_orthogonal++;
+            }
+            else{
+                //cout << "Orthogonality not conserved" << endl;
+                N_non_orthogonal++;
+            }
+        }
+    }
+    cout << "Possible number of orthogonal vectors: " << 0.5*n*(n-1) << endl;
+    cout << "Number of orthogonal vectors: " << N_orthogonal << endl;
+    cout << "Number of non-orthogonal vectors: " << N_non_orthogonal << "\n" <<endl;
+    delete[]w1;
+    delete[]w2;
+}
+
 int main(){
     /*
     mat A = randu<mat>(5,5);
@@ -154,8 +155,8 @@ int main(){
     return 0;
     */
     double *d, *rho, **A, **R;
-    int n = 40;
-    double rho_max = 7.0;
+    int n = 10;
+    double rho_max = 6.0;
 
     cout << "Doing a " << n << "x" << n << " matrix (n = "<< n << ")" << endl;
     cout << "with rho_max = " << rho_max << "\n" << endl;
@@ -204,46 +205,112 @@ int main(){
     }
     // Sorting eigenvalues from lowest to highest
     std::sort(lambda, lambda+n);
-    cout << "Lowest 5 eigenvalues are: " << endl;
-    for (int i=0; i<5; i++){
-        // Printing the 5 smallest eigenvalues
+    cout << "Lowest 3 eigenvalues are: " << endl;
+    for (int i=0; i<3; i++){
+        // Printing the 3 smallest eigenvalues
         cout << lambda[i] << endl;
     }
-    cout << "" <<endl;
+    //cout << "" <<endl;
     orthogonal_test(R, n);
     
     // 2c) Interacting case:
-    cout << "\nCalculating interacting case" << endl;
-    double omega_r = 1;
-    d = new double[n];
-    rho = new double[n];
-    A = new double*[n];
-    R = new double*[n];
-    for (int i=0; i<n; i++){
-        A[i] = new double[n];
-        R[i] = new double[n];
-    }
-    initialize_matrix(A, R, d, rho, rho_max, n, omega_r);
+    cout << "Calculating interacting case... \n" << endl;
+//    double omega_r = 1;
+//    d = new double[n];
+//    rho = new double[n];
+//    A = new double*[n];
+//    R = new double*[n];
+//    for (int i=0; i<n; i++){
+//        A[i] = new double[n];
+//        R[i] = new double[n];
+//    }
+//    initialize_matrix(A, R, d, rho, rho_max, n, omega_r);
 
-    delete[]rho;
-    delete[]d;
+//    delete[]rho;
+//    delete[]d;
 
-    max_diag = 1;
-    iterations = 0;
-    while (max_diag > tolerance && iterations <= maxiter){
-        int p = 0;
-        int q = 0;
-        max_diag = max_offdiag(A, p, q, n);
+//    max_diag = 1;
+//    iterations = 0;
+//    while (max_diag > tolerance && iterations <= maxiter){
+//        int p = 0;
+//        int q = 0;
+//        max_diag = max_offdiag(A, p, q, n);
+//        for (int i=0; i<n; i++){
+//            for (int j=0; j<n; j++){
+//                if (fabs(max_diag - fabs(A[i][j])) < tolerance){
+//                    p=i;
+//                    q=j;
+//                }
+//            }
+//        }
+//        Jacobi_rotation(A, R, p, q, n);
+//        iterations++;
+//    }
+
+//    lambda = new double[n];
+//    cout <<"Number of iterations: " << iterations << endl;
+//    for (int i=0; i<n; i++){
+//        lambda[i] = A[i][i];
+//    }
+//    // Sorting eigenvalues from lowest to highest
+//    std::sort(lambda, lambda+n);
+//    cout << "Lowest 3 eigenvalues are: " << endl;
+//    for (int i=0; i<3; i++){
+//        // Printing the 3 smallest eigenvalues
+//        cout << lambda[i] << endl;
+//    }
+//    cout << "" <<endl;
+//    orthogonal_test(R, n);
+
+    double omegas[] = {0.01, 0.5, 1, 5};
+    for (int i=0; i<4; i++){
+        //double omega_r = omegas[i];
+        cout << "Calculating for the case with omega = " << omegas[i] << endl;
+        d = new double[n];
+        rho = new double[n];
+        A = new double*[n];
+        R = new double*[n];
         for (int i=0; i<n; i++){
-            for (int j=0; j<n; j++){
-                if (fabs(max_diag - fabs(A[i][j])) < tolerance){
-                    p=i;
-                    q=j;
+            A[i] = new double[n];
+            R[i] = new double[n];
+        }
+        initialize_matrix(A, R, d, rho, rho_max, n, omegas[i]);
+
+        //delete[]rho;
+        //delete[]d;
+
+        max_diag = 1;
+        iterations = 0;
+        while (max_diag > tolerance && iterations <= maxiter){
+            int p = 0;
+            int q = 0;
+            max_diag = max_offdiag(A, p, q, n);
+            for (int i=0; i<n; i++){
+                for (int j=0; j<n; j++){
+                    if (fabs(max_diag - fabs(A[i][j])) < tolerance){
+                        p=i;
+                        q=j;
+                    }
                 }
             }
+            Jacobi_rotation(A, R, p, q, n);
+            iterations++;
         }
-        Jacobi_rotation(A, R, p, q, n);
-        iterations++;
+
+        lambda = new double[n];
+        cout <<"Number of iterations: " << iterations << endl;
+        for (int i=0; i<n; i++){
+            lambda[i] = A[i][i];
+        }
+        // Sorting eigenvalues from lowest to highest
+        std::sort(lambda, lambda+n);
+        cout << "Lowest 3 eigenvalues are: " << endl;
+        for (int i=0; i<3; i++){
+            // Printing the 3 smallest eigenvalues
+            cout << lambda[i] << endl;
+        }
+        //cout << "" <<endl;
+        orthogonal_test(R, n);
     }
     return 0;
 }
