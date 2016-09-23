@@ -2,11 +2,12 @@
 #include <cmath>
 #include <math.h>
 #include <algorithm>
-//#include <armadillo>
+#include <numeric>
+#include <armadillo>
 
 
 using namespace std;
-//using namespace arma;
+using namespace arma;
 
 void initialize_matrix(double **A, double **R, double *d, double *rho, double rho_max, int n){
     /* This function initializes the initial matrix A and R for the project.
@@ -59,21 +60,29 @@ double max_offdiag(double **A, int p, int q, int n){
 }
 
 void orthogonal_test(double **R, int n){
+    // Function that checks if the final eigenvectors are orthogonal
     double *w1, *w2;
     w1 = new double[n];
     w2 = new double[n];
+    int N_orthogonal = 0;
+    int N_non_orthogonal = 0;
     for (int i=0; i<n; i++){
         for (int j=i+1; j<n; j++){
             w1 = R[i];
             w2 = R[j];
-            if (fabs(w1*w2 - 1) < 1e-10){
-                cout << "Orthogonality conserved" << endl;
+            if (fabs(std::inner_product(w1, w1+n, w2, 0)) < 1e-10){
+                //cout << "Orthogonality conserved" << endl;
+                N_orthogonal++;
             }
             else{
-                cout << "Orthogonality not conserved" << endl;
+                //cout << "Orthogonality not conserved" << endl;
+                N_non_orthogonal++;
             }
         }
     }
+    cout << "Possible number of orthogonal vectors: " << 0.5*n*(n-1) << endl;
+    cout << "Number of orthogonal vectors: " << N_orthogonal << endl;
+    cout << "Number of non-orthogonal vectors: " << N_non_orthogonal << endl;
     delete[]w1;
     delete[]w2;
 }
@@ -121,18 +130,26 @@ void Jacobi_rotation(double **A, double **R, int k, int l, int n){
         R[i][k] = c*r_ik - s*r_il;
         R[i][l] = c*r_il + s*r_ik;
     }
-    orthogonal_test(R, n);
+    //orthogonal_test(R, n);
     return;
 }
 
 
 int main(){
-    //double A;
-    //A = mat (1,2);
-    double tolerance = 1.0e-8;
+    /*
+    mat A = randu<mat>(5,5);
+    mat B = randu<mat>(5,5);
+    cout << A*B << endl;
+
+    return 0;
+    */
     double *d, *rho, **A, **R;
-    int n = 30;
-    double rho_max = 40;
+    int n = 40;
+    double rho_max = 7.0;
+
+    cout << "Doing a " << n << "x" << n << " matrix (n = "<< n << ")" << endl;
+    cout << "with rho_max = " << rho_max << "\n" << endl;
+
     d = new double[n];
     rho = new double[n];
     A = new double*[n];
@@ -151,6 +168,7 @@ int main(){
     double max_diag = 1;
     int iterations = 0;
     int maxiter = 5000;
+    double tolerance = 1.0e-8;
     while (max_diag > tolerance && iterations <= maxiter){
         int p = 0;
         int q = 0;
@@ -175,11 +193,16 @@ int main(){
     }
     // Sorting eigenvalues from lowest to highest
     std::sort(lambda, lambda+n);
-    cout << "Lowest 5 eigen values is: " << endl;
+    cout << "Lowest 5 eigenvalues are: " << endl;
     for (int i=0; i<5; i++){
         // Printing the 5 smallest eigenvalues
         cout << lambda[i] << endl;
     }
-
+    cout << "\n" << endl;
+    orthogonal_test(R, n);
+    
+    // 2c) Interacting case:
+    double omega_r = 1;
+    
     return 0;
 }
