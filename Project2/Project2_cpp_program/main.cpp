@@ -1,8 +1,11 @@
 #include <iostream>
 #include <cmath>
 #include <math.h>
-#include <algorithm>
+#include <algorithm>    // Used to sort arrays
 #include <numeric>
+#include <fstream>  // Writing to file
+#include <iomanip>  // setw identitation for output file
+#include <sstream>
 //#include <armadillo>
 
 
@@ -11,10 +14,10 @@ using namespace std;
 
 void initialize_matrix(double **A, double **R, double *d, double *rho, double rho_max, int n, double omega=0){
     /* This function initializes the initial matrix A and R for the project.
-       Does not calculate the values along the off-diagonal as they are the same.
-       Matrix R is the identity matrix.
-       Omega is an optional argument. If omega = 0 we look at the non interacting case,
-       if omega != 0 we look at the interactng case.
+     * Does not calculate the values along the off-diagonal as they are the same.
+     * Matrix R is the identity matrix.
+     * Omega is an optional argument. If omega = 0 we look at the non interacting case,
+     * if omega != 0 we look at the interactng case.
     */
     double h = (rho_max/(n+1));
     for (int i=0; i<n; i++){
@@ -118,7 +121,9 @@ void Jacobi_rotation(double **A, double **R, int k, int l, int n){
 }
 
 void orthogonal_test(double **R, int n){
-    // Function that checks if the final eigenvectors are orthogonal
+    /* Function that checks if the final eigenvectors are orthogonal.
+     * Has a small tolerance in case the values in the eigenvectors are very small.
+     */
     double *w1, *w2;
     w1 = new double[n];
     w2 = new double[n];
@@ -145,6 +150,70 @@ void orthogonal_test(double **R, int n){
     delete[]w2;
 }
 
+void Smallest_eigenvector(double **A, double **R, double *lambda, int n){
+    // Attempting to implement a way to check which eigenvector corresponds to which eigenvalue
+    double tolerance = 1.0e-10;
+    double *new_vector, *eigenvalue_vector;
+    for (int i=0; i<n; i++){
+        int counter = 0;
+        new_vector = new double[n];
+        eigenvalue_vector = new double[n];
+        for (int j=0; j<n; j++){
+            new_vector[j] = A[j][i]*R[i][j];
+            eigenvalue_vector[j] = lambda[j]*R[i][j];
+        }
+        for (int k=0; k<n; k++){
+            double value = new_vector[k] - eigenvalue_vector[k];
+            cout << "value = " << value << endl;;
+            if (fabs(value) < tolerance){
+                counter++;
+            }
+        }
+        if (counter == 10){
+            cout << "This did work" << endl;
+        }
+        else{
+            cout << counter << endl;
+            cout << "Did not work" << endl;
+        }
+    }
+}
+
+void write_file(double **R, double *rho, double rho_max, int n, string filename){
+    // Function that writes eigenvector and rho data to an output file.
+    ofstream datafile;
+    datafile.open(filename);
+    int max_points = 1000;  // Saving up to 1000 points
+    datafile << "# First row is the n value and the rho_max value. The other rows contains the data to be plotted \n";
+    datafile << "# First column contains rho values. The other values contains smallest 3 eigenvectors \n";
+    datafile << n << setw(15) << rho_max << "\n";
+    //int step;
+    for (int i=0; i<n; i++){
+        datafile << rho[i] << setw(15)
+                 << pow(R[0][i], 1) << setw(15)
+                 << pow(R[1][i] ,1) << setw(15)
+                 << pow(R[2][i], 1) << "\n";
+    }
+
+//    if(n > max_points){
+//        /*
+//        Creating an if-test to reduce the number of points saved.
+//        Saving at most 1000 points, if we have more points, we will do n/max_points jumps
+//        between the intervals. e.g: n = 10^4, then we save every 10 points.
+//        */
+//        step = n/max_points;
+//    }
+//    else{
+//        //  Saves every point if n < max_points
+//        step = 1;
+//    }
+//    for (int i=0; i < n; i=i+step){
+//        datafile << x[i] << setw(15)  << v[i] << "\n";
+//    }
+
+    datafile.close();
+}
+
 int main(){
     /*
     mat A = randu<mat>(5,5);
@@ -154,7 +223,7 @@ int main(){
     return 0;
     */
     double *d, *rho, **A, **R;
-    int n = 10;
+    int n = 100;
     double rho_max = 6.0;
 
     cout << "Using a " << n << "x" << n << " matrix (n = "<< n << ")" << endl;
@@ -210,6 +279,7 @@ int main(){
     cout << "Calculating interacting case... \n" << endl;
 
     double omegas[] = {0.01, 0.5, 1, 5};
+    string filename = "Eigenvector_data_omega_";
     for (int i=0; i<4; i++){
         cout << "Calculating for the case with omega = " << omegas[i] << endl;
         d = new double[n];
@@ -245,13 +315,23 @@ int main(){
         for (int i=0; i<n; i++){
             lambda[i] = A[i][i];
         }
+
         // Sorting eigenvalues from lowest to highest
         std::sort(lambda, lambda+n);
         cout << "Lowest 3 eigenvalues are: " << endl;
         for (int i=0; i<3; i++){
             cout << lambda[i] << endl;
         }
+        //Smallest_eigenvector(A, R, lambda, n);
         orthogonal_test(R, n);
+
+        string fileout = filename;
+        stringstream stream;
+        stream << fixed << setprecision(2) << omegas[i];
+        string argument = stream.str();
+        fileout.append(argument);
+        fileout.append(".txt");
+        write_file(R, rho, rho_max, n, fileout);
     }
     return 0;
 }
