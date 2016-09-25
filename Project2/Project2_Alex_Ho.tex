@@ -1,0 +1,71 @@
+\documentclass[12pt]{article}
+\author{Alex Ho}
+\title{FYS4150 - Computational Physics \\ Project 2}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage[english, norsk]{babel}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\lstset{
+language=Python,
+basicstyle=\ttfamily,
+otherkeywords={self},             
+keywordstyle=\ttfamily\color{blue!90!black},
+keywords=[2]{True,False},
+%keywords=[3]{ttk},
+keywordstyle={[2]\ttfamily\color{blue!90!black}},
+emph={MyClass,__init__},          
+emphstyle=\ttfamily\color{red!80!black},    
+stringstyle=\color{blue!90!black},
+showstringspaces=false,
+commentstyle=\color{blue!90!black},
+breaklines=true,
+tabsize=3,
+moredelim=**[is][\color{blue}]{@}{@}
+}
+
+\begin{document}
+\maketitle
+\section{Introduction}
+In this project, we will have a look at the so called \textit{Eigenvalue problem}. We will use the well known Schrödinger equation from quantum mechanics and apply it to a system consisting of a single electron in a harmonic oscillator potential. To achieve this, we will implement Jacobi's method to solve the Schrödinger equation and then find the eigenvalues, which will physically be the energies of the electrons.
+
+We will also look at the case where we have two interacting electrons in a three dimensional harmonic oscillator, with different frequencies.
+\section{Method}
+\subsection*{2a) Mathematical intermezzo}
+We first want to look at the orthogonality properties of a specific basis. Let us consider the following basis of vectors
+\begin{align}
+\mathbf{v}_i = \begin{pmatrix}
+v_{i1} \\
+v_{i2} \\
+\vdots \\
+v_{in}
+\end{pmatrix}
+\end{align}
+We will also assume that this is an orthogonal basis
+\begin{align}
+\mathbf{v}_j^T\mathbf{v}_i = \delta_{ij}
+\end{align}
+We want to look at the orthogonality properties for a orthogonal and unitary vector transformation in the form
+\begin{align}
+\mathbf{w}_i = \mathbf{U}\mathbf{v}_i
+\end{align}
+For an orthogonal matrix, we know that $\mathbf{U}^T\mathbf{U} = \mathbf{I}=1$, where $\mathbf{I}$ is the identity matrix, so we have that
+\begin{align}
+\mathbf{w}_j^T\mathbf{w}_i = (\mathbf{U}\mathbf{v}_i)^T(\mathbf{U}\mathbf{v}_i) = \mathbf{v}_j^T \mathbf{U}^T\mathbf{U}\mathbf{v}_i = \mathbf{v}_i^T\mathbf{v}_i = \delta{ij}
+\end{align}
+For a unitary matrix, we have that $\mathbf{U^*}\mathbf{U}=\mathbf{I}$ and $\mathbf{U}^{\dagger}\mathbf{U} = \mathbf{I}$, where $\mathbf{U}^{\dagger} = (\mathbf{U}^*)^T$ is the hermitian conjugate. Doing the hermitian conjugate on the transformation vector, we can show that
+\begin{align}
+\mathbf{w}_j^{\dagger}\mathbf{w}_i = (\mathbf{U}\mathbf{v}_j)^{\dagger}(\mathbf{U}\mathbf{v}_i) = \mathbf{v}_j^{\dagger}\mathbf{U}^{\dagger}\mathbf{U}\mathbf{v}_i = \mathbf{v}_j^{\dagger}\mathbf{v}_i = \delta_{ij}
+\end{align}
+Here we have assumed that the basis vector is real, so $\mathbf{v}_i^* = \mathbf{v}_i$.
+\subsection*{2b) Implementing Jacobi's method for the non-interacting case}
+\section{Implementation}
+\section{Results}
+\section{Conclusion}
+\section{References}
+M. Hjort-Jensen, 2015, \textit{Computational Physics}, accessible at course GitHub repository; \url{https://github.com/CompPhysics/ComputationalPhysics/tree/master/doc/Lectures} (as of 14.09.16), 551 pages.
+\end{document}
