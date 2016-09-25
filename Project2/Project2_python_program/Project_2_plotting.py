@@ -14,6 +14,7 @@ for omega_points in omega_value:
 
 
 def save_and_plot(filename_open):
+	""" Saves the datapoints and returns the values in arrays """
 	filename = open(os.path.join(file_directory, filename_open), 'r')
 	i = 0
 	data = []
@@ -36,12 +37,6 @@ def save_and_plot(filename_open):
 		eig1[j+1] = float(data[j+1][1])
 		eig2[j+1] = float(data[j+1][2])
 		eig3[j+1] = float(data[j+1][3])
-	"""
-	plt.plot(rho, eig1, 'b-')
-	plt.xlabel(r'$\rho$')
-	plt.ylabel('$|\psi|^2$')
-	plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$, with $\omega$ = %.g' %(omega))
-	"""
 	return rho, eig1, eig2, eig3, omega
 
 
@@ -49,6 +44,8 @@ rho, o1_eig1, o1_eig2, o1_eig3, omega1 = save_and_plot(omega_filenames[0])
 rho, o2_eig1, o2_eig2, o2_eig3, omega2 = save_and_plot(omega_filenames[1])
 rho, o3_eig1, o3_eig2, o3_eig3, omega3 = save_and_plot(omega_filenames[2])
 rho, o4_eig1, o4_eig2, o4_eig3, omega4 = save_and_plot(omega_filenames[3])
+
+plotting = False
 
 fig1 = plt.figure()
 plt.plot(rho, o1_eig1, 'b-')
@@ -58,11 +55,10 @@ plt.plot(rho, o3_eig1, 'g-')
 plt.plot(rho, o4_eig1, 'k-')
 plt.xlabel(r'$\rho$')
 plt.ylabel('$|\psi|^2$')
-plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$')
+plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$, ground state')
 plt.legend(['$\omega=0.01$','$\omega=0.5$','$\omega=1$', '$\omega=5$'])
 plt.hold("off")
-#plt.legend(['$\omega=$%g','$\omega=$%g','$\omega=$%g', '$\omega=$%g' %(omega1,omega2,omega3,omega4)])
-"""
+
 fig2 = plt.figure()
 plt.plot(rho, o1_eig2, 'b-')
 plt.hold("on")
@@ -71,11 +67,11 @@ plt.plot(rho, o3_eig2, 'g-')
 plt.plot(rho, o4_eig2, 'k-')
 plt.xlabel(r'$\rho$')
 plt.ylabel('$|\psi|^2$')
-plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$')
+plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$, first excited state')
 plt.legend(['$\omega=0.01$','$\omega=0.5$','$\omega=1$', '$\omega=5$'])
 plt.hold("off")
 
-fig2 = plt.figure()
+fig3 = plt.figure()
 plt.plot(rho, o1_eig3, 'b-')
 plt.hold("on")
 plt.plot(rho, o2_eig3, 'r-')
@@ -83,8 +79,13 @@ plt.plot(rho, o3_eig3, 'g-')
 plt.plot(rho, o4_eig3, 'k-')
 plt.xlabel(r'$\rho$')
 plt.ylabel('$|\psi|^2$')
-plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$')
+plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$, second excited state')
 plt.legend(['$\omega=0.01$','$\omega=0.5$','$\omega=1$', '$\omega=5$'])
 plt.hold("off")
-"""
-plt.show()
+
+if plotting:
+	plt.show()
+else:
+	fig1.savefig('../Plots/Plot_groundstate.pdf')
+	fig2.savefig('../Plots/Plot_first_excitedstate.pdf')
+	fig3.savefig('../Plots/Plot_second_excitedstate.pdf')
