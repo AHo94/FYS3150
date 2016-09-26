@@ -6,6 +6,7 @@
 #include <fstream>  // Writing to file
 #include <iomanip>  // setw identitation for output file
 #include <sstream>
+#include <time.h>
 
 using namespace std;
 
@@ -163,8 +164,8 @@ void write_file(double **R, double *rho, double rho_max, double omega, int n, in
     ofstream datafile;
     datafile.open(filename);
     int min1 = vector_index[0];
-    int min2 = vector_index[1];
-    int min3 = vector_index[2];
+    //int min2 = vector_index[1];
+    //int min3 = vector_index[2];
     datafile << "# First row contains the n, rho_max and omega values respectively.";
     datafile << " The other rows contains the data to be plotted \n";
     datafile << "# First column contains rho values. Second column contains the eigenvector for the ground state";
@@ -185,7 +186,7 @@ int main(){
 
     cout << "Using a " << n << "x" << n << " matrix (n = "<< n << ")" << endl;
     cout << "with rho_max = " << rho_max << "\n" << endl;
-
+    start = clock();
     d = new double[n];
     rho = new double[n];
     A = new double*[n];
@@ -217,6 +218,8 @@ int main(){
         Jacobi_rotation(A, R, p, q, n);
         iterations++;
     }
+    finish = clock();
+    cout << "Time elapsed for non interactive case: " << ((finish-start)/(double)(CLOCKS_PER_SEC)/1000) << "s" << endl;
 
     double *lambda;
     lambda = new double[n];
@@ -242,6 +245,7 @@ int main(){
     string filename = "Eigenvector_data_omega_";
     for (int i=0; i<4; i++){
         cout << "Calculating for the case with omega = " << omegas[i] << endl;
+        start = clock();
         d = new double[n];
         rho = new double[n];
         A = new double*[n];
@@ -269,6 +273,8 @@ int main(){
             Jacobi_rotation(A, R, p, q, n);
             iterations++;
         }
+        finish = clock();
+        cout << "Time elapsed: " << ((finish-start)/(double)(CLOCKS_PER_SEC)/1000) << "s" << endl;
 
         lambda = new double[n];
         cout <<"Number of iterations: " << iterations << endl;
