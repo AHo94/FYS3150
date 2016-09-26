@@ -54,7 +54,7 @@ void initialize_matrix(double **A, double **R, double *d, double *rho, double rh
     }
 }
 
-double max_offdiag(double **A, int p, int q, int n){
+double max_offdiag(double **A, int n){
     // Finds the max value along the off diagonal
     double max_value=0;
     for (int i=0; i<n; i++){
@@ -62,8 +62,6 @@ double max_offdiag(double **A, int p, int q, int n){
             double a_ij = fabs(A[i][j]);
             if (a_ij > max_value){
                 max_value = a_ij;
-                //p = i;
-                //q = j;
             }
         }
     }
@@ -205,7 +203,7 @@ int main(){
     while (max_diag > tolerance && iterations <= maxiter){
         int p = 0;
         int q = 0;
-        max_diag = max_offdiag(A, p, q, n);
+        max_diag = max_offdiag(A, n);
 
         // For loop that finds the index of the max_diagonal value in the matrix A.
         for (int i=0; i<n; i++){
@@ -259,7 +257,7 @@ int main(){
         while (max_diag > tolerance && iterations <= maxiter){
             int p = 0;
             int q = 0;
-            max_diag = max_offdiag(A, p, q, n);
+            max_diag = max_offdiag(A, n);
             for (int i=0; i<n; i++){
                 for (int j=0; j<n; j++){
                     if (fabs(max_diag - fabs(A[i][j])) < tolerance){
