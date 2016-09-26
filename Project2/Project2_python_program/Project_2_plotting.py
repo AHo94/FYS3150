@@ -12,8 +12,6 @@ omega_filenames = []
 for omega_points in omega_value:
 	omega_filenames.append('Eigenvector_data_omega_'+omega_points+'.txt')
 
-print n
-
 def save_and_plot(filename_open):
 	""" Saves the datapoints and returns the values in arrays """
 	filename = open(os.path.join(file_directory, filename_open), 'r')
@@ -30,21 +28,16 @@ def save_and_plot(filename_open):
 	omega = float(data[0][2])
 	rho = np.zeros(n+2)
 	rho[-1] = rho_max
-	eig1 = np.zeros(n+2)
-	eig2 = np.zeros(n+2)
-	eig3 = np.zeros(n+2)
+	eig = np.zeros(n+2)
 	for j in range(0, n, 1):
 		rho[j+1] = float(data[j+1][0])
-		eig1[j+1] = float(data[j+1][1])
-		eig2[j+1] = float(data[j+1][2])
-		eig3[j+1] = float(data[j+1][3])
-	return rho, eig1, eig2, eig3, omega
+		eig[j+1] = float(data[j+1][1])
+	return rho, eig
 
-print n
-rho, o1_eig1, o1_eig2, o1_eig3, omega1 = save_and_plot(omega_filenames[0])
-rho, o2_eig1, o2_eig2, o2_eig3, omega2 = save_and_plot(omega_filenames[1])
-rho, o3_eig1, o3_eig2, o3_eig3, omega3 = save_and_plot(omega_filenames[2])
-rho, o4_eig1, o4_eig2, o4_eig3, omega4 = save_and_plot(omega_filenames[3])
+rho, o1_eig1, omega1 = save_and_plot(omega_filenames[0])
+rho, o2_eig1, omega2 = save_and_plot(omega_filenames[1])
+rho, o3_eig1, omega3 = save_and_plot(omega_filenames[2])
+rho, o4_eig1, omega4 = save_and_plot(omega_filenames[3])
 
 plotting = False
 
@@ -59,7 +52,7 @@ plt.ylabel('$|\psi|^2$')
 plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$, ground state')
 plt.legend(['$\omega=0.01$','$\omega=0.5$','$\omega=1$', '$\omega=5$'])
 plt.hold("off")
-
+"""
 fig2 = plt.figure()
 plt.plot(rho, o1_eig2, 'b-')
 plt.hold("on")
@@ -84,12 +77,13 @@ plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$, second excited state')
 plt.legend(['$\omega=0.01$','$\omega=0.5$','$\omega=1$', '$\omega=5$'])
 plt.hold("off")
 """
+"""
 if plotting:
 	plt.show()
 else:
 	fig1.savefig('../Plots/Plot_groundstate.pdf')
-	fig2.savefig('../Plots/Plot_first_excitedstate.pdf')
-	fig3.savefig('../Plots/Plot_second_excitedstate.pdf')
+	#fig2.savefig('../Plots/Plot_first_excitedstate.pdf')
+	#fig3.savefig('../Plots/Plot_second_excitedstate.pdf')
 """
 
 class Proj2_plot_script:
@@ -118,5 +112,3 @@ class Proj2_plot_script:
 		for j in range(0, n, 1):
 			rho[j+1] = float(data[j+1][0])
 			eig1[j+1] = float(data[j+1][1])
-			eig2[j+1] = float(data[j+1][2])
-			eig3[j+1] = float(data[j+1][3])
