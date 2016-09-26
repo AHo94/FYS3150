@@ -62,8 +62,8 @@ double max_offdiag(double **A, int p, int q, int n){
             double a_ij = fabs(A[i][j]);
             if (a_ij > max_value){
                 max_value = a_ij;
-                p = i;
-                q = j;
+                //p = i;
+                //q = j;
             }
         }
     }
@@ -182,7 +182,7 @@ void write_file(double **R, double *rho, double rho_max, double omega, int n, in
 
 int main(){
     double *d, *rho, **A, **R;
-    int n = 150;
+    int n = 100;
     double rho_max = 10.0;
 
     cout << "Using a " << n << "x" << n << " matrix (n = "<< n << ")" << endl;
@@ -241,7 +241,7 @@ int main(){
     double omegas[] = {0.01, 0.5, 1, 5};
     int *vector_index;   // An array that stores the indices from the matrix R where the smallest eigenvector is
     vector_index = new int[3];
-    string filename = "Eigenvector_data_omega_";
+    string filename = "Eigenvector_data_n_";
     for (int i=0; i<4; i++){
         cout << "Calculating for the case with omega = " << omegas[i] << endl;
         d = new double[n];
@@ -291,6 +291,8 @@ int main(){
         stringstream stream;
         stream << fixed << setprecision(2) << omegas[i];
         string argument = stream.str();
+        fileout.append(to_string(n));
+        fileout.append("_omega_");
         fileout.append(argument);
         fileout.append(".txt");
         write_file(R, rho, rho_max, omegas[i], n, vector_index, fileout);
