@@ -182,7 +182,7 @@ void write_file(double **R, double *rho, double rho_max, double omega, int n, in
 
 int main(){
     double *d, *rho, **A, **R;
-    int n = 100;
+    int n = 150;
     double rho_max = 10.0;
 
     cout << "Using a " << n << "x" << n << " matrix (n = "<< n << ")" << endl;
