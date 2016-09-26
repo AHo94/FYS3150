@@ -62,7 +62,39 @@ For a unitary matrix, we have that $\mathbf{U^*}\mathbf{U}=\mathbf{I}$ and $\mat
 \mathbf{w}_j^{\dagger}\mathbf{w}_i = (\mathbf{U}\mathbf{v}_j)^{\dagger}(\mathbf{U}\mathbf{v}_i) = \mathbf{v}_j^{\dagger}\mathbf{U}^{\dagger}\mathbf{U}\mathbf{v}_i = \mathbf{v}_j^{\dagger}\mathbf{v}_i = \delta_{ij}
 \end{align}
 Here we have assumed that the basis vector is real, so $\mathbf{v}_i^* = \mathbf{v}_i$.
-\subsection*{2b) Implementing Jacobi's method for the non-interacting case}
+\subsection*{2b) Jacobi's rotation method}
+Jacobi's rotation method (or Jacobi's method) is an algorithm that can be used to solve the eigenvalue problem. Consider an $n\times n$ orthogonal transformation matrix
+\begin{align}
+\mathbf{S} = \begin{pmatrix}
+1 & 0 & \cdots & 0 & 0 & \cdots & 0 & 0 \\
+0 & 1 & \cdots & 0 & 0 & \cdots & 0 & 0 \\
+\cdots & \cdots & \cdots & \cdots &\cdots & \cdots & \cdots & \cdots \\
+0 & 0& \cdots & \cos \theta & 0 & \cdots & 0 & \sin \theta \\
+0 & 0 & \cdots & 0 & 1 & \cdots & 0 & 0 \\
+0 & \cdots & \cdots & \cdots & \cdots \\
+0 & 0 & \cdots & 0 & 0 & \cdots & 1 & 0 \\
+0 & 0 & \cdots & -\sin\theta & 0 & \cdots & 0 & \cos\theta
+\end{pmatrix}
+\end{align}
+with the property $\mathbf{S}^T = \mathbf{S}^{-1}$. A similarity transformation, on a matrix $\mathbf{A}$
+\begin{align}
+\mathbf{B} = \mathbf{S}^T \mathbf{A} \mathbf{S}
+\end{align}
+gives us 
+\begin{align}
+b_{ii} &= a_{ii} ,\quad i\neq k, i\neq l \\
+b_{ik} &= a_{ik} \cos\theta - a_{il}\sin\theta, \quad i\neq k, i\neq j \\
+b_{il} &= a_{il}\cos\theta + a_{ik}\sin\theta, \quad i\neq k, i\neq j \\
+b_{kk} &= a_{kk}\cos^2\theta - 2a_{kl}\cos\theta\sin\theta + a_{ll}\sin^2\theta \\
+b_{ll} &= a_{ll}\cos^2\theta + 2a_{kl}\cos\theta\sin\theta + a_{kk}\sin^2\theta \\
+b_{kl} &= (a_{kk}-a_{ll})\cos\theta\sin\theta + a_{kl}(\cos^2\theta - \sin^2\theta)
+\end{align}
+The angle $\theta$ is arbitrary. The idea here is to choose a $\theta$ that causes all non-diagonal matrix elements to become zero (or within a given tolerance). However, not all non-diagonal matrix elements will become zero after one iteration, so we will have to run this algorithm a sufficient amount of times to get the desired result.
+
+Since we want the non-diagonal matrix elements to become zero, we require that $b_{kl} = b_{lk} = 0$, which gives
+\begin{align}
+b_{kl} = (a_{kk} - a_{ll})\cos\theta\sin\theta + a_{kl}(\cos^2\theta - \sin^2\theta) = 0
+\end{align}
 \section{Implementation}
 \section{Results}
 \section{Conclusion}
