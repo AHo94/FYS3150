@@ -1,12 +1,12 @@
-#include <iostream>
+#include <iostream> // Printing purposes
 #include <cmath>
-#include <math.h>
+#include <math.h>   // Mathematics library
 #include <algorithm>    // Used to sort arrays
 #include <numeric>
 #include <fstream>  // Writing to file
 #include <iomanip>  // setw identitation for output file
-#include <sstream>
-#include <time.h>
+#include <sstream>  // Convert numbers to string within a set precision
+#include <time.h>   // Clock
 
 using namespace std;
 
@@ -55,7 +55,7 @@ void initialize_matrix(double **A, double **R, double *d, double *rho, double rh
     }
 }
 
-double max_offdiag(double **A, int n){
+double max_offdiag(double **A, int n, double *max_diag_indices){
     // Finds the max value along the off diagonal
     double max_value=0;
     for (int i=0; i<n; i++){
@@ -63,6 +63,8 @@ double max_offdiag(double **A, int n){
             double a_ij = fabs(A[i][j]);
             if (a_ij > max_value){
                 max_value = a_ij;
+                max_diag_indices[0] = i;
+                max_diag_indices[1] = j;
             }
         }
     }
@@ -177,7 +179,7 @@ void write_file(double **R, double *rho, double rho_max, double omega, int n, in
 
 int main(){
     clock_t start, finish;
-    double *d, *rho, **A, **R;
+    double *d, *rho, **A, **R, *max_diag_indices;
     int n = 400;
     double rho_max = 10.0;
 
@@ -188,6 +190,7 @@ int main(){
     rho = new double[n];
     A = new double*[n];
     R = new double*[n];
+    max_diag_indices = new double[n];
     for (int i=0; i<n; i++){
         A[i] = new double[n];
         R[i] = new double[n];
@@ -196,23 +199,23 @@ int main(){
     initialize_matrix(A, R, d, rho, rho_max, n);
     double max_diag = 1;
     int iterations = 0;
-    int maxiter = 200000;
+    int maxiter = 400000;
     double tolerance = 1.0e-8;
     while (max_diag > tolerance && iterations <= maxiter){
-        int p = 0;
-        int q = 0;
-        max_diag = max_offdiag(A, n);
+        //int p = 0;
+        //int q = 0;
+        max_diag = max_offdiag(A, n, max_diag_indices);
 
         // For loop that finds the index of the max_diagonal value in the matrix A.
-        for (int i=0; i<n; i++){
-            for (int j=0; j<n; j++){
-                if (fabs(max_diag - fabs(A[i][j])) < tolerance){
-                    p=i;
-                    q=j;
-                }
-            }
-        }
-        Jacobi_rotation(A, R, p, q, n);
+//        for (int i=0; i<n; i++){
+//            for (int j=0; j<n; j++){
+//                if (fabs(max_diag - fabs(A[i][j])) < tolerance){
+//                    p=i;
+//                    q=j;
+//                }
+//            }
+//        }
+        Jacobi_rotation(A, R, max_diag_indices[0], max_diag_indices[1], n);
         iterations++;
     }
     finish = clock();
@@ -232,7 +235,7 @@ int main(){
         cout << lambda[i] << endl;
     }
     orthogonal_test(R, n);
-    
+
     // --- Interacting case ---
     cout << "Calculating interacting case... \n" << endl;
 
@@ -247,6 +250,7 @@ int main(){
         rho = new double[n];
         A = new double*[n];
         R = new double*[n];
+        max_diag_indices = new double[n];
         for (int i=0; i<n; i++){
             A[i] = new double[n];
             R[i] = new double[n];
@@ -256,18 +260,18 @@ int main(){
         max_diag = 1;
         iterations = 0;
         while (max_diag > tolerance && iterations <= maxiter){
-            int p = 0;
-            int q = 0;
-            max_diag = max_offdiag(A, n);
-            for (int i=0; i<n; i++){
-                for (int j=0; j<n; j++){
-                    if (fabs(max_diag - fabs(A[i][j])) < tolerance){
-                        p=i;
-                        q=j;
-                    }
-                }
-            }
-            Jacobi_rotation(A, R, p, q, n);
+//            int p = 0;
+//            int q = 0;
+            max_diag = max_offdiag(A, n, max_diag_indices);
+//            for (int i=0; i<n; i++){
+//                for (int j=0; j<n; j++){
+//                    if (fabs(max_diag - fabs(A[i][j])) < tolerance){
+//                        p=i;
+//                        q=j;
+//                    }
+//                }
+//            }
+            Jacobi_rotation(A, R, max_diag_indices[0], max_diag_indices[1], n);
             iterations++;
         }
         finish = clock();
