@@ -178,7 +178,7 @@ void write_file(double **R, double *rho, double rho_max, double omega, int n, in
 int main(){
     clock_t start, finish;
     double *d, *rho, **A, **R;
-    int n = 100;
+    int n = 400;
     double rho_max = 10.0;
 
     cout << "Using a " << n << "x" << n << " matrix (n = "<< n << ")" << endl;
@@ -216,7 +216,7 @@ int main(){
         iterations++;
     }
     finish = clock();
-    cout << "Time elapsed for non interactive case: " << ((finish-start)/(double)(CLOCKS_PER_SEC)/1000) << "s" << endl;
+    cout << "Time elapsed for non interactive case: " << ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
 
     double *lambda;
     lambda = new double[n];
