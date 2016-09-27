@@ -1,5 +1,6 @@
 # First row contains the n, rho_max and omega values respectively. The other rows contains the data to be plotted 
-# First column contains rho values. Second column contains the eigenvector for the ground state100             10              1
+# First column contains rho values. Second column contains the eigenvector for the ground state 
+100             10              1
 0.0990099     0.00109262
 0.19802     0.00463375
 0.29703      0.0107701
