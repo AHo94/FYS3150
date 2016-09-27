@@ -45,15 +45,17 @@ class Proj2_plot_script:
 			eigenvec = self.read_data(filename)
 			plt.plot(self.rho, eigenvec)
 
+		plt.xlabel(r'$\rho$')
+		plt.ylabel('$|\psi|^2$')
+		plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$, ground state, n=%g' %(self.n))
+		plt.legend(['$\omega=0.01$','$\omega=0.5$','$\omega=1$', '$\omega=5$'])
+		plt.hold("off")
+		# Specified filename for a set number of meshpoints n
 		fig_filename = 'Plot_groundstate_n'+str(self.n)+'.pdf'
+
 		if self.save_fig:
 			fig1.savefig('../Plots/'+fig_filename)
 		else:
-			plt.xlabel(r'$\rho$')
-			plt.ylabel('$|\psi|^2$')
-			plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$, ground state, n=%g' %(self.n))
-			plt.legend(['$\omega=0.01$','$\omega=0.5$','$\omega=1$', '$\omega=5$'])
-			plt.hold("off")
 			plt.show()
 
 
