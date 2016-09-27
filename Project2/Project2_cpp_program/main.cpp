@@ -1,8 +1,8 @@
 #include <iostream> // Printing purposes
-#include <cmath>
+//#include <cmath>
 #include <math.h>   // Mathematics library
 #include <algorithm>    // Used to sort arrays
-#include <numeric>
+//#include <numeric>
 #include <fstream>  // Writing to file
 #include <iomanip>  // setw identitation for output file
 #include <sstream>  // Convert numbers to string within a set precision
@@ -70,7 +70,6 @@ double max_offdiag(double **A, int n, double *max_diag_indices){
     }
     return max_value;
 }
-
 
 void Jacobi_rotation(double **A, double **R, int k, int l, int n){
     // Jacobi rotation algorithm
@@ -202,19 +201,7 @@ int main(){
     int maxiter = 400000;
     double tolerance = 1.0e-8;
     while (max_diag > tolerance && iterations <= maxiter){
-        //int p = 0;
-        //int q = 0;
         max_diag = max_offdiag(A, n, max_diag_indices);
-
-        // For loop that finds the index of the max_diagonal value in the matrix A.
-//        for (int i=0; i<n; i++){
-//            for (int j=0; j<n; j++){
-//                if (fabs(max_diag - fabs(A[i][j])) < tolerance){
-//                    p=i;
-//                    q=j;
-//                }
-//            }
-//        }
         Jacobi_rotation(A, R, max_diag_indices[0], max_diag_indices[1], n);
         iterations++;
     }
@@ -260,17 +247,7 @@ int main(){
         max_diag = 1;
         iterations = 0;
         while (max_diag > tolerance && iterations <= maxiter){
-//            int p = 0;
-//            int q = 0;
             max_diag = max_offdiag(A, n, max_diag_indices);
-//            for (int i=0; i<n; i++){
-//                for (int j=0; j<n; j++){
-//                    if (fabs(max_diag - fabs(A[i][j])) < tolerance){
-//                        p=i;
-//                        q=j;
-//                    }
-//                }
-//            }
             Jacobi_rotation(A, R, max_diag_indices[0], max_diag_indices[1], n);
             iterations++;
         }
