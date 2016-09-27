@@ -6,7 +6,8 @@ file_directory = 'C:/Users/Alex/Documents/FYS3150/FYS3150_projects/Project2/buil
 class Proj2_plot_script:
 	def __init__(self, save_figure):
 		self.n = 0
-		self.save_fig = save_figure
+		self.save_fig = save_figure		# Saves as a figure if True
+		# The omega values of the filename
 		self.omega_value = np.array(['0.01', '0.50', '1.00', '5.00'])
 		self.omega_filenames = []
 		# For loops that creates filenames that is used for datafiles
@@ -37,12 +38,12 @@ class Proj2_plot_script:
 		return eig
 
 	def plot_data(self):
+		""" Plots the data """
 		fig1 = plt.figure()
 		plt.hold("on")
 		for filename in self.omega_filenames:
 			eigenvec = self.read_data(filename)
 			plt.plot(self.rho, eigenvec)
-
 
 		if self.save_fig:
 			fig1.savefig('../Plots/Plot_groundstate.pdf')
@@ -55,5 +56,5 @@ class Proj2_plot_script:
 			plt.show()
 
 
-solve = Proj2_plot_script(False)
+solve = Proj2_plot_script(True)
 solve.plot_data()
