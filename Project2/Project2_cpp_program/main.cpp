@@ -168,7 +168,7 @@ void write_file(double **R, double *rho, double rho_max, double omega, int n, in
     //int min3 = vector_index[2];
     datafile << "# First row contains the n, rho_max and omega values respectively.";
     datafile << " The other rows contains the data to be plotted \n";
-    datafile << "# First column contains rho values. Second column contains the eigenvector for the ground state";
+    datafile << "# First column contains rho values. Second column contains the eigenvector for the ground state \n";
     datafile << n << setw(15) << rho_max << setw(15) << omega << "\n";
     for (int i=0; i<n; i++){
         datafile << rho[i] << setw(15)
@@ -180,6 +180,7 @@ void write_file(double **R, double *rho, double rho_max, double omega, int n, in
 }
 
 int main(){
+    clock_t start, finish;
     double *d, *rho, **A, **R;
     int n = 100;
     double rho_max = 10.0;
@@ -274,7 +275,7 @@ int main(){
             iterations++;
         }
         finish = clock();
-        cout << "Time elapsed: " << ((finish-start)/(double)(CLOCKS_PER_SEC)/1000) << "s" << endl;
+        cout << "Time elapsed: " << ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
 
         lambda = new double[n];
         cout <<"Number of iterations: " << iterations << endl;
