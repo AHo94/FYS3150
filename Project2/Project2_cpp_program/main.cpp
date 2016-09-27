@@ -164,17 +164,13 @@ void write_file(double **R, double *rho, double rho_max, double omega, int n, in
     ofstream datafile;
     datafile.open(filename);
     int min1 = vector_index[0];
-    //int min2 = vector_index[1];
-    //int min3 = vector_index[2];
     datafile << "# First row contains the n, rho_max and omega values respectively.";
     datafile << " The other rows contains the data to be plotted \n";
     datafile << "# First column contains rho values. Second column contains the eigenvector for the ground state \n";
     datafile << n << setw(15) << rho_max << setw(15) << omega << "\n";
     for (int i=0; i<n; i++){
         datafile << rho[i] << setw(15)
-                 << pow(R[i][min1], 2) << "\n"; // setw(15)
-                 //<< pow(R[i][min2] ,2) << setw(15)
-                 //<< pow(R[i][min3], 2) << "\n";
+                 << pow(R[i][min1], 2) << "\n";
     }
     datafile.close();
 }
@@ -296,8 +292,6 @@ int main(){
         stringstream stream;
         stream << fixed << setprecision(2) << omegas[i];
         string argument = stream.str();
-        //fileout.append(to_string(n));
-        //fileout.append("_omega_");
         fileout.append(argument);
         fileout.append(".txt");
         write_file(R, rho, rho_max, omegas[i], n, vector_index, fileout);
