@@ -45,8 +45,9 @@ class Proj2_plot_script:
 			eigenvec = self.read_data(filename)
 			plt.plot(self.rho, eigenvec)
 
+		fig_filename = 'Plot_groundstate_n'+str(self.n)+'.pdf'
 		if self.save_fig:
-			fig1.savefig('../Plots/Plot_groundstate.pdf')
+			fig1.savefig('../Plots/'+fig_filename)
 		else:
 			plt.xlabel(r'$\rho$')
 			plt.ylabel('$|\psi|^2$')
