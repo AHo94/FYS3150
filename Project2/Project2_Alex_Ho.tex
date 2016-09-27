@@ -121,6 +121,11 @@ is no longer satisfied. The end result is that the matrix $\mathbf{A}$ will only
 
 The reason we decided to choose the largest value of the non-diagonal elements is because of this test. It ensures that all the non-diagonal elements will be close to zero, thus giving us the diagonal matrix with the desired eigenvalues.
 \section{Implementation}
+For the C++ program, the first part was to implement the algorithm. I first create a function that initializes the matrix $\mathbf{A}$ as well as creating an identity matrix $\mathbf{R}$ which will contain the eigenvectors when $\mathbf{A}$ is fully diagonalized. In the Jacobi's method function, I also calculate the eigenvector after one iteration.
+
+Setting the tolerance to $\epsilon = 10^{-8}$, I run the algorithm until $\text{max}(a_{ij}^2) > \epsilon$ is no longer satisfied. Each iteration is counted to give us an idea on how many iterations is required to diagonalize $\mathbf{A}$, which now contains the eigenvalues. As mentioned, the eigenvalues in the diagonalized matrix $\mathbf{A}$ is not ordered in ascending order, so I have to do it by using the \textit{sort} function from the \textit{algorithm} library.
+
+For the interacting case, we use the exact same code but with different values of $\omega$. In this part I will also save the eigenvector for the ground state which is saved within the matrix $\mathbf{R}$. However, like the diagonalized matrix $\mathbf{A}$, the eigenvectors in $\mathbf{R}$ are also not ordered properly, so the program will have to find the eigenvector that corresponds to the ground state eigenvalue by doing certain tests. 
 
 \section{Results}
 In the C++ program, by selecting the number of mesh points to $n=400$, with $\rho_{max} = 10$, the output for the non interacting case is the following:
@@ -144,11 +149,11 @@ The eigenvalues, even though they are not within 4 decimal precision, are very c
 
 The time it took for the program to run was roughly 5 minutes. This seems like a very long simulation time, so there is probably something that is not quite optimal in the program, thus causing the program to run for a longer time.
 
-Figure 1 shows the the probability distribution of the wave function (or the eigenvectors we calculated) for different frequencies $\omega$.
+Figure 1 shows the the probability distribution of the wave function (or the eigenvectors we calculated), which have been normalized, for different frequencies $\omega$.
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=\linewidth]{Plots/Plot_groundstate_n400.pdf}
-\caption{Probability distribution of the wave functions of the ground state, for different values of $\omega$. Plotted for $n=400$ meshpoints.}
+\caption{Probability distribution of the (normalized) wave functions of the ground state, for different values of $\omega$. Plotted for $n=400$ meshpoints.}
 \end{figure}
 These results are not quite surprising. Let us for a moment imagine that two electrons are bound together by a spring. The electrons oscillate back and forth due to the oscillation of the spring. They interact once when they are closest to each other (that is, the distance between them is the minimum).
 
