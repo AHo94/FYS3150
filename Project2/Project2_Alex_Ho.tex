@@ -16,7 +16,6 @@ basicstyle=\ttfamily,
 otherkeywords={self},             
 keywordstyle=\ttfamily\color{blue!90!black},
 keywords=[2]{True,False},
-%keywords=[3]{ttk},
 keywordstyle={[2]\ttfamily\color{blue!90!black}},
 emph={MyClass,__init__},          
 emphstyle=\ttfamily\color{red!80!black},    
@@ -91,13 +90,58 @@ b_{kl} &= (a_{kk}-a_{ll})\cos\theta\sin\theta + a_{kl}(\cos^2\theta - \sin^2\the
 \end{align}
 The angle $\theta$ is arbitrary. The idea here is to choose a $\theta$ that causes all non-diagonal matrix elements to become zero (or within a given tolerance). However, not all non-diagonal matrix elements will become zero after one iteration, so we will have to run this algorithm a sufficient amount of times to get the desired result.
 
+First we have to choose a value $a_{ij}$. This value will be the largest non-diagonal value in the matrix $\mathbf{A}$ and needs to be larger within a tolerance $\epsilon$, that is
+\begin{align}
+\text{max}(a_{ij}^2) > \epsilon
+\end{align}
 Since we want the non-diagonal matrix elements to become zero, we require that $b_{kl} = b_{lk} = 0$, which gives
 \begin{align}
 b_{kl} = (a_{kk} - a_{ll})\cos\theta\sin\theta + a_{kl}(\cos^2\theta - \sin^2\theta) = 0
 \end{align}
+Defining $\tau = \frac{a_{ll}-a_{kk}}{2a_{kl}}$ and $\tan\theta = t = \frac{\sin\theta}{\cos\theta}$, we can write the above expression as
+\begin{align}
+-2a_{kl}\tau t + \frac{a_{kl}}{\cos^2\theta}(\cos^2\theta - \sin^2\theta) &= 0 \nonumber \\
+\implies -2\tau t + 1 - t^2 &= 0 \nonumber \\
+\implies t^2 + 2\tau t - 1 &= 0
+\end{align}
+Where we have in the first line inserted the expression for $\tau$ and then divided by $\cos^2\theta$. We can now use this second order equation to determine $\tan\theta$.
+\begin{align}
+\tan\theta = -\tau \pm \sqrt{1+\tau^2}
+\end{align} 
+Once that is determined, one can easily calculate the new values of $\cos\theta$ and $\sin\theta$ given as
+\begin{align}
+\cos\theta &= \frac{1}{\sqrt{1 + \tan^2\theta}}\\
+\sin\theta &= \cos\theta \tan\theta 
+\end{align}
+When these are calculated, we can compute the new values of $b$ which results in a new matrix. We then repeat the same procedure, with this new matrix, until
+\begin{align}
+\text{max}(a_{ij}^2) > \epsilon
+\end{align}
+is no longer satisfied. The end result is that the matrix $\mathbf{A}$ will only contain values along the diagonal, which will be the eigenvalues (or energies) of the system. Note that the eigenvalues along the diagonal are not ordered from the lowest to highest eigenvalue (or vice versa).
+
+The reason we decided to choose the largest value of the non-diagonal elements is because of this test. It ensures that all the non-diagonal elements will be close to zero, thus giving us the diagonal matrix with the desired eigenvalues.
 \section{Implementation}
+
 \section{Results}
+In the C++ program, by selecting the number of mesh points to $n=400$, with $\rho_{max} = 10$, the lowest three eigenvalues becomes
+\begin{lstlisting}
+@
+
+@
+\end{lstlisting}
+Figure 1 shows the the probability distribution of the wave function (or the eigenvectors we calculated) for different frequencies $\omega$. 
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=\linewidth]{Plots/Plot_groundstate_n400.pdf}
+\caption{Probability distribution of the wave functions of the ground state, for different values of $\omega$. Plotted for $n=400$ meshpoints.}
+\end{figure}
+These results are not quite surprising. Let us for a moment imagine that two electrons are bound together by a spring. The electrons oscillate back and forth due to the oscillation of the spring. They interact once when they are closest to each other (that is, the distance between them is the minimum).
+
+For lower frequencies, the electrons will interact less frequently which means, by the analogy above, they are further apart from each other a lot more often. Another way to think of this is that the spring can be drawn over a larger distance before it is forced to contract, thus allowing the electrons to go further out. This can be seen from figure 1 (the blue line) where the probability of them being close to each other is very small, while them being further apart is slightly larger.
+
+For higher frequencies, the electrons will interact more frequently. Using the same analogy, we can think of the electrons bouncing back and forth very quickly. The spring here cannot be drawn as 
 \section{Conclusion}
+
 \section{References}
 M. Hjort-Jensen, 2015, \textit{Computational Physics}, accessible at course GitHub repository; \url{https://github.com/CompPhysics/ComputationalPhysics/tree/master/doc/Lectures} (as of 14.09.16), 551 pages.
 \end{document}
