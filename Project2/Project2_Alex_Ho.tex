@@ -120,6 +120,24 @@ When these are calculated, we can compute the new values of $b$ which results in
 is no longer satisfied. The end result is that the matrix $\mathbf{A}$ will only contain values along the diagonal, which will be the eigenvalues (or energies) of the system. Note that the eigenvalues along the diagonal are not ordered from the lowest to highest eigenvalue (or vice versa).
 
 The reason we decided to choose the largest value of the non-diagonal elements is because of this test. It ensures that all the non-diagonal elements will be close to zero, thus giving us the diagonal matrix with the desired eigenvalues.
+
+\subsection*{2c) Unit tests}
+From exercise 2a, we have shown that the orthogonality is preserved for an orthogonal and/or unitary vector transformation. The Jacobi's method uses an orthogonal transformation, so one can expect that the resulting eigenvectors are remains orthogonal.
+
+For a $n\times n$ matrix, we will have $n$ eigenvectors when we have diagonalized the matrix $\mathbf{A}$. We first have to calculate how many possible vector dot product combinations there are for all these $n$ eigenvectors. Let us first consider $n=2$, which gives us two eigenvectors so the only vector product combination we have is $\mathbf{v}_1 \cdot \mathbf{v}_2$. For $n = 3$ we have
+\begin{align*}
+\mathbf{v}_1 \cdot \mathbf{v}_2, \quad \mathbf{v}_1\cdot \mathbf{v}_3, \quad \mathbf{v}_2 \cdot \mathbf{v}_3
+\end{align*}
+That is three combinations, for $n=4$
+\begin{align*}
+\mathbf{v}_1 \cdot \mathbf{v}_2, \quad \mathbf{v}_1\cdot \mathbf{v}_3, \quad \mathbf{v}_1 \cdot \mathbf{v}_4\\
+\mathbf{v}_2 \cdot \mathbf{v}_3, \quad \mathbf{v}_2 \cdot \mathbf{v}_3, \quad \mathbf{v}_3 \cdot \mathbf{v}_4
+\end{align*}
+Which is 6 combinations. For $n=5$ one can show that there are 10 combinations. We can clearly see a recursive pattern here, and can by this say that
+\begin{align}
+\text{Possible vector dot product combinations} = \frac{1}{2}n(n-1)
+\end{align}
+This will already give us an exact estimate on how many orthogonal combinations we can expect from the eigenvectors.
 \section{Implementation}
 For the C++ program, the first part was to implement the algorithm. I first create a function that initializes the matrix $\mathbf{A}$ as well as creating an identity matrix $\mathbf{R}$ which will contain the eigenvectors when $\mathbf{A}$ is fully diagonalized. In the Jacobi's method function, I also calculate the eigenvector after one iteration.
 
