@@ -16,7 +16,7 @@ void initialize_matrix(double **A, double **R, double *d, double *rho, double rh
      * Matrix R is the identity matrix.
      * Omega is an optional argument. If omega = 0 we look at the non interacting case,
      * if omega != 0 we look at the interactng case.
-    */
+     */
     double h = (rho_max/(n+1));
     for (int i=0; i<n; i++){
         // Creates the rho gridpoints
@@ -72,7 +72,10 @@ double max_offdiag(double **A, int n, double *max_diag_indices){
 }
 
 void max_diag_testing(double **max_diag_test_matrix, int n, int i, int j){
-    // Unit test for max_offidag function
+    /* Unit test to see if the max_diag function gives the largest (absolute value) non diagonal matrix element.
+     * Test matrix is a tridiagonal matrix with 2 along the diagonal and -1 along the non diagonal.
+     * One of the non diagonal element is to be selected to be larger than |-1|, e.g -1000.
+     */
     double *index_testing, *input_index_test;
     input_index_test = new double[2];
     index_testing = new double[2];
@@ -152,7 +155,6 @@ void Jacobi_rotation(double **A, double **R, int k, int l, int n){
         R[i][k] = c*r_ik - s*r_il;
         R[i][l] = c*r_il + s*r_ik;
     }
-    return;
 }
 
 void orthogonal_test(double **R, int n){
@@ -237,7 +239,7 @@ int main(){
         max_diag_test_matrix[i] = new double[n];
     }
     // Unit test for max_offidag function
-    max_diag_testing(max_diag_test_matrix,n,1,2);
+    max_diag_testing(max_diag_test_matrix, n, 1, 2);
     // Freeing memory
     for (int i=0; i<n; i++){
         delete[]max_diag_test_matrix[i];
