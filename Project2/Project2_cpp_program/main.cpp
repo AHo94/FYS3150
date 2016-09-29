@@ -71,6 +71,25 @@ double max_offdiag(double **A, int n, double *max_diag_indices){
     return max_value;
 }
 
+void max_diag_testing(double **max_diag_test_matrix, int n, int i, int j){
+    // Creates a symmetric array
+    for (int i=0; i<n; i++){
+        for (int j=0; j<n; j++){
+            if (i==j) {
+                max_diag_test_matrix[i][j] = 2;
+            } else if (i==j-1) {
+                max_diag_test_matrix[i][j] = -1.0;
+            } else if (i==j+1) {
+                max_diag_test_matrix[i][j] = -1.0;
+            } else{
+                max_diag_test_matrix[i][j] = 0;
+            }
+        }
+    }
+    // One of the off diagonals to become the largest value
+    max_diag_test_matrix[i][j] = -1000;
+}
+
 void Jacobi_rotation(double **A, double **R, int k, int l, int n){
     // Jacobi rotation algorithm
     double s, c; // Sine and cosine functions
@@ -179,22 +198,44 @@ void write_file(double **R, double *rho, double rho_max, double omega, int n, in
 int main(){
     clock_t start, finish;
     double *d, *rho, **A, **R, *max_diag_indices;
+    double **max_diag_test_matrix, *index_testing;
     int n = 400;
     double rho_max = 10.0;
 
     cout << "Using a " << n << "x" << n << " matrix (n = "<< n << ")" << endl;
     cout << "with rho_max = " << rho_max << "\n" << endl;
-    start = clock();
+    // Initialize everything
     d = new double[n];
     rho = new double[n];
     A = new double*[n];
     R = new double*[n];
     max_diag_indices = new double[n];
+    max_diag_test_matrix = new double*[n];
+    index_testing = new double[n];
     for (int i=0; i<n; i++){
         A[i] = new double[n];
         R[i] = new double[n];
+        max_diag_test_matrix[i] = new double[n];
     }
+    // Unit test for max_offidag function
+    int input_index_test = new int[2];
+    input_index[0] = 1;
+    input_index[0] = 2;
+    max_diag_testing(max_diag_test_matrix, n, input_index_test[0], input_index_test[1]);
+    max_diag_test = max_offdiag(max_diag_test_matrix, n, index_testing);
+    for (int i=0; i<n; i++){
+        if (index_testing[i] == )
+    }
+    // Freeing memory
+    delete[]index_testing;
+    delete[]input_index_test;
+    for (int i=0; i<n; i++){
+        delete[]max_diag_test_matrix[i];
+    }
+    delete[]max_diag_test_matrix;
 
+    // Non interacting case
+    start = clock();
     initialize_matrix(A, R, d, rho, rho_max, n);
     double max_diag = 1;
     int iterations = 0;
