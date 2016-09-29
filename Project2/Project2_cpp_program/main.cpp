@@ -200,18 +200,21 @@ void Smallest_eigenvector(double **A, double *lambda, int *vector_index, int n){
     }
 }
 
-void write_file(double **R, double *rho, double rho_max, double omega, int n, int *vector_index, string filename){
+void write_file(double **R, double *rho, double *V, double lambda
+                , double rho_max, double omega, int n, int *vector_index, string filename){
     // Function that writes eigenvector and rho data to an output file.
     ofstream datafile;
     datafile.open(filename);
     int min1 = vector_index[0];
     datafile << "# First row contains the n, rho_max and omega values respectively.";
     datafile << " The other rows contains the data to be plotted \n";
-    datafile << "# First column contains rho values. Second column contains the eigenvector for the ground state \n";
+    datafile << "# First column contains rho values. Second column contains the eigenvector for the ground state"
+                "third column contains the potential at point i. Fourth column contains the eigenvalues. \n";
     datafile << n << setw(15) << rho_max << setw(15) << omega << "\n";
     for (int i=0; i<n; i++){
         datafile << rho[i] << setw(15)
-                 << pow(R[i][min1], 2) << "\n";
+                 << pow(R[i][min1], 2) << setw(15)
+                 << V[i] << setw(15) << lambda << "\n";
     }
     datafile.close();
 }
@@ -222,7 +225,7 @@ int main(){
     double **max_diag_test_matrix;
     //double *index_testing, *input_index_test;
     int n = 400;
-    double rho_max = 10.0;
+    double rho_max = 10;
 
     cout << "Using a " << n << "x" << n << " matrix (n = "<< n << ")" << endl;
     cout << "with rho_max = " << rho_max << "\n" << endl;
@@ -282,6 +285,8 @@ int main(){
 
     double omegas[] = {0.01, 0.5, 1, 5};
     int *vector_index;   // An array that stores the indices from the matrix R where the smallest eigenvector is
+    double *V;
+    double specified_rho_max[] = {40, 5, 4, 2};
     vector_index = new int[1];
     string filename = "Eigenvector_data_omega_";
     for (int i=0; i<4; i++){
@@ -291,13 +296,19 @@ int main(){
         rho = new double[n];
         A = new double*[n];
         R = new double*[n];
+        V = new double[n];
         max_diag_indices = new double[n];
-        for (int i=0; i<n; i++){
-            A[i] = new double[n];
-            R[i] = new double[n];
+        for (int j=0; j<n; j++){
+            A[j] = new double[n];
+            R[j] = new double[n];
         }
-        initialize_matrix(A, R, d, rho, rho_max, n, omegas[i]);
 
+        initialize_matrix(A, R, d, rho, specified_rho_max[i], n, omegas[i]);
+
+        for (int j=0; j<n; j++){
+            // Filling out the potential
+            V[j] = pow(omegas[i]*rho[j],2) + 1.0/rho[j];
+        }
         max_diag = 1;
         iterations = 0;
         while (max_diag > tolerance && iterations <= maxiter){
@@ -310,15 +321,15 @@ int main(){
 
         lambda = new double[n];
         cout <<"Number of iterations: " << iterations << endl;
-        for (int i=0; i<n; i++){
-            lambda[i] = A[i][i];
+        for (int j=0; j<n; j++){
+            lambda[j] = A[j][j];
         }
 
         // Sorting eigenvalues from lowest to highest
         std::sort(lambda, lambda+n);
         cout << "Lowest 3 eigenvalues are: " << endl;
-        for (int i=0; i<3; i++){
-            cout << lambda[i] << endl;
+        for (int j=0; j<3; j++){
+            cout << lambda[j] << endl;
         }
         Smallest_eigenvector(A, lambda, vector_index, n);
         orthogonal_test(R, n);
@@ -329,7 +340,7 @@ int main(){
         string argument = stream.str();
         fileout.append(argument);
         fileout.append(".txt");
-        write_file(R, rho, rho_max, omegas[i], n, vector_index, fileout);
+        write_file(R, rho, V, lambda[0], specified_rho_max[i], omegas[i], n, vector_index, fileout);
     }
     return 0;
 }
