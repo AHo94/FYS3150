@@ -238,22 +238,7 @@ int main(){
     }
     // Unit test for max_offidag function
     max_diag_testing(max_diag_test_matrix,n,1,2);
-//    input_index_test = new double[2];
-//    index_testing = new double[2];
-//    input_index_test[0] = 1;
-//    input_index_test[1] = 2;
-//    double test_max_diag = max_diag_testing(max_diag_test_matrix, n, input_index_test[0], input_index_test[1]);
-//    double max_diag = max_offdiag(max_diag_test_matrix, n, index_testing);
-//    if (fabs(max_diag - test_max_diag) < 1e-8){
-//        cout << "max_diag does give out the largest value" << endl;
-//        cout << "max_diag result: " << max_diag << " \n" << endl;
-//    }
-//    else{
-//        cout << "max_diag test did not work \n" << endl;
-//    }
-//    // Freeing memory
-//    delete[]index_testing;
-//    delete[]input_index_test;
+    // Freeing memory
     for (int i=0; i<n; i++){
         delete[]max_diag_test_matrix[i];
     }
