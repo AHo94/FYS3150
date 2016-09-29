@@ -243,7 +243,7 @@ int main(){
         delete[]max_diag_test_matrix[i];
     }
     delete[]max_diag_test_matrix;
-    return 0;
+
     cout << "Starting Jacobi's algorithm for a single electron" << endl;
     // Non interacting case
     start = clock();
