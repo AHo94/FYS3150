@@ -71,7 +71,7 @@ double max_offdiag(double **A, int n, double *max_diag_indices){
     return max_value;
 }
 
-void max_diag_testing(double **max_diag_test_matrix, int n, int i, int j){
+double max_diag_testing(double **max_diag_test_matrix, int n, int i, int j){
     // Creates a symmetric array
     for (int i=0; i<n; i++){
         for (int j=0; j<n; j++){
@@ -88,6 +88,8 @@ void max_diag_testing(double **max_diag_test_matrix, int n, int i, int j){
     }
     // One of the off diagonals to become the largest value
     max_diag_test_matrix[i][j] = -1000;
+    cout << "Max (absolute) value in the test matrix: " << fabs(max_diag_test_matrix[i][j]) << endl;
+    return fabs(max_diag_test_matrix[i][j]) ;
 }
 
 void Jacobi_rotation(double **A, double **R, int k, int l, int n){
@@ -198,7 +200,8 @@ void write_file(double **R, double *rho, double rho_max, double omega, int n, in
 int main(){
     clock_t start, finish;
     double *d, *rho, **A, **R, *max_diag_indices;
-    double **max_diag_test_matrix, *index_testing;
+    double **max_diag_test_matrix;
+    double *index_testing, *input_index_test;
     int n = 400;
     double rho_max = 10.0;
 
@@ -209,22 +212,26 @@ int main(){
     rho = new double[n];
     A = new double*[n];
     R = new double*[n];
-    max_diag_indices = new double[n];
+    max_diag_indices = new double[2];
     max_diag_test_matrix = new double*[n];
-    index_testing = new double[n];
     for (int i=0; i<n; i++){
         A[i] = new double[n];
         R[i] = new double[n];
         max_diag_test_matrix[i] = new double[n];
     }
     // Unit test for max_offidag function
-    int input_index_test = new int[2];
-    input_index[0] = 1;
-    input_index[0] = 2;
-    max_diag_testing(max_diag_test_matrix, n, input_index_test[0], input_index_test[1]);
-    max_diag_test = max_offdiag(max_diag_test_matrix, n, index_testing);
-    for (int i=0; i<n; i++){
-        if (index_testing[i] == )
+    input_index_test = new double[2];
+    index_testing = new double[2];
+    input_index_test[0] = 1;
+    input_index_test[1] = 2;
+    double test_max_diag = max_diag_testing(max_diag_test_matrix, n, input_index_test[0], input_index_test[1]);
+    double max_diag = max_offdiag(max_diag_test_matrix, n, index_testing);
+    if (fabs(max_diag - test_max_diag) < 1e-8){
+        cout << "max_diag does give out the largest value" << endl;
+        cout << "max_diag result: " << max_diag << " \n" << endl;
+    }
+    else{
+        cout << "max_diag test did not work \n" << endl;
     }
     // Freeing memory
     delete[]index_testing;
@@ -233,11 +240,11 @@ int main(){
         delete[]max_diag_test_matrix[i];
     }
     delete[]max_diag_test_matrix;
-
+    cout << "Starting Jacobi's algorithm for a single electron" << endl;
     // Non interacting case
     start = clock();
     initialize_matrix(A, R, d, rho, rho_max, n);
-    double max_diag = 1;
+    max_diag = 1;
     int iterations = 0;
     int maxiter = 400000;
     double tolerance = 1.0e-8;
