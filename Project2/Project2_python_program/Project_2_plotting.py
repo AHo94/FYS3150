@@ -27,14 +27,23 @@ class Proj2_plot_script:
 		filename.close()
 		self.n = int(data[0][0])
 		rho_max = float(data[0][1])
-		omega = float(data[0][2])
+		self.omega = float(data[0][2])
 		self.rho = np.zeros(self.n+2)
 		self.rho[-1] = rho_max
 		eig = np.zeros(self.n+2)
+		self.V = np.zeros(self.n+2)
+		self.E = np.zeros(self.n+2)
 		for j in range(0, self.n, 1):
 			self.rho[j+1] = float(data[j+1][0])
 			eig[j+1] = float(data[j+1][1])
+			self.V[j+1] = float(data[j+1][2])
+			self.E[j+1] = float(data[j+1][3])
 
+		# Placing boundary to the potential and E (to prevent them for being 0)
+		self.V[0] = self.omega**2*self.rho[0]**2 + 1.0/self.rho[0]
+		self.V[-1] = self.omega**2*self.rho[-1]**2 + 1.0/self.rho[-1]
+		self.E[0] = self.E[1]
+		self.E[-1] = self.E[-2]
 		return eig
 
 	def plot_data(self):
@@ -53,11 +62,30 @@ class Proj2_plot_script:
 		# Specified filename for a set number of meshpoints n
 		fig_filename = 'Plot_groundstate_n'+str(self.n)+'.pdf'
 
+		# Plotting example of tunneling effect
+		fig2, ax1 = plt.subplots()
+		Tunneling_eigvec = self.read_data(self.omega_filenames[2])
+		ax1.plot(self.rho, Tunneling_eigvec)
+		ax1.set_xlabel(r'$\rho$')
+		ax1.set_ylabel('$|\psi|^2$')
+
+		ax2 = ax1.twinx()
+		ax2.plot(self.rho, self.V, 'r-')
+		plt.hold("on")
+		ax2.plot(self.rho, self.E, 'g-')
+		ax2.set_ylabel('$E$')
+		plt.hold("off")
+		plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$. Also shows the energy and potential. n=%g, omega = %f' %(self.n, self.omega))
+		ax2.legend(['Potential', 'Energy'])
+
+		tunneling_filename = 'Plot_groundstate_tunneling_effect.pdf'
+
 		if self.save_fig:
 			fig1.savefig('../Plots/'+fig_filename)
+			fig2.savefig('../Plots/'+tunneling_filename)
 		else:
 			plt.show()
 
 
-solve = Proj2_plot_script(True)
+solve = Proj2_plot_script(False)
 solve.plot_data()
