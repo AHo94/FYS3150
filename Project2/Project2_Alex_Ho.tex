@@ -152,6 +152,11 @@ In the C++ program, by selecting the number of mesh points to $n=400$, with $\rh
 Using a 400x400 matrix (n = 400)
 with rho_max = 10
 
+Max (absolute) value in the test matrix: 1000
+max_diag does give out the largest value
+max_diag result: 1000
+
+Starting Jacobi's algorithm for a single electron
 Time elapsed for non interactive case: 305.675s
 Number of iterations: 260506
 Lowest 3 eigenvalues are: 
@@ -161,9 +166,8 @@ Lowest 3 eigenvalues are:
 Possible number of orthogonal vectors: 79800
 Number of orthogonal vectors: 79800
 Number of non-orthogonal vectors: 0
-@
 \end{lstlisting}
-The eigenvalues, even though they are not within 4 decimal precision, are very close to the exact analytical eigenvalues. We can also see that the number of iterations needed to fully diagonalize the matrix $\mathbf{A}$ (or at least within a tolerance $\epsilon$) was 260506 iterations. The unit test of the orthogonality between the eigenvectors is also shown, where every possibly combination of the scalar product between the eigenvectors are orthogonal (also within a tolerance).
+The eigenvalues, even though they are not within 4 decimal precision, are very close to the exact analytical eigenvalues. We can also see that the number of iterations needed to fully diagonalize the matrix $\mathbf{A}$ (or at least within a tolerance $\epsilon$) was 260506 iterations. The unit test of the orthogonality between the eigenvectors is also shown, where every possibly combination of the scalar product between the eigenvectors are orthogonal (also within a tolerance). The unit test, where the largest matrix element in the test matrix was $-1000$, also worked out.
 
 The time it took for the program to run was roughly 5 minutes. This seems like a very long simulation time, so there is probably something that is not quite optimal in the program, thus causing the program to run for a longer time.
 
@@ -179,7 +183,9 @@ For lower frequencies, the electrons will interact less frequently which means, 
 
 For higher frequencies, the electrons will interact more frequently. Using the same analogy, we can think of the electrons bouncing back and forth very quickly. The spring is very stiff, so it cannot be stretched that far. Because of this, the electrons are forced to be very close to each other, which is exactly what we see in figure 1. In the case of $\omega = 5$ (the cyan line), we can clearly see that the probability of them being very close to each other is very large, while them being further apart is very low (practically zero).
 \section{Conclusion}
+The run time of the Jacobi's method is quite slow, which implies that this algorithm is not exactly the smartest algorithm to use in order to solve eigenvalue problems. This is especially true if we compare Jacobi's method to other algorithms.
 
+Our eigenvalue results did not reach 4 decimal precision, but did come very close. One could possibly fix that by increasing the number of mesh points $n$ as well as $\rho_{max}$. However, as shown from the results, increasing $n$ would also increase the run time of the program, which is probably not practical for our purpose.
 \section{References}
 M. Hjort-Jensen, 2015, \textit{Computational Physics}, accessible at course GitHub repository; \url{https://github.com/CompPhysics/ComputationalPhysics/tree/master/doc/Lectures} (as of 14.09.16), 551 pages.
 \end{document}
