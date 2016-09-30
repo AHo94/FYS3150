@@ -276,7 +276,7 @@ int main(){
     delete[]max_diag_test_matrix;
 
     cout << "Starting Jacobi's algorithm for a single electron" << endl;
-    // Non interacting case
+    // --- Non interacting case ---
     start = clock();
     initialize_matrix(A, R, d, rho, rho_max, n);
     double max_diag = 1;
@@ -312,7 +312,8 @@ int main(){
     armadillo_test(d, rho_max, n);
     finish = clock();
     cout << "Time elapsed for Armadillo's algorithm: " << ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
-    return 0;
+    //return 0;
+
     // --- Interacting case ---
     cout << "Calculating interacting case... \n" << endl;
 
