@@ -1,8 +1,6 @@
 #include <iostream> // Printing purposes
-//#include <cmath>
 #include <math.h>   // Mathematics library
 #include <algorithm>    // Used to sort arrays
-//#include <numeric>
 #include <fstream>  // Writing to file
 #include <iomanip>  // setw identitation for output file
 #include <sstream>  // Convert numbers to string within a set precision
