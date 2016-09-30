@@ -200,7 +200,6 @@ Let us first think of a new analogy. We want to roll a ball upward a hill. In th
 \caption{An illustration of two different potentials and how they affect the electron.}
 \end{figure}
 
-
 The probability distribution for the interacting and non-interacting case differ quite significantly for lower frequencies. The potential is not very steep for lower frequencies, so the electrons will not fall back down the potential as quick. With Coulomb repulsion, the electrons will be pushed further apart as the potential will not drag the electrons back fast enough.
 
 With higher frequencies, the probability distributions will be very much alike. Higher frequencies gives a steeper potential, so the electrons will fall back down quicker because they are unable to climb the potential fast enough. Even with Coulomb repulsion, the electrons will not get very far due to the steep potential.
@@ -215,9 +214,11 @@ A different, but interesting, result can be seen in figure 2. What we can see he
 
 
 \section{Conclusion}
-The run time of the Jacobi's method is quite slow, which implies that this algorithm is not exactly the smartest algorithm to use in order to solve eigenvalue problems. This is especially true if we compare Jacobi's method to other algorithms.
+The run time of the Jacobi's method is quite slow, which implies that this algorithm is not exactly the smartest algorithm to use in order to solve eigenvalue problems. This is especially true if we compare Jacobi's method to other algorithms, e.g. the eig\_sym function of Armadillo, which finished in less than a second, compared to the 6 minutes in the C++ program.
 
 Our eigenvalue results did not reach 4 decimal precision, but did come very close. One could possibly fix that by increasing the number of mesh points $n$ as well as $\rho_{max}$. However, as shown from the results, increasing $n$ would also increase the run time of the program, which is probably not practical for our purpose.
+
+From the results, we saw that the average distance between the electrons will be larger when the harmonic oscillator potential is smaller (and vice versa for larger potentials). One can also see that the Coulomb repulsion will cause a larger effect for smaller potentials. 
 \section{References}
 M. Hjort-Jensen, 2015, \textit{Computational Physics}, accessible at course GitHub repository; \url{https://github.com/CompPhysics/ComputationalPhysics/tree/master/doc/Lectures} (as of 14.09.16), 551 pages.
 \end{document}
