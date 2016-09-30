@@ -38,6 +38,10 @@ class Proj2_plot_script:
 			eig[j+1] = float(data[j+1][1])
 			self.V[j+1] = float(data[j+1][2])
 			self.E[j+1] = float(data[j+1][3])
+		# Normalizing
+		new_eig = np.sum(eig)*(rho_max)/(self.n+1)
+		factor = 1.0/new_eig
+		eig *= factor
 
 		# Placing boundary to the potential and E (to prevent them for being 0)
 		self.V[0] = self.omega**2*self.rho[0]**2 + 1.0/self.rho[0]
@@ -57,7 +61,7 @@ class Proj2_plot_script:
 		plt.xlabel(r'$\rho$')
 		plt.ylabel('$|\psi|^2$')
 		plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$, ground state, n=%g' %(self.n))
-		plt.legend(['$\omega=0.01$','$\omega=0.5$','$\omega=1$', '$\omega=5$'])
+		plt.legend([r'$\omega=0.01, \rho_{max} = 40$',r'$\omega=0.5, \rho_{max}=5$',r'$\omega=1, \rho_{max}=4$',r'$\omega=5, \rho_{max}=2$'])
 		plt.hold("off")
 		# Specified filename for a set number of meshpoints n
 		fig_filename = 'Plot_groundstate_n'+str(self.n)+'.pdf'
@@ -75,7 +79,7 @@ class Proj2_plot_script:
 		ax2.plot(self.rho, self.E, 'g-')
 		ax2.set_ylabel('$E$')
 		plt.hold("off")
-		plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$. Also shows the energy and potential. n=%g, omega = %f' %(self.n, self.omega))
+		plt.title(r'Plot of $|\psi|^2$ as a function of $\rho$. n=%g, $\omega$ = %f' %(self.n, self.omega))
 		ax2.legend(['Potential', 'Energy'])
 
 		tunneling_filename = 'Plot_groundstate_tunneling_effect.pdf'
@@ -87,5 +91,5 @@ class Proj2_plot_script:
 			plt.show()
 
 
-solve = Proj2_plot_script(False)
+solve = Proj2_plot_script(True)
 solve.plot_data()
