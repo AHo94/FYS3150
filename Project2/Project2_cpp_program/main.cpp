@@ -7,8 +7,11 @@
 #include <iomanip>  // setw identitation for output file
 #include <sstream>  // Convert numbers to string within a set precision
 #include <time.h>   // Clock
+#include <vector>
+#include <armadillo>
 
 using namespace std;
+using namespace arma;
 
 void initialize_matrix(double **A, double **R, double *d, double *rho, double rho_max, int n, double omega=0){
     /* This function initializes the initial matrix A and R for the project.
@@ -200,6 +203,29 @@ void Smallest_eigenvector(double **A, double *lambda, int *vector_index, int n){
     }
 }
 
+void armadillo_test(double *d, double rho_max, int n){
+    double h = (rho_max)/(n+1);
+    mat Arma_test;
+    Arma_test.zeros(n,n);
+    for (int i=0; i<n; i++){
+        for (int j=0; j<n; j++){
+            if (i==j) {
+                Arma_test(i,j) = d[i];
+            } else if (i==j-1) {
+                Arma_test(i,j) = -1.0/(h*h);
+            } else if (i==j+1) {
+                Arma_test(i,j) = -1.0/(h*h);
+            } else{
+                Arma_test(i,j) = 0;
+            }
+        }
+    }
+    vec eigval = eig_sym(Arma_test);
+    cout << "Lowest 3 eigenvalues of the Armadillo simulation: " << endl;
+    for (int i=0; i<3; i++)
+        cout << eigval(i) << endl;
+}
+
 void write_file(double **R, double *rho, double *V, double lambda
                 , double rho_max, double omega, int n, int *vector_index, string filename){
     // Function that writes eigenvector and rho data to an output file.
@@ -280,6 +306,13 @@ int main(){
     }
     orthogonal_test(R, n);
 
+    // --- Armadillo comparison ---
+    cout << "Using Armadillo to compare the time\n" << endl;
+    start = clock();
+    armadillo_test(d, rho_max, n);
+    finish = clock();
+    cout << "Time elapsed for Armadillo's algorithm: " << ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
+    return 0;
     // --- Interacting case ---
     cout << "Calculating interacting case... \n" << endl;
 
