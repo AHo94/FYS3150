@@ -204,6 +204,7 @@ void Smallest_eigenvector(double **A, double *lambda, int *vector_index, int n){
 }
 
 void armadillo_test(double *d, double rho_max, int n){
+    // Function that tests the algorithm in Armadillo
     double h = (rho_max)/(n+1);
     mat Arma_test;
     Arma_test.zeros(n,n);
@@ -228,7 +229,7 @@ void armadillo_test(double *d, double rho_max, int n){
 
 void write_file(double **R, double *rho, double *V, double lambda
                 , double rho_max, double omega, int n, int *vector_index, string filename){
-    // Function that writes eigenvector and rho data to an output file.
+    // Function that writes data to a file
     ofstream datafile;
     datafile.open(filename);
     int min1 = vector_index[0];
