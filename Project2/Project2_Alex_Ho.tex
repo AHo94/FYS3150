@@ -154,10 +154,10 @@ with rho_max = 10
 
 Max (absolute) value in the test matrix: 1000
 max_diag does give out the largest value
-max_diag result: 1000
+max_diag result: 1000 
 
 Starting Jacobi's algorithm for a single electron
-Time elapsed for non interactive case: 305.675s
+Time elapsed for non interactive case: 400.941s
 Number of iterations: 260506
 Lowest 3 eigenvalues are: 
 2.99981
@@ -166,10 +166,18 @@ Lowest 3 eigenvalues are:
 Possible number of orthogonal vectors: 79800
 Number of orthogonal vectors: 79800
 Number of non-orthogonal vectors: 0
+
+Using Armadillo to compare the time
+
+Lowest 3 eigenvalues of the Armadillo simulation: 
+2.99981
+6.99903
+10.9976
+Time elapsed for Armadillo's algorithm: 0.347s
 \end{lstlisting}
 The eigenvalues, even though they are not within 4 decimal precision, are very close to the exact analytical eigenvalues. We can also see that the number of iterations needed to fully diagonalize the matrix $\mathbf{A}$ (or at least within a tolerance $\epsilon$) was 260506 iterations. The unit test of the orthogonality between the eigenvectors is also shown, where every possibly combination of the scalar product between the eigenvectors are orthogonal (also within a tolerance). The unit test, where the largest matrix element in the test matrix was $-1000$, also worked out.
 
-The time it took for the program to run was roughly 5 minutes. This seems like a very long simulation time, so there is probably something that is not quite optimal in the program, thus causing the program to run for a longer time.
+The time it took for the program to run was roughly 6 minutes. This seems like a very long simulation time, so there is probably something that is not quite optimal in the program, thus causing the program to run for a longer time. Compared to Armadillo's \emph{eig\_sym}, we can clearly see that Armadillo is much faster, using less than a second to finish. The lowest three eigenvalues are identical to our Jacobi's method, so Armadillo's method can serve as a good unit test for the eigenvalues.
 
 Figure 1 shows the the probability distribution of the wave function (or the eigenvectors we calculated), which have been normalized, for different frequencies $\omega$.
 \begin{figure}[hbtp]
@@ -182,6 +190,30 @@ These results are not quite surprising. Let us for a moment imagine that two ele
 For lower frequencies, the electrons will interact less frequently which means, by the analogy above, they are further apart from each other a lot more often. Another way to think of this is that the spring can be drawn over a larger distance before it is forced to contract, thus allowing the electrons to go further out. This can be seen from figure 1 (the blue line with $\omega = 0.01$) where the probability of them being close to each other is very small, while them being further apart is slightly larger.
 
 For higher frequencies, the electrons will interact more frequently. Using the same analogy, we can think of the electrons bouncing back and forth very quickly. The spring is very stiff, so it cannot be stretched that far. Because of this, the electrons are forced to be very close to each other, which is exactly what we see in figure 1. In the case of $\omega = 5$ (the cyan line), we can clearly see that the probability of them being very close to each other is very large, while them being further apart is very low (practically zero).
+
+We also compared the interacting and non-interacting case. From figure (???) we can see that the distance between the electrons are closer in the non-interactive case compared to the interactive case. The electrons will just oscillate back and forth when they are not affected by the Coulomb repulsion, and the max distance between the electrons are determined by the energy. In the interacting case however, the Coulomb repulsion causes the electrons to be pushed further apart. It serves as an extra pushing force between the electrons when they are close to each other.
+
+Let us first think of a new analogy. We want to roll a ball upward a hill. In this case, the ball is the electron and the hill is the potential. If the hill is very steep (stronger potential), the distance the ball travels will be very short before it falls back down. On the other hand, if the hill is not very steep (weaker potential), the ball will be able to travel further away from us before it is forced to roll back. Figure 3 shows an illustration of this.
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=\linewidth]{Potential_illustration2.png}
+\caption{An illustration of two different potentials and how they affect the electron.}
+\end{figure}
+
+
+The probability distribution for the interacting and non-interacting case differ quite significantly for lower frequencies. The potential is not very steep for lower frequencies, so the electrons will not fall back down the potential as quick. With Coulomb repulsion, the electrons will be pushed further apart as the potential will not drag the electrons back fast enough.
+
+With higher frequencies, the probability distributions will be very much alike. Higher frequencies gives a steeper potential, so the electrons will fall back down quicker because they are unable to climb the potential fast enough. Even with Coulomb repulsion, the electrons will not get very far due to the steep potential.
+
+A different, but interesting, result can be seen in figure 2. What we can see here is the tunnelling effect. The red line shows the potential while the green line is the energy of the eigenvector. The energy and potential crosses each other at two points. What this means is that the distance of the electrons is bound between these two points and it cannot be anywhere outside them. However, the probability distribution says that the distance of the electrons can be smaller/larger than these two points. In classical mechanics, this would not be possible, but this is possible in quantum mechanics due to the tunnelling effect.
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=\linewidth]{Plots/Plot_groundstate_tunneling_effect.pdf}
+\caption{A plot showcasing the tunnelling effect. Plot for $\omega = 1$.}
+\end{figure}
+
+
 \section{Conclusion}
 The run time of the Jacobi's method is quite slow, which implies that this algorithm is not exactly the smartest algorithm to use in order to solve eigenvalue problems. This is especially true if we compare Jacobi's method to other algorithms.
 
