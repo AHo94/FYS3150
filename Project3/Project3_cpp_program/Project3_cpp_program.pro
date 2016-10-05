@@ -5,8 +5,10 @@ CONFIG -= qt
 
 SOURCES += main.cpp\
      vec3.cpp \
-    celestials.cpp
+    celestials.cpp \
+    eulermethod.cpp
 
 HEADERS += \
     vec3.h \
-    celestials.h
+    celestials.h \
+    eulermethod.h
