@@ -15,14 +15,18 @@ int main()
     YrstoDays = 1.0/365;  // Converts one year to 365 days
     M_sun = 1.0;
     M_earth = 6*pow(10,24)/(2*pow(10,30));
-    M_jupiter = 0;//1.9*pow(10,27)/(2*pow(10,30));
+    M_jupiter = 1.9*pow(10,27)/(2*pow(10,30));
 
+    // Adding the Sun
     System.createCelestialBody(vec3(0,0,0), vec3(0,0,0), M_sun);
+
+    // Adding Earth
     vec3 Earthpos (9.890331046925951E-01, 1.768079890757788E-01, -1.738715302893284E-04);
     vec3 Earthvel (-3.268395786841218E-03, 1.689265025904021E-02, -9.889230545039174E-07);
     Earthvel /= YrstoDays;
     System.createCelestialBody(Earthpos, Earthvel, M_earth);
 
+    // Adding Jupiter
     vec3 Jupiterpos (-5.433468170028908E+00, -3.819061221110369E-01, 1.231004384238452E-01);
     vec3 Jupitervel (4.425651679847022E-04, -7.171108917491057E-03, 1.992744446163222E-05);
     Jupitervel /= YrstoDays;

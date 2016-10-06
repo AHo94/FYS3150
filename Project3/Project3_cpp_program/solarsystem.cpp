@@ -46,8 +46,8 @@ void SolarSystem::CalculateAccelerationAndEnergy(){
             double dR = dRvector.length();
 
             vec3 factor = -four_pi2*dRvector/(dR*dR*dR);
-            body1.acceleration = factor*body2.mass;
-            body2.acceleration = factor*body1.mass;
+            body1.acceleration += factor*body2.mass;
+            body2.acceleration += factor*body1.mass;
 
             m_pot_energy -= four_pi2*body1.mass*body2.mass;
         }
@@ -56,7 +56,7 @@ void SolarSystem::CalculateAccelerationAndEnergy(){
     }
     new_tot_energy = m_kin_energy + m_pot_energy;   // New total energy
     if (old_tot_energy != 0){
-        if (fabs(new_tot_energy - old_tot_energy) > 1e-6){
+        if (fabs(new_tot_energy - old_tot_energy) > 1e-4){
             cout << fabs(new_tot_energy - old_tot_energy) << endl;
             //cout << "Total energy not conserved, stopping program" << endl;
             //terminate();

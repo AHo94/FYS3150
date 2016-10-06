@@ -32,12 +32,13 @@ void ODEsolvers::Verlet(SolarSystem &system){
     // Solving Verlet's method
     system.CalculateAccelerationAndEnergy();
 
-    double m2_2 = m_dt*m_dt/2.0;
+    double dt2_2 = m_dt*m_dt/2.0;
+    double dt_2 = m_dt/2.0;
 
     for (Celestials &body : system.bodies()){
-        body.position += body.velocity*m_dt + m2_2*body.acceleration;
+        body.position += body.velocity*m_dt + dt2_2*body.acceleration;
         vec3 old_acc = body.acceleration;
         system.CalculateAccelerationAndEnergy();
-        body.velocity += (m_dt/2.0)*(body.acceleration + old_acc);
+        body.velocity += dt_2*(body.acceleration + old_acc);
     }
 }
