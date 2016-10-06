@@ -1,7 +1,6 @@
 #ifndef ODESOLVERS_H
 #define ODESOLVERS_H
 
-
 class ODEsolvers
 {
 public:

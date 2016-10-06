@@ -1,9 +1,9 @@
 #ifndef SOLARSYSTEM_H
 #define SOLARSYSTEM_H
 #include "celestials.h"
+#include "vec3.h"
 #include <vector>
 #include <cmath>
-#include "vec3.h"
 #include <string>
 #include <fstream>
 class SolarSystem

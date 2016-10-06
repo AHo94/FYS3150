@@ -1,6 +1,5 @@
 #include "odesolvers.h"
 #include "solarsystem.h"
-#include <iostream>
 
 ODEsolvers::ODEsolvers(double dt):
 m_dt(dt)
