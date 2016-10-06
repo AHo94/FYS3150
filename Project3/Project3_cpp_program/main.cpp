@@ -32,7 +32,7 @@ int main()
     int NumTimesteps = 1000;
     ODEsolvers solver(dt);
     for (int step=0; step<NumTimesteps; step++){
-        System.write_file("TESTINGFILE.txt");
+        System.write_file("Celestial_positions.txt");
         //solver.Euler_step(System);
         //solver.EulerCromer(System);
         solver.Verlet(System);
