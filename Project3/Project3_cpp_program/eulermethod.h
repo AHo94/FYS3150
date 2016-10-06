@@ -1,12 +1,12 @@
 #ifndef EULERMETHOD_H
 #define EULERMETHOD_H
 
-
 class eulermethod
 {
 public:
-    eulermethod();
-    void solve_euler_2D(double **velcoity, double **position, int N);
+    eulermethod(double dt);
+    double m_dt;
+    void Euler3D_step(class SolarSystem &system);
 };
 
 #endif // EULERMETHOD_H
