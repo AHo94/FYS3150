@@ -29,7 +29,7 @@ DYNAMICAL CHARACTERISTICS:
  
  
 *******************************************************************************
-Ephemeris / WWW_USER Mon Oct  3 12:07:02 2016 Pasadena, USA      / Horizons    
+Ephemeris / WWW_USER Thu Oct  6 02:43:02 2016 Pasadena, USA      / Horizons    
 *******************************************************************************
 Target body name: Earth (399)                     {source: DE431mx}
 Center body name: Solar System Barycenter (0)     {source: DE431mx}
@@ -42,26 +42,23 @@ Step-size       : 1440 minutes
 Center geodetic : 0.00000000,0.00000000,0.0000000 {E-lon(deg),Lat(deg),Alt(km)}
 Center cylindric: 0.00000000,0.00000000,0.0000000 {E-lon(deg),Dxy(km),Dz(km)}
 Center radii    : (undefined)                                                  
-Output units    : KM-S                                                         
+Output units    : AU-D                                                         
 Output type     : GEOMETRIC cartesian states
-Output format   : 3 (position, velocity, LT, range, range-rate)
+Output format   : 2 (position and velocity)
 Reference frame : ICRF/J2000.0                                                 
 Coordinate systm: Ecliptic and Mean Equinox of Reference Epoch                 
 *******************************************************************************
 JDTDB
    X     Y     Z
    VX    VY    VZ
-   LT    RG    RR
 *******************************************************************************
 $$SOE
 2457664.500000000 = A.D. 2016-Oct-03 00:00:00.0000 TDB 
-   1.479572465138224E+08  2.645009868848537E+07 -2.601081070663407E+04
-  -5.659086230512699E+00  2.924889478278030E+01 -1.712277583795441E-03
-   5.013564357017614E+02  1.503028781931500E+08 -4.235888170932909E-01
+   9.890331046925951E-01  1.768079890757788E-01 -1.738715302893284E-04
+  -3.268395786841218E-03  1.689265025904021E-02 -9.889230545039174E-07
 2457665.500000000 = A.D. 2016-Oct-04 00:00:00.0000 TDB 
-   1.474464566846316E+08  2.897317981106967E+07 -2.615029695644416E+04
-  -6.164478448843726E+00  2.915424096033672E+01 -1.512074118327433E-03
-   5.012337858437194E+02  1.502661086907342E+08 -4.275042457026570E-01
+   9.856186855782008E-01  1.936737446562445E-01 -1.748039382785424E-04
+  -3.560284217201080E-03  1.683798310220931E-02 -8.732958778903947E-07
 $$EOE
 *******************************************************************************
 Coordinate system description:
@@ -76,18 +73,15 @@ Coordinate system description:
     Z-axis  : perpendicular to the xy-plane in the directional (+ or -) sense
               of Earth's north pole at the reference epoch.
 
-  Symbol meaning:
+  Symbol meaning [1 au= 149597870.700 km, 1 day= 86400.0 s]:
 
     JDTDB    Julian Day Number, Barycentric Dynamical Time
-      X      X-component of position vector (km)                               
-      Y      Y-component of position vector (km)                               
-      Z      Z-component of position vector (km)                               
-      VX     X-component of velocity vector (km/sec)                           
-      VY     Y-component of velocity vector (km/sec)                           
-      VZ     Z-component of velocity vector (km/sec)                           
-      LT     One-way down-leg Newtonian light-time (sec)                       
-      RG     Range; distance from coordinate center (km)                       
-      RR     Range-rate; radial velocity wrt coord. center (km/sec)            
+      X      X-component of position vector (au)                               
+      Y      Y-component of position vector (au)                               
+      Z      Z-component of position vector (au)                               
+      VX     X-component of velocity vector (au/day)                           
+      VY     Y-component of velocity vector (au/day)                           
+      VZ     Z-component of velocity vector (au/day)                           
 
 Geometric states/elements have no aberrations applied.
 
