@@ -57,8 +57,8 @@ void SolarSystem::CalculateAccelerationAndEnergy(){
     new_tot_energy = m_kin_energy + m_pot_energy;   // New total energy
     if (old_tot_energy != 0){
         if (fabs(new_tot_energy - old_tot_energy) > 1e-4){
-            cout << fabs(new_tot_energy - old_tot_energy) << endl;
-            //cout << "Total energy not conserved, stopping program" << endl;
+            //cout << fabs(new_tot_energy - old_tot_energy) << endl;
+            cout << "Total energy not conserved, stopping program" << endl;
             //terminate();
         }
     }
