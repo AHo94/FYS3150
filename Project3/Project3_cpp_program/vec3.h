@@ -7,14 +7,18 @@ class vec3
 {
 public:
     vec3();
-    vec3(const vec3&) = default;
-    vec3(vec3&&) = default;
     vec3(double x, double y, double z);
+    double lengthSquared();
+    double length();
 
-    // Some vector properties
-    double dot(vec3 otherVector);   // Dot product/scalar product
-    vec3 cross(vec3 otherVector);   // Cross product
+    // Actions
+    void zeros();
+    vec3 cross(vec3 otherVector);
+    double dot(vec3 otherVector);
+    void normalize();
+    vec3 normalized();
 
+    // Getters and setters
     double x() const { return components[0]; }
     double y() const { return components[1]; }
     double z() const { return components[2]; }
@@ -22,25 +26,22 @@ public:
     void setY(double y) { components[1] = y; }
     void setZ(double z) { components[2] = z; }
 
-    double &operator()(int index){return components[index];}    // Allows access to vector(0)
-    double &operator[](int index){return components[index];}    // Allows access to vector[0]
-    double lengthSquared();     // r^2 = x^2 + y^2 + z^2
-    double length();            // r = sqrt(x^2 + y^2 + z^2), requires more computing time
-
-    vec3 &operator-=(double rhs);  // Subtraction with a scalar
-    vec3 &operator-=(vec3 rhs);    // Subtract componentwise
-    vec3 &operator+=(double rhs);  // Addition with a scalar
-    vec3 &operator+=(vec3 rhs);    // Addition componentwise
-    vec3 &operator*=(double rhs);  // Multiplication with a scalar
-    vec3 &operator*=(vec3 rhs);    // Multiplication componentwise
-    vec3 &operator/=(double rhs);  // Dividing with a scalar
-    vec3 &operator/=(vec3 rhs);    // Dividing componentwise
-
-
-    // Implementing printing
+    // Convenience functions
     void print();
     void print(std::string name);
-    friend std::ostream& operator << (std::ostream& os, const vec3& myVector);   // Allows cout << vector << endl;
+    friend std::ostream& operator<<(std::ostream& os, const vec3& myVector); // Allows cout << myVector << endl;
+
+    // Operators
+    double &operator()(int index) { return components[index]; } // Allows access like myVector(0)
+    double &operator[](int index) { return components[index]; } // Allows access like myVector[0]
+    vec3 &operator+=(double rhs); // Componentwise addition with scalar
+    vec3 &operator+=(vec3 rhs);   // Componentwise addition with vector
+    vec3 &operator*=(double rhs); // Componentwise multiplication with scalar
+    vec3 &operator*=(vec3 rhs);   // Componentwise multiplicationwith vector
+    vec3 &operator-=(double rhs); // Componentwise subtraction with scalar
+    vec3 &operator-=(vec3 rhs);   // Componentwise subtraction with vector
+    vec3 &operator/=(double rhs); // Componentwise division with scalar
+    vec3 &operator/=(vec3 rhs);   // Componentwise division with vector
 private:
     double components[3];
 };
