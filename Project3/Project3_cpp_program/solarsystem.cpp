@@ -52,7 +52,7 @@ void SolarSystem::CalculateAccelerationAndEnergy(){
             m_pot_energy -= four_pi2*body1.mass*body2.mass;
         }
     m_kin_energy = 0.5*body1.mass*body1.velocity.dot(body1.velocity);
-    angular_momentum = body1.mass*(body1.position.cross(body1.velocity));
+    //angular_momentum = body1.mass*(body1.position.cross(body1.velocity));
     }
     new_tot_energy = m_kin_energy + m_pot_energy;   // New total energy
     if (old_tot_energy != 0){
