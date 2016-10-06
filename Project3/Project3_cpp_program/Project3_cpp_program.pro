@@ -6,9 +6,13 @@ CONFIG -= qt
 SOURCES += main.cpp\
      vec3.cpp \
     celestials.cpp \
-    eulermethod.cpp
+    eulermethod.cpp \
+    solarsystem.cpp \
+    odesolvers.cpp
 
 HEADERS += \
     vec3.h \
     celestials.h \
-    eulermethod.h
+    eulermethod.h \
+    solarsystem.h \
+    odesolvers.h
