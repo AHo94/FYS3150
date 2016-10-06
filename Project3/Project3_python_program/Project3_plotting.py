@@ -5,8 +5,7 @@ file_directory = 'C:/Users/Alex/Documents/FYS3150/FYS3150_projects/Project3/buil
 
 class Plotter():
 	def __init__(self):
-		self.filename = "TESTINGFILE.txt"
-		self.N = 0
+		self.filename = "Celestial_positions.txt"
 		self.read_data(self.filename)
 
 	def read_data(self, filename_open):
