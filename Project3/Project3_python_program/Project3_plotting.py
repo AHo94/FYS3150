@@ -23,16 +23,24 @@ class Plotter():
 		self.Earth_pos = np.zeros((3,self.N))
 		#if NumberofObjects <= 3:
 		self.Jupiter_pos = np.zeros((3, self.N))
+		self.Mercury_pos = np.zeros((3, self.N))
+		self.Mars_pos = np.zeros((3, self.N))
+		self.Saturn_pos = np.zeros((3, self.N))
+		self.Uranus_pos = np.zeros((3, self.N))
+		self.Neptune_pos = np.zeros((3, self.N))
 
 		for i in range(0,3):
 			for j in range(0,self.N):
 				self.Sun_pos[i][j] = data[j][i]
 				self.Earth_pos[i][j] = data[j][i+3]
 				self.Jupiter_pos[i][j] = data[j][i+6]
+				self.Mercury_pos[i][j] = data[j][i+9]
+				self.Mars_pos[i][j] = data[j][i+12]
+				self.Saturn_pos[i][j] = data[j][i+15]
+				self.Uranus_pos[i][j] = data[j][i+18]
+				self.Neptune_pos[i][j] = data[j][i+21]
 
-
-
-	def plotting(self):
+	def Earth_Jupiter_test(self):			
 		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
 		plt.hold("on")
 		plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
@@ -42,9 +50,24 @@ class Plotter():
 		plt.legend(['Earth', 'Sun', 'Jupiter'])
 		plt.show()
 
+	def plotting_2D(self):
+		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
+		plt.hold("on")
+		plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
+		plt.plot(self.Jupiter_pos[0][:], self.Jupiter_pos[1][:])
+		plt.plot(self.Mercury_pos[0][:], self.Mercury_pos[1][:])
+		plt.plot(self.Mars_pos[0][:], self.Mars_pos[1][:])
+		plt.plot(self.Saturn_pos[0][:], self.Saturn_pos[1][:])
+		plt.plot(self.Uranus_pos[0][:], self.Uranus_pos[1][:])
+		plt.plot(self.Neptune_pos[0][:], self.Neptune_pos[1][:])
+		plt.xlabel('x - [AU]')
+		plt.ylabel('y - [AU]')
+		plt.legend(['Earth', 'Sun', 'Jupiter', 'Mercury', 'Mars', 'Saturn', 'Uranus', 'Neptune'])
+		plt.show()
+
 	def animation(self):
 		# Animates 
 		a = 3
 
 solve = Plotter()
-solve.plotting()
+solve.plotting_2D()
