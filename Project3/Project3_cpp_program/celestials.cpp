@@ -1,26 +1,16 @@
 #include "celestials.h"
 
-Celestials::Celestials()
+Celestials::Celestials(vec3 pos, vec3 vel, double in_mass)
 {
-    mass = 0;
-    distance = 0;
+    position = pos;
+    velocity = vel;
+    mass = in_mass;
 }
 
-void Celestials::set_properties(double M, double R)
+Celestials::Celestials(double x, double y, double z, double vx, double vy, double vz, double in_mass)
 {
-    // Initializes the properties of the object
-    mass = M;
-    distance = R;
+    position = vec3(x,y,z);
+    velocity = vec3(vx, vy, vz);
+    mass = in_mass;
 }
 
-double Celestials::get_mass(void)
-{
-    // Returns the mass of the object
-    return mass;
-}
-
-double Celestials::get_distance(void)
-{
-    // Returns the distance to from the object to the Sun
-    return distance;
-}

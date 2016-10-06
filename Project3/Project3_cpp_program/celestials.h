@@ -1,17 +1,17 @@
 #ifndef CELESTIALS_H
 #define CELESTIALS_H
-
+#include <vec3.h>
 
 class Celestials
 {
 public:
-    Celestials();
-    void set_properties(double M, double R);
-    double get_mass(void);
-    double get_distance(void);
-private:
-    double mass;    // Mass of the celestial object
-    double distance;    // Distance from the object to the Sun
+    vec3 position;
+    vec3 velocity;
+    vec3 acceleration;
+    double mass;
+
+    Celestials(vec3 position, vec3 velocity, double mass);
+    Celestials(double x, double y, double z, double vx, double vy, double vz, double mass);
 };
 
 #endif // CELESTIALS_H
