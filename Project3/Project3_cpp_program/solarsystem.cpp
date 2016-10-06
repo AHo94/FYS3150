@@ -26,6 +26,7 @@ void SolarSystem::CalculateAccelerationAndEnergy(){
      * Will also calculate the total energy of the system.
      * An if test will be used to see if the total energy of the system is conserved.
      * If total energy is not conserved, the program stops.
+     * Also checks if the angular momentum is conserved.
      */
     m_kin_energy = 0;
     m_pot_energy = 0;
@@ -50,7 +51,8 @@ void SolarSystem::CalculateAccelerationAndEnergy(){
 
             m_pot_energy -= four_pi2*body1.mass*body2.mass;
         }
-    m_kin_energy += 0.5*body1.mass*body1.velocity.dot(body1.velocity);
+    m_kin_energy = 0.5*body1.mass*body1.velocity.dot(body1.velocity);
+    angular_momentum = body1.mass*(body1.position.cross(body1.velocity));
     }
     new_tot_energy = m_kin_energy + m_pot_energy;   // New total energy
     if (old_tot_energy != 0){
@@ -62,9 +64,7 @@ void SolarSystem::CalculateAccelerationAndEnergy(){
 }
 
 void SolarSystem::write_file(string filename){
-    /*
-     * Writes the positions of the celestial bodies to a file.
-     */
+    // Writes the positions of the celestial bodies to a file.
     if(!m_file.good()) {
         m_file.open(filename.c_str(), ofstream::out);
         if(!m_file.good()) {
