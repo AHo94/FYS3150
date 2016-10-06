@@ -62,8 +62,8 @@ int main()
     System.createCelestialBody(Uranuspos, Uranusvel, M_uranus);
 
     // Adding Neptune
-    vec3 Neptunepos (9.393096450667111E+00, -3.182064102580347E+01, 6.879522592437006E-01);
-    vec3 Neptunevel (3.065499934972441E-03, 2.293283900283695E-04, -9.119583887771224E-04);
+    vec3 Neptunepos (2.825072704568992E+01, -9.952093577677799E+00, -4.461218547546795E-01);
+    vec3 Neptunevel (1.022588623946866E-03,  2.979574756810357E-03, -8.514325155122657E-05);
     Neptunevel /= YrstoDays;
     System.createCelestialBody(Neptunepos, Neptunevel, M_neptune);
 
