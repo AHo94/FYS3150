@@ -41,8 +41,8 @@ class Plotter():
 				self.Neptune_pos[i][j] = data[j][i+21]
 
 	def Earth_Jupiter_test(self):	
-		fig = figure()
-		if savefile:
+		fig = plt.figure()
+		if self.savefile:
 			fig.savefig('../Plots/'+'Earth_Jupiter_test.pdf')
 		else:		
 			plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
@@ -56,8 +56,8 @@ class Plotter():
 			plt.show()
 
 	def plotting_2D(self):
-		fig = figure()
-		if savefile:
+		fig = plt.figure()
+		if self.savefile:
 			fig.savefig('../Plots/'+'All_planets_plot.pdf')
 		else:
 			plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
@@ -79,5 +79,5 @@ class Plotter():
 		# Animates 
 		a = 3
 
-solve = Plotter()
-solve.plotting_2D(False)
+solve = Plotter(False)
+solve.plotting_2D()
