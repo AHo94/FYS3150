@@ -24,6 +24,7 @@ class Plotter():
 		self.Earth_pos = np.zeros((3,self.N))
 		self.Jupiter_pos = np.zeros((3, self.N))
 		self.Mercury_pos = np.zeros((3, self.N))
+		self.Venus_pos = np.zeros((3, self.N))
 		self.Mars_pos = np.zeros((3, self.N))
 		self.Saturn_pos = np.zeros((3, self.N))
 		self.Uranus_pos = np.zeros((3, self.N))
@@ -36,12 +37,13 @@ class Plotter():
 				self.Earth_pos[i][j] = data[j][i+3]
 				self.Jupiter_pos[i][j] = data[j][i+6]
 				self.Mercury_pos[i][j] = data[j][i+9]
-				self.Mars_pos[i][j] = data[j][i+12]
-				self.Saturn_pos[i][j] = data[j][i+15]
-				self.Uranus_pos[i][j] = data[j][i+18]
-				self.Neptune_pos[i][j] = data[j][i+21]
-				self.Pluto_pos[i][j] = data[j][i+24]
-
+				self.Venus_pos[i][j] = data[j][i+12]
+				self.Mars_pos[i][j] = data[j][i+15]
+				self.Saturn_pos[i][j] = data[j][i+18]
+				self.Uranus_pos[i][j] = data[j][i+21]
+				self.Neptune_pos[i][j] = data[j][i+24]
+				self.Pluto_pos[i][j] = data[j][i+27]
+				
 	def Earth_Jupiter_test(self):	
 		fig = plt.figure()
 		if self.savefile:
@@ -67,6 +69,7 @@ class Plotter():
 			plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
 			plt.plot(self.Jupiter_pos[0][:], self.Jupiter_pos[1][:])
 			plt.plot(self.Mercury_pos[0][:], self.Mercury_pos[1][:])
+			plt.plot(self.Venus_pos[0][:], self.Venus_pos[1][:])
 			plt.plot(self.Mars_pos[0][:], self.Mars_pos[1][:])
 			plt.plot(self.Saturn_pos[0][:], self.Saturn_pos[1][:])
 			plt.plot(self.Uranus_pos[0][:], self.Uranus_pos[1][:])
@@ -74,7 +77,7 @@ class Plotter():
 			plt.plot(self.Pluto_pos[0][:], self.Pluto_pos[1][:])
 			plt.xlabel('x - [AU]')
 			plt.ylabel('y - [AU]')
-			plt.legend(['Earth', 'Sun', 'Jupiter', 'Mercury', 'Mars', 'Saturn', 'Uranus', 'Neptune', 'Pluto'])
+			plt.legend(['Earth', 'Sun', 'Jupiter', 'Mercury', 'Venus', 'Mars', 'Saturn', 'Uranus', 'Neptune', 'Pluto'])
 			plt.title('Orbits of the planets. Timescale in years.')
 			plt.show()
 
