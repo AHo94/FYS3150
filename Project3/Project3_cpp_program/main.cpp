@@ -43,8 +43,7 @@ void set_initial_cond(vec3 &pos, vec3 &vel, string planet_name){
 }
 
 int main(){
-
-    SolarSystem System;
+    SolarSystem System;     // Initializes the solar system
     // Masses of the celestial bodies in the solar system
     double M_sun, M_earth, M_jupiter, M_mercury, M_venus, M_mars, M_saturn, M_uranus, M_neptune, M_pluto;
     M_sun = 1.0;
@@ -57,7 +56,6 @@ int main(){
     M_uranus = 8.8*pow(10,25)/(2*pow(10,30));
     M_neptune = 1.03*pow(10,26)/(2*pow(10,30));
     M_pluto = 1.31*pow(10,22)/(2*pow(10,30));
-
 
     // Adding the Sun
     System.createCelestialBody(vec3(0,0,0), vec3(0,0,0), M_sun);
@@ -108,10 +106,10 @@ int main(){
     System.createCelestialBody(Plutopos, Plutovel, M_pluto);
 
     // Solving system
-    double dt = 0.001;
-    int NumTimesteps = 10000;
+    double dt = 0.01;
+    int NumTimesteps = 25000;
     ODEsolvers solver(dt);
-    int plot_counter = 10;
+    int plot_counter = 25;
     for (int step=0; step<NumTimesteps; step++){
         if (plot_counter == 25){
             // Saves every 25 steps.
@@ -123,7 +121,6 @@ int main(){
         solver.Verlet(System);
         plot_counter += 1;
     }
-
 
     return 0;
 }
