@@ -1,12 +1,30 @@
 #include <iostream>
 #include <cmath>    // Math library
+#include <string>
+#include <fstream>
 #include "vec3.h"
 #include "celestials.h"
 #include "solarsystem.h"
 #include "odesolvers.h"
 using namespace std;
 
+void set_initial_cond(vec3 pos, vec3 vel, string data_filename){
+    ifstream infile (data_filename);
+    //string line;
+
+    float x,y,z;
+    for (string line; getline(infile, line);){
+        istringstream in(line);
+        cout << line << endl;
+    }
+}
+
 int main(){
+    vec3 A(0,0,0);
+    vec3 B(0,0,0);
+    set_initial_cond(A, B, "../NASA_data/earth_data.txt");
+    return 0;
+
     SolarSystem System;
     // Masses of the celestial bodies in the solar system
     double M_sun, M_earth, M_jupiter, M_mercury, M_mars, M_saturn, M_uranus, M_neptune, M_pluto, YrstoDays;
@@ -72,12 +90,13 @@ int main(){
     Plutovel /= YrstoDays;
     System.createCelestialBody(Plutopos, Plutovel, M_pluto);
 
+    // Solving system
     double dt = 0.01;
-    int NumTimesteps = 20000;
+    int NumTimesteps = 25000;
     ODEsolvers solver(dt);
     int plot_counter = 10;
     for (int step=0; step<NumTimesteps; step++){
-        if (plot_counter == 10){
+        if (plot_counter == 25){
             // Saves every 10 steps.
             System.write_file("Celestial_positions.txt");
             plot_counter = 0;
