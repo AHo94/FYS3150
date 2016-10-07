@@ -10,6 +10,11 @@
 using namespace std;
 
 void set_initial_cond(vec3 &pos, vec3 &vel, string planet_name){
+    /*
+     * Function that reads data from NASA and sets the coordinate/velocities as initial conditions.
+     * Datafile is assumed to only contain positions in the first row and velocities in the second row.
+     * Source of data: http://ssd.jpl.nasa.gov/horizons.cgi
+     */
     string data_filename = "../NASA_data/";
     data_filename.append(planet_name);
     data_filename.append("_data.txt");
@@ -38,16 +43,6 @@ void set_initial_cond(vec3 &pos, vec3 &vel, string planet_name){
 }
 
 int main(){
-    /*
-    vec3 A(0,0,0);
-    vec3 B(0,0,0);
-    set_initial_cond(A, B, "earth");
-    A.print("A");
-    B.print("B");
-    string filename = "../NASA_data/";
-    cout << filename.append("earth_data.txt") << endl;
-    return 0;
-    */
 
     SolarSystem System;
     // Masses of the celestial bodies in the solar system
@@ -67,38 +62,47 @@ int main(){
     // Adding the Sun
     System.createCelestialBody(vec3(0,0,0), vec3(0,0,0), M_sun);
 
+    // Adding Earth
     vec3 Earthpos, Earthvel;
     set_initial_cond(Earthpos, Earthvel, "earth");
     System.createCelestialBody(Earthpos, Earthvel, M_earth);
 
+    // Adding Jupiter
     vec3 Jupiterpos, Jupitervel;
     set_initial_cond(Jupiterpos, Jupitervel, "jupiter");
     System.createCelestialBody(Jupiterpos, Jupitervel, M_jupiter);
 
+    // Adding Mercury
     vec3 Mercurypos, Mercuryvel;
     set_initial_cond(Mercurypos, Mercuryvel, "mercury");
     System.createCelestialBody(Mercurypos, Mercuryvel, M_mercury);
 
+    // Adding Venus
     vec3 Venuspos, Venusvel;
     set_initial_cond(Venuspos, Venusvel, "venus");
     System.createCelestialBody(Venuspos, Venusvel, M_venus);
 
+    // Adding Mars
     vec3 Marspos, Marsvel;
     set_initial_cond(Marspos, Marsvel, "mars");
     System.createCelestialBody(Marspos, Marsvel, M_mars);
 
+    // Adding Saturn
     vec3 Saturnpos, Saturnvel;
     set_initial_cond(Saturnpos, Saturnvel, "saturn");
     System.createCelestialBody(Saturnpos, Saturnvel, M_saturn);
 
+    // Adding Uranus
     vec3 Uranuspos, Uranusvel;
     set_initial_cond(Uranuspos, Uranusvel, "uranus");
     System.createCelestialBody(Uranuspos, Uranusvel, M_uranus);
 
+    // Adding Neptune
     vec3 Neptunepos, Neptunevel;
     set_initial_cond(Neptunepos, Neptunevel, "neptune");
     System.createCelestialBody(Neptunepos, Neptunevel, M_neptune);
 
+    // Adding pluto
     vec3 Plutopos, Plutovel;
     set_initial_cond(Plutopos, Plutovel, "pluto");
     System.createCelestialBody(Plutopos, Plutovel, M_pluto);
@@ -159,7 +163,7 @@ int main(){
     int plot_counter = 10;
     for (int step=0; step<NumTimesteps; step++){
         if (plot_counter == 25){
-            // Saves every 10 steps.
+            // Saves every 25 steps.
             System.write_file("Celestial_positions.txt");
             plot_counter = 0;
         }
@@ -169,38 +173,6 @@ int main(){
         plot_counter += 1;
     }
 
-
-    //Celestials Earth(1,0,0,0,0,1);
-    /*
-    string earth_file = "../NASA_data/horizons_results.txt";
-
-    std::ifstream infile(earth_file);
-    std::string line;
-    std::string delimeter = "  ";
-    char c;
-    int counter = 0;
-    while (std::getline(infile, line)){
-        std::stringstream ss(line);
-
-        int n;
-        std::vector<int> v;
-        while (iss > n);
-        {
-            v.push_back(n);
-        }
-
-        if (line == "$$SOE"){
-            counter += 1;
-        }
-        if (line == "$$EOE"){
-            counter -= 1;
-        }
-        if (counter >= 1 && line != "$$SOE"){
-            cout << std:: line << endl;
-        }
-
-    }
-    */
 
     return 0;
 }
