@@ -6,12 +6,10 @@
 #include "odesolvers.h"
 using namespace std;
 
-int main()
-{
-    // Masses of the celestial bodies in the solar system
-
+int main(){
     SolarSystem System;
-    double M_sun, M_earth, M_jupiter, M_mercury, M_mars, M_saturn, M_uranus, M_neptune, YrstoDays;
+    // Masses of the celestial bodies in the solar system
+    double M_sun, M_earth, M_jupiter, M_mercury, M_mars, M_saturn, M_uranus, M_neptune, M_pluto, YrstoDays;
     YrstoDays = 1.0/365;  // Converts one year to 365 days
     M_sun = 1.0;
     M_earth = 6*pow(10,24)/(2*pow(10,30));
@@ -21,6 +19,7 @@ int main()
     M_saturn = 5.5*pow(10,26)/(2*pow(10,30));
     M_uranus = 8.8*pow(10,25)/(2*pow(10,30));
     M_neptune = 1.03*pow(10,26)/(2*pow(10,30));
+    M_pluto = 1.31*pow(10,22)/(2*pow(10,30));
 
     // Adding the Sun
     System.createCelestialBody(vec3(0,0,0), vec3(0,0,0), M_sun);
@@ -67,14 +66,26 @@ int main()
     Neptunevel /= YrstoDays;
     System.createCelestialBody(Neptunepos, Neptunevel, M_neptune);
 
+    // Adding Pluto
+    vec3 Plutopos (9.393096450667111E+00, -3.182064102580347E+01, 6.879522592437006E-01);
+    vec3 Plutovel (3.065499934972441E-03, 2.293283900283695E-04, -9.119583887771224E-04);
+    Plutovel /= YrstoDays;
+    System.createCelestialBody(Plutopos, Plutovel, M_pluto);
+
     double dt = 0.01;
-    int NumTimesteps = 30000;
+    int NumTimesteps = 20000;
     ODEsolvers solver(dt);
+    int plot_counter = 10;
     for (int step=0; step<NumTimesteps; step++){
-        System.write_file("Celestial_positions.txt");
+        if (plot_counter == 10){
+            // Saves every 10 steps.
+            System.write_file("Celestial_positions.txt");
+            plot_counter = 0;
+        }
         //solver.Euler_step(System);
         //solver.EulerCromer(System);
         solver.Verlet(System);
+        plot_counter += 1;
     }
 
 
