@@ -2,46 +2,108 @@
 #include <cmath>    // Math library
 #include <string>
 #include <fstream>
+#include <sstream>
 #include "vec3.h"
 #include "celestials.h"
 #include "solarsystem.h"
 #include "odesolvers.h"
 using namespace std;
 
-void set_initial_cond(vec3 pos, vec3 vel, string data_filename){
+void set_initial_cond(vec3 &pos, vec3 &vel, string planet_name){
+    string data_filename = "../NASA_data/";
+    data_filename.append(planet_name);
+    data_filename.append("_data.txt");
     ifstream infile (data_filename);
-    //string line;
-
-    float x,y,z;
-    for (string line; getline(infile, line);){
-        istringstream in(line);
-        cout << line << endl;
+    string line;
+    double YrstoDays = 1.0/365.0;   // Converts from years to days
+    double x, y, z;
+    int counter = 0;
+    while (getline(infile, line)){
+        istringstream ss(line);
+        ss >> x >> y >> z;
+        if (counter == 0)
+        {
+            pos(0) = x;
+            pos(1) = y;
+            pos(2) = z;
+        }
+        else if (counter == 1){
+            vel(0) = x;
+            vel(1) = y;
+            vel(2) = z;
+        }
+        counter += 1;
     }
+    vel /= YrstoDays;   // Converts velocity from AU/days to AU/yrs
 }
 
 int main(){
+    /*
     vec3 A(0,0,0);
     vec3 B(0,0,0);
-    set_initial_cond(A, B, "../NASA_data/earth_data.txt");
+    set_initial_cond(A, B, "earth");
+    A.print("A");
+    B.print("B");
+    string filename = "../NASA_data/";
+    cout << filename.append("earth_data.txt") << endl;
     return 0;
+    */
 
     SolarSystem System;
     // Masses of the celestial bodies in the solar system
-    double M_sun, M_earth, M_jupiter, M_mercury, M_mars, M_saturn, M_uranus, M_neptune, M_pluto, YrstoDays;
-    YrstoDays = 1.0/365;  // Converts one year to 365 days
+    double M_sun, M_earth, M_jupiter, M_mercury, M_venus, M_mars, M_saturn, M_uranus, M_neptune, M_pluto;
     M_sun = 1.0;
     M_earth = 6*pow(10,24)/(2*pow(10,30));
     M_jupiter = 1.9*pow(10,27)/(2*pow(10,30));
     M_mercury = 2.4*pow(10,23)/(2*pow(10,30));
+    M_venus = 4.9*pow(10,24)/(2*pow(10,30));
     M_mars = 6.6*pow(10,23)/(2*pow(10,30));
     M_saturn = 5.5*pow(10,26)/(2*pow(10,30));
     M_uranus = 8.8*pow(10,25)/(2*pow(10,30));
     M_neptune = 1.03*pow(10,26)/(2*pow(10,30));
     M_pluto = 1.31*pow(10,22)/(2*pow(10,30));
 
+
     // Adding the Sun
     System.createCelestialBody(vec3(0,0,0), vec3(0,0,0), M_sun);
 
+    vec3 Earthpos, Earthvel;
+    set_initial_cond(Earthpos, Earthvel, "earth");
+    System.createCelestialBody(Earthpos, Earthvel, M_earth);
+
+    vec3 Jupiterpos, Jupitervel;
+    set_initial_cond(Jupiterpos, Jupitervel, "jupiter");
+    System.createCelestialBody(Jupiterpos, Jupitervel, M_jupiter);
+
+    vec3 Mercurypos, Mercuryvel;
+    set_initial_cond(Mercurypos, Mercuryvel, "mercury");
+    System.createCelestialBody(Mercurypos, Mercuryvel, M_mercury);
+
+    vec3 Venuspos, Venusvel;
+    set_initial_cond(Venuspos, Venusvel, "venus");
+    System.createCelestialBody(Venuspos, Venusvel, M_venus);
+
+    vec3 Marspos, Marsvel;
+    set_initial_cond(Marspos, Marsvel, "mars");
+    System.createCelestialBody(Marspos, Marsvel, M_mars);
+
+    vec3 Saturnpos, Saturnvel;
+    set_initial_cond(Saturnpos, Saturnvel, "saturn");
+    System.createCelestialBody(Saturnpos, Saturnvel, M_saturn);
+
+    vec3 Uranuspos, Uranusvel;
+    set_initial_cond(Uranuspos, Uranusvel, "uranus");
+    System.createCelestialBody(Uranuspos, Uranusvel, M_uranus);
+
+    vec3 Neptunepos, Neptunevel;
+    set_initial_cond(Neptunepos, Neptunevel, "neptune");
+    System.createCelestialBody(Neptunepos, Neptunevel, M_neptune);
+
+    vec3 Plutopos, Plutovel;
+    set_initial_cond(Plutopos, Plutovel, "pluto");
+    System.createCelestialBody(Plutopos, Plutovel, M_pluto);
+
+    /*
     // Adding Earth
     vec3 Earthpos (9.890331046925951E-01, 1.768079890757788E-01, -1.738715302893284E-04);
     vec3 Earthvel (-3.268395786841218E-03, 1.689265025904021E-02, -9.889230545039174E-07);
@@ -89,10 +151,10 @@ int main(){
     vec3 Plutovel (3.065499934972441E-03, 2.293283900283695E-04, -9.119583887771224E-04);
     Plutovel /= YrstoDays;
     System.createCelestialBody(Plutopos, Plutovel, M_pluto);
-
+    */
     // Solving system
-    double dt = 0.01;
-    int NumTimesteps = 25000;
+    double dt = 0.001;
+    int NumTimesteps = 10000;
     ODEsolvers solver(dt);
     int plot_counter = 10;
     for (int step=0; step<NumTimesteps; step++){
