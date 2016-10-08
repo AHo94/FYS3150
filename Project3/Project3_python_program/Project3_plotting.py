@@ -156,5 +156,5 @@ class Plotter():
 		
 		plt.show()
 solve = Plotter(False)
-#solve.plotting_3D()
-solve.animate()
+solve.plotting_3D()
+#solve.animate()
