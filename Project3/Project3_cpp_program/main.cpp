@@ -20,7 +20,7 @@ void set_initial_cond(vec3 &pos, vec3 &vel, string planet_name){
     data_filename.append("_data.txt");
     ifstream infile (data_filename);
     string line;
-    double YrstoDays = 1.0/365.0;   // Converts from years to days
+    double DaystoYrs = 1.0/365.0;   // Converts from years to days
     double x, y, z;
     int counter = 0;
     while (getline(infile, line)){
@@ -39,7 +39,7 @@ void set_initial_cond(vec3 &pos, vec3 &vel, string planet_name){
         }
         counter += 1;
     }
-    vel /= YrstoDays;   // Converts velocity from AU/days to AU/yrs
+    vel /= DaystoYrs;   // Converts velocity from AU/days to AU/yrs
 }
 
 int main(){
@@ -47,63 +47,32 @@ int main(){
     // Masses of the celestial bodies in the solar system
     double M_sun, M_earth, M_jupiter, M_mercury, M_venus, M_mars, M_saturn, M_uranus, M_neptune, M_pluto;
     M_sun = 1.0;
-    M_earth = 6*pow(10,24)/(2*pow(10,30));
-    M_jupiter = 1.9*pow(10,27)/(2*pow(10,30));
-    M_mercury = 2.4*pow(10,23)/(2*pow(10,30));
-    M_venus = 4.9*pow(10,24)/(2*pow(10,30));
-    M_mars = 6.6*pow(10,23)/(2*pow(10,30));
-    M_saturn = 5.5*pow(10,26)/(2*pow(10,30));
-    M_uranus = 8.8*pow(10,25)/(2*pow(10,30));
-    M_neptune = 1.03*pow(10,26)/(2*pow(10,30));
-    M_pluto = 1.31*pow(10,22)/(2*pow(10,30));
+    double M_sun_real = 2*pow(10,30);
+    M_earth = 6*pow(10,24)/M_sun_real;
+    M_jupiter = 1.9*pow(10,27)/M_sun_real;
+    M_mercury = 2.4*pow(10,23)/M_sun_real;
+    M_venus = 4.9*pow(10,24)/M_sun_real;
+    M_mars = 6.6*pow(10,23)/M_sun_real;
+    M_saturn = 5.5*pow(10,26)/M_sun_real;
+    M_uranus = 8.8*pow(10,25)/M_sun_real;
+    M_neptune = 1.03*pow(10,26)/M_sun_real;
+    M_pluto = 1.31*pow(10,22)/M_sun_real;
 
-    // Adding the Sun
+    // Creates arrays for names and masses for the celestials
+    string Celestial_names[] = {"earth", "jupiter", "mercury", "venus", "mars", "saturn",
+                            "uranus", "neptune", "pluto"};
+    double Celestial_masses[] = {M_earth, M_jupiter, M_mercury, M_venus, M_mars, M_saturn,
+                             M_uranus, M_neptune, M_pluto};
+
+    // Hard coding the Sun into the system in the origin and at rest
     System.createCelestialBody(vec3(0,0,0), vec3(0,0,0), M_sun);
 
-    // Adding Earth
-    vec3 Earthpos, Earthvel;
-    set_initial_cond(Earthpos, Earthvel, "earth");
-    System.createCelestialBody(Earthpos, Earthvel, M_earth);
-
-    // Adding Jupiter
-    vec3 Jupiterpos, Jupitervel;
-    set_initial_cond(Jupiterpos, Jupitervel, "jupiter");
-    System.createCelestialBody(Jupiterpos, Jupitervel, M_jupiter);
-
-    // Adding Mercury
-    vec3 Mercurypos, Mercuryvel;
-    set_initial_cond(Mercurypos, Mercuryvel, "mercury");
-    System.createCelestialBody(Mercurypos, Mercuryvel, M_mercury);
-
-    // Adding Venus
-    vec3 Venuspos, Venusvel;
-    set_initial_cond(Venuspos, Venusvel, "venus");
-    System.createCelestialBody(Venuspos, Venusvel, M_venus);
-
-    // Adding Mars
-    vec3 Marspos, Marsvel;
-    set_initial_cond(Marspos, Marsvel, "mars");
-    System.createCelestialBody(Marspos, Marsvel, M_mars);
-
-    // Adding Saturn
-    vec3 Saturnpos, Saturnvel;
-    set_initial_cond(Saturnpos, Saturnvel, "saturn");
-    System.createCelestialBody(Saturnpos, Saturnvel, M_saturn);
-
-    // Adding Uranus
-    vec3 Uranuspos, Uranusvel;
-    set_initial_cond(Uranuspos, Uranusvel, "uranus");
-    System.createCelestialBody(Uranuspos, Uranusvel, M_uranus);
-
-    // Adding Neptune
-    vec3 Neptunepos, Neptunevel;
-    set_initial_cond(Neptunepos, Neptunevel, "neptune");
-    System.createCelestialBody(Neptunepos, Neptunevel, M_neptune);
-
-    // Adding pluto
-    vec3 Plutopos, Plutovel;
-    set_initial_cond(Plutopos, Plutovel, "pluto");
-    System.createCelestialBody(Plutopos, Plutovel, M_pluto);
+    // Adds all the celestials to the system
+    for (int i=0; i<sizeof(Celestial_masses)/sizeof(*Celestial_masses); i++){
+        vec3 position, velocity;
+        set_initial_cond(position, velocity, Celestial_names[i]);
+        System.createCelestialBody(position, velocity, Celestial_masses[i]);
+    }
 
     // Solving system
     double dt = 0.01;
