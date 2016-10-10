@@ -8,7 +8,7 @@ m_dt(dt)
 }
 
 void ODEsolvers::Euler_step(SolarSystem &system){
-    // Solving Euler's methpd
+    // Solving Euler's method
     system.CalculateAccelerationAndEnergy();
 
     for (Celestials &body : system.bodies()){
