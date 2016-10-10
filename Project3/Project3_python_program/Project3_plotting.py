@@ -88,8 +88,8 @@ class Plotter():
 			plt.show()
 
 	def plotting_3D(self):		
-		fig = plt.figure()
-		ax = fig.gca(projection='3d')
+		fig1 = plt.figure()
+		ax = fig1.gca(projection='3d')
 		ax.plot(self.Earth_pos[0][:], self.Earth_pos[1][:], self.Earth_pos[2][:], 'b--')
 		plt.hold("on")
 		ax.plot(self.Sun_pos[0][:], self.Sun_pos[1][:], self.Sun_pos[2][:], 'r--')
@@ -105,6 +105,21 @@ class Plotter():
 		ax.set_ylabel('Y - [AU]')
 		ax.set_zlabel('Z - [AU]')
 		ax.legend(['Earth', 'Sun', 'Jupiter', 'Mercury', 'Venus', 'Mars', 'Saturn', 'Uranus', 'Neptune', 'Pluto'])
+		ax.set_title('Orbits of all planets')
+		fig2 = plt.figure()
+		ax2 = fig2.gca(projection='3d')
+		ax2.plot(self.Earth_pos[0][1:100], self.Earth_pos[1][1:100], self.Earth_pos[2][1:100], 'b-')
+		plt.hold("on")
+		ax2.plot(self.Sun_pos[0][1:100], self.Sun_pos[1][1:100], self.Sun_pos[2][1:100], 'r-')
+		ax2.plot(self.Mercury_pos[0][1:100], self.Mercury_pos[1][1:100], self.Mercury_pos[2][1:100], 'k-')
+		ax2.plot(self.Venus_pos[0][1:100], self.Venus_pos[1][1:100], self.Venus_pos[2][1:100], 'm-')
+		ax2.plot(self.Mars_pos[0][1:100], self.Mars_pos[1][1:100], self.Mars_pos[2][1:100], 'c-')
+		ax2.set_xlabel('X - [AU]')
+		ax2.set_ylabel('Y - [AU]')
+		ax2.set_zlabel('Z - [AU]')
+		ax2.legend(['Earth', 'Sun', 'Mercury', 'Venus', 'Mars'])
+		ax2.set_title('Plot of the planets inside the asteroid belt')
+
 
 		ax.scatter(self.Jupiter_pos[0][0], self.Jupiter_pos[1][0], self.Jupiter_pos[2][0], color='green', s=200)
 		ax.scatter(self.Saturn_pos[0][0], self.Saturn_pos[1][0], self.Saturn_pos[2][0], color='green', s=150)
@@ -113,7 +128,7 @@ class Plotter():
 		ax.scatter(self.Pluto_pos[0][0], self.Pluto_pos[1][0], self.Pluto_pos[2][0], color='green', s=5)
 		#ax.add_artist(circle_Jupiter)
 		if self.savefile:
-			fig.savefig('../Plots/'+'All_planets_3D_plot.pdf')
+			fig1.savefig('../Plots/'+'All_planets_3D_plot.pdf')
 		else:
 			plt.show()
 
