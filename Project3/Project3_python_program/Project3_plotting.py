@@ -8,8 +8,6 @@ file_directory = 'C:/Users/Alex/Documents/FYS3150/FYS3150_projects/Project3/buil
 
 class Plotter():
 	def __init__(self, savefile):
-		self.filename = "Celestial_positions.txt"
-		self.read_data(self.filename)
 		self.savefile = savefile
 
 
@@ -48,6 +46,27 @@ class Plotter():
 				self.Neptune_pos[i][j] = data[j][i+24]
 				self.Pluto_pos[i][j] = data[j][i+27]
 
+	def read_data_EJ(self, filename_open):
+		filename = open(os.path.join(file_directory, filename_open), 'r')
+		i = 0
+		data = []
+		for line in filename:
+			data_set = line.split()
+			data.append(data_set)
+		filename.close()
+
+		self.N = len(data)
+		NumberofObjects = (len(data[0])/3.0)
+		self.Sun_pos = np.zeros((3,self.N))
+		self.Earth_pos = np.zeros((3,self.N))
+		self.Jupiter_pos = np.zeros((3, self.N))
+
+		for i in range(0,3):
+			for j in range(0,self.N):
+				self.Sun_pos[i][j] = data[j][i]
+				self.Earth_pos[i][j] = data[j][i+3]
+				self.Jupiter_pos[i][j] = data[j][i+6]
+
 	def read_data_mercury_GR(self, filename_open):
 		filename = open(os.path.join(file_directory, filename_open), 'r')
 		i = 0
@@ -70,6 +89,7 @@ class Plotter():
 				
 	def Earth_Jupiter_test(self):	
 		fig = plt.figure()
+		self.read_data_EJ("Earth_Jupiter.txt")
 		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
 		plt.hold("on")
 		plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
@@ -85,6 +105,8 @@ class Plotter():
 			plt.show()
 
 	def plotting_2D(self):
+		self.filename = "Celestial_positions.txt"
+		self.read_data(self.filename)
 		fig = plt.figure()
 		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:], 'b--')
 		plt.hold("on")
@@ -107,7 +129,9 @@ class Plotter():
 		else:
 			plt.show()
 
-	def plotting_3D(self):		
+	def plotting_3D(self):	
+		self.filename = "Celestial_positions.txt"
+		self.read_data(self.filename)	
 		fig1 = plt.figure()
 		ax = fig1.gca(projection='3d')
 		ax.plot(self.Earth_pos[0][:], self.Earth_pos[1][:], self.Earth_pos[2][:], 'b--')
@@ -217,4 +241,5 @@ class Plotter():
 solve = Plotter(False)
 #solve.plotting_3D()
 #solve.animate()
-solve.plot_mercury_GR()
+solve.Earth_Jupiter_test()
+#solve.plot_mercury_GR()
