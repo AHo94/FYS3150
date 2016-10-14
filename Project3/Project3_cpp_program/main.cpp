@@ -66,6 +66,9 @@ int main(){
     double Celestial_masses[] = {M_earth, M_jupiter, M_mercury, M_venus, M_mars, M_saturn,
                              M_uranus, M_neptune, M_pluto};
 
+
+    //string Celestial_names[] = {"earth"};
+    //double Celestial_masses[] = {M_earth};
     // Hard coding the Sun into the system in the origin and at rest
     System.createCelestialBody(vec3(0,0,0), vec3(0,0,0), M_sun);
 
@@ -78,30 +81,55 @@ int main(){
 
     // Solving system
     double dt = 0.0001;
-    int NumTimesteps = 25000;
+    int NumTimesteps = 100000;
     ODEsolvers solver(dt);
-    int plot_counter = 25;
+    int plot_counter = 99;
+    string init_text = to_string(NumTimesteps) + " " +  to_string(dt) + "\n";
 
+    // Solving for Sun - Earth system - Euler method
+    System.write_file("Earth_Sun_Euler.txt", init_text);
     for (int step=0; step<NumTimesteps; step++){
-        if (plot_counter == 25){
+        if (plot_counter == 100){
             // Saves every 25 steps.
-            System.write_file("TESTTT.txt");
+            System.write_file("Earth_Sun_Euler.txt", "");
             plot_counter = 0;
         }
-        //solver.Euler_step(System);
-        //solver.EulerCromer(System);
+        solver.Euler_step(System);
+        plot_counter += 1;
+    }
+
+    // Solving for Sun - Earth system - Euler Cromer
+    System.write_file("Earth_Sun_EulerCromer.txt", init_text);
+    for (int step=0; step<NumTimesteps; step++){
+        if (plot_counter == 100){
+            // Saves every 25 steps.
+            System.write_file("Earth_Sun_EulerCromer.txt", "");
+            plot_counter = 0;
+        }
+        solver.EulerCromer(System);
+        plot_counter += 1;
+    }
+
+    // Solving for Sun - Earth system - Verlet method
+    System.write_file("Earth_Sun_Verlet.txt", init_text);
+    for (int step=0; step<NumTimesteps; step++){
+        if (plot_counter == 100){
+            // Saves every 25 steps.
+            System.write_file("Earth_Sun_Verlet.txt", "");
+            plot_counter = 0;
+        }
         solver.Verlet(System);
         plot_counter += 1;
     }
 
+    // Solving for all planets
+    System.write_file("Celestial_position.txt", init_text);
     for (int step=0; step<NumTimesteps; step++){
-        if (plot_counter == 25){
+        if (plot_counter == 100){
             // Saves every 25 steps.
-            System.write_file("Celestial_positions.txt");
+            System.write_file("Celestial_position.txt", "");
             plot_counter = 0;
         }
-        //solver.Euler_step(System);
-        //solver.EulerCromer(System);
         solver.Verlet(System);
         plot_counter += 1;
     }

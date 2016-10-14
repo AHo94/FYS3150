@@ -17,7 +17,7 @@ public:
     int NumberofBodies();
     void CalculateAccelerationAndEnergy();
     void CalculateAccelerationAndEnergy_GR();
-    void write_file(std::string filename);
+    void write_file(std::string filename, std::string init_text);
 
     std::vector<Celestials> &bodies();
 private:
