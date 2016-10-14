@@ -47,6 +47,26 @@ class Plotter():
 				self.Uranus_pos[i][j] = data[j][i+21]
 				self.Neptune_pos[i][j] = data[j][i+24]
 				self.Pluto_pos[i][j] = data[j][i+27]
+
+	def read_data_mercury_GR(self, filename_open):
+		filename = open(os.path.join(file_directory, filename_open), 'r')
+		i = 0
+		data = []
+		for line in filename:
+			data_set = line.split()
+			data.append(data_set)
+		filename.close()
+
+		self.N = len(data)
+		NumberofObjects = (len(data[0])/3.0)
+		self.Sun_pos_GR = np.zeros((3,self.N))
+		self.Mercury_pos_GR = np.zeros((3, self.N))
+
+		for i in range(0,3):
+			for j in range(0,self.N):
+				self.Sun_pos_GR[i][j] = data[j][i]
+				self.Mercury_pos_GR[i][j] = data[j][i+3]
+
 				
 	def Earth_Jupiter_test(self):	
 		fig = plt.figure()
@@ -131,6 +151,30 @@ class Plotter():
 			fig1.savefig('../Plots/'+'All_planets_3D_plot.pdf')
 		else:
 			plt.show()
+	def plot_mercury_GR(self):
+		self.read_data_mercury_GR("Mercury_GR.txt")
+		fig1 = plt.figure()
+		ax = fig1.gca(projection='3d')
+		plt.hold("on")
+		ax.plot(self.Sun_pos_GR[0][:], self.Sun_pos_GR[1][:], self.Sun_pos_GR[2][:], 'r-')
+		ax.plot(self.Mercury_pos_GR[0][:], self.Mercury_pos_GR[1][:], self.Mercury_pos_GR[2][:], 'b-')
+		ax.set_xlabel('X - [AU]')
+		ax.set_ylabel('Y - [AU]')
+		ax.set_zlabel('Z - [AU]')
+		ax.legend(['Sun', 'Mercury'])
+		ax.set_title('Orbital path of Mercury around the Sun')
+		ax.scatter(self.Sun_pos_GR[0][0], self.Sun_pos_GR[1][0], self.Sun_pos_GR[2][0], color='red', s=200)
+		ax.scatter(self.Mercury_pos_GR[0][0], self.Mercury_pos_GR[1][0], self.Mercury_pos_GR[2][0], color='blue', s=30)
+		fig2 = plt.figure()
+		plt.plot(self.Sun_pos_GR[0][:], self.Sun_pos_GR[1][:], 'r-')
+		plt.hold("on")
+		plt.plot(self.Mercury_pos_GR[0][:], self.Mercury_pos_GR[1][:], 'b-')
+		plt.xlabel('X - [AU]')
+		plt.ylabel('Y - [AU]')
+		plt.legend(['Sun', 'Mercury'])
+		plt.show()
+
+
 
 	def animate(self):
 		# Animates 
@@ -171,5 +215,6 @@ class Plotter():
 		
 		plt.show()
 solve = Plotter(False)
-solve.plotting_3D()
+#solve.plotting_3D()
 #solve.animate()
+solve.plot_mercury_GR()
