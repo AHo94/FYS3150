@@ -64,6 +64,63 @@ void SolarSystem::CalculateAccelerationAndEnergy(){
     }
 }
 
+void SolarSystem::CalculateAccelerationAndEnergy_GR(){
+    /*
+     * Function used to test the perihelion precession of Mercury using general relativity.
+     * This assumes only two celestial bodies, the Sun and Mercury.
+     * Also assumes that the Sun is the first celestial in m_bodies
+     */
+    m_kin_energy = 0;
+    m_pot_energy = 0;
+    old_tot_energy = new_tot_energy;
+
+    // Reset forces/acceleration on all bodies
+    for (Celestials &body : m_bodies){
+        body.acceleration.zeros();
+    }
+
+    double four_pi2 = 4*pi_m*pi_m;  // Defines 4pi^2, used multiple times in for-loop
+
+    Celestials &Sun = m_bodies[0];
+    Celestials &Mercury = m_bodies[1];
+    vec3 dRvector = Mercury.position - Sun.position;
+    double dR = dRvector.length();
+    vec3 orbital_angular_mom = Mercury.position.cross(Mercury.velocity);
+    double l = orbital_angular_mom.lengthSquared();
+    vec3 factor = -four_pi2*dRvector/(dR*dR*dR);
+    Sun.acceleration += factor*Mercury.mass*(1 + 3*l/(dR*dR*c*c));
+    Mercury.acceleration += factor*Sun.mass*(1 + 3*l/(dR*dR*c*c));
+
+
+    /*
+    for (int i=0; i<NumberofBodies(); i++){
+        Celestials &body1 = m_bodies[i];
+        for (int j=i+1; j<NumberofBodies(); j++){
+            Celestials &body2 = m_bodies[j];
+            vec3 dRvector = body2.position - body1.position;
+            double dR = dRvector.lengthSquared();
+
+            vec3 factor = -four_pi2*dRvector/dR;
+            dRvector.cross(body2.velocity)
+            body1.acceleration += factor*body2.mass;
+            body2.acceleration += factor*body1.mass;
+
+            m_pot_energy -= four_pi2*body1.mass*body2.mass;
+        }
+    m_kin_energy = 0.5*body1.mass*body1.velocity.dot(body1.velocity);
+    //angular_momentum = body1.mass*(body1.position.cross(body1.velocity));
+    }
+    new_tot_energy = m_kin_energy + m_pot_energy;   // New total energy
+    if (old_tot_energy != 0){
+        if (fabs(new_tot_energy - old_tot_energy) > 1e-4){
+            //cout << fabs(new_tot_energy - old_tot_energy) << endl;
+            cout << "Total energy not conserved, stopping program" << endl;
+            //terminate();
+        }
+    }
+            */
+}
+
 void SolarSystem::write_file(string filename){
     // Writes the positions of the celestial bodies to a file.
     if(!m_file.good()) {

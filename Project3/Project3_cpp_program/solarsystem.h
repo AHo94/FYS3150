@@ -11,10 +11,12 @@ class SolarSystem
 public:
     SolarSystem();
     double pi_m = acos(-1);
+    double c = 63145;//3*pow(10,8);
     Celestials &createCelestialBody(vec3 position, vec3 velocity, double mass);
 
     int NumberofBodies();
     void CalculateAccelerationAndEnergy();
+    void CalculateAccelerationAndEnergy_GR();
     void write_file(std::string filename);
 
     std::vector<Celestials> &bodies();

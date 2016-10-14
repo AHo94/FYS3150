@@ -9,6 +9,7 @@ public:
     void Euler_step(class SolarSystem &system);
     void EulerCromer(class SolarSystem &system);
     void Verlet(class SolarSystem &system);
+    void Verlet_GR(class SolarSystem &system);
 };
 
 #endif // ODESOLVERS_H

@@ -79,6 +79,7 @@ int main(){
     int NumTimesteps = 25000;
     ODEsolvers solver(dt);
     int plot_counter = 25;
+    /*
     for (int step=0; step<NumTimesteps; step++){
         if (plot_counter == 25){
             // Saves every 25 steps.
@@ -90,6 +91,19 @@ int main(){
         solver.Verlet(System);
         plot_counter += 1;
     }
+    */
 
+    SolarSystem MercurySys;
+    MercurySys.createCelestialBody(vec3(0,0,0), vec3(0,0,0), 1);
+    vec3 Mercpos(0.3075, 0, 0);
+    vec3 Mercvel(0, 12.44, 0);
+    MercurySys.createCelestialBody(Mercpos, Mercvel, M_mercury);
+    dt = 0.001;
+    NumTimesteps = 100;
+    for (int step=0; step<NumTimesteps; step++){
+        MercurySys.write_file("Mercury_GR.txt");
+        solver.Verlet_GR(MercurySys);
+        plot_counter += 1;
+    }
     return 0;
 }

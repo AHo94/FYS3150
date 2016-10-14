@@ -41,3 +41,19 @@ void ODEsolvers::Verlet(SolarSystem &system){
         body.velocity += dt_2*(body.acceleration + old_acc);
     }
 }
+
+void ODEsolvers::Verlet_GR(SolarSystem &system){
+    // Verlet's method, used to test general relativity.
+
+    system.CalculateAccelerationAndEnergy_GR();
+    double dt2_2 = m_dt*m_dt/2.0;
+    double dt_2 = m_dt/2.0;
+
+    for (Celestials &body : system.bodies()){
+        body.position += body.velocity*m_dt + dt2_2*body.acceleration;
+        vec3 old_acc = body.acceleration;
+        system.CalculateAccelerationAndEnergy_GR();
+        body.velocity += dt_2*(body.acceleration + old_acc);
+    }
+
+}
