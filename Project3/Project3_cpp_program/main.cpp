@@ -8,7 +8,6 @@
 #include "solarsystem.h"
 #include "odesolvers.h"
 using namespace std;
-
 void set_initial_cond(vec3 &pos, vec3 &vel, string planet_name){
     /*
      * Function that reads data from NASA and sets the coordinate/velocities as initial conditions.
@@ -42,8 +41,73 @@ void set_initial_cond(vec3 &pos, vec3 &vel, string planet_name){
     vel /= DaystoYrs;   // Converts velocity from AU/days to AU/yrs
 }
 
+void solve_system(SolarSystem &Solar_system, double dt, double N, string filename, string method){
+    /*
+    ODEsolvers solver(dt);
+    string init_text = to_string(N) + " " +  to_string(dt) + "\n ";
+    Solar_system.write_file(filename, init_text);
+    int plot_counter = 100;
+    if (method == "verlet"){
+        cout << "Running Verlet method" << endl;
+        for (int step=0; step<N; step++){
+            if (plot_counter == 100){
+                // Saves every 100 steps.
+                Solar_system.write_file(filename, "");
+                plot_counter = 0;
+            }
+            solver.Verlet(Solar_system);
+            plot_counter += 1;
+        }
+    }
+
+    else if(method == "euler"){
+        cout << "Running Euler method" << endl;
+        for (int step=0; step<N; step++){
+            if (plot_counter == 100){
+                // Saves every 100 steps.
+                Solar_system.write_file(filename, "");
+                plot_counter = 0;
+            }
+            solver.Euler_step(Solar_system);
+            plot_counter += 1;
+        }
+    }
+    else if (method == "eulercromer"){
+        cout << "Running Euler Cromer method" << endl;
+        for (int step=0; step<N; step++){
+            if (plot_counter == 100){
+                // Saves every 100 steps.
+                Solar_system.write_file(filename, "");
+                plot_counter = 0;
+            }
+            solver.EulerCromer(Solar_system);
+            plot_counter += 1;
+        }
+    }
+    else if (method == "verletGR"){
+        cout << "Running Verlet method with GR correction" << endl;
+        for (int step=0; step<N; step++){
+            if (plot_counter == 100){
+                // Saves every 100 steps.
+                Solar_system.write_file(filename, "");
+                plot_counter = 0;
+            }
+            solver.Verlet_GR(Solar_system);
+            plot_counter += 1;
+        }
+    }
+    else{
+        cout << "Method input invalid, input = " << method << ", try the following: \n"
+             << "verlet \n"
+             << "euler \n"
+             << "eulercromer \n"
+             << "verletGR" <<endl;
+        terminate();
+    }
+    */
+}
+
 int main(){
-    SolarSystem System;     // Initializes the solar system
     // Masses of the celestial bodies in the solar system
     double M_sun, M_earth, M_jupiter, M_mercury, M_venus, M_mars, M_saturn, M_uranus, M_neptune, M_pluto;
     M_sun = 1.0;
@@ -58,19 +122,22 @@ int main(){
     M_neptune = 1.03*pow(10,26)/M_sun_real;
     M_pluto = 1.31*pow(10,22)/M_sun_real;
 
+    // Hard coding position and velocity of the Sun. Assuming at origin and at rest
+    vec3 Sunpos(0,0,0);
+    vec3 Sunvel(0,0,0);
+
     // Creates arrays for names and masses for the celestials
+    string Celestial_names[] = {"earth", "jupiter"};
+                                //, "mercury", "venus", "mars", "saturn",
+                           // "uranus", "neptune", "pluto"};
+    double Celestial_masses[] = {M_earth, M_jupiter};//, M_mercury, M_venus, M_mars, M_saturn,
+                             //M_uranus, M_neptune, M_pluto};
 
 
-    string Celestial_names[] = {"earth", "jupiter", "mercury", "venus", "mars", "saturn",
-                            "uranus", "neptune", "pluto"};
-    double Celestial_masses[] = {M_earth, M_jupiter, M_mercury, M_venus, M_mars, M_saturn,
-                             M_uranus, M_neptune, M_pluto};
 
-
-    //string Celestial_names[] = {"earth"};
-    //double Celestial_masses[] = {M_earth};
+    SolarSystem System;     // Initializes the solar system
     // Hard coding the Sun into the system in the origin and at rest
-    System.createCelestialBody(vec3(0,0,0), vec3(0,0,0), M_sun);
+    System.createCelestialBody(Sunpos, Sunvel, M_sun);
 
     // Adds all the celestials to the system
     for (int i=0; i<sizeof(Celestial_masses)/sizeof(*Celestial_masses); i++){
@@ -81,22 +148,27 @@ int main(){
 
     // Solving system
     double dt = 0.0001;
-    int NumTimesteps = 100000;
+    int NumTimesteps = 201;
+    //solve_system(System, dt, NumTimesteps, "Celestial_positions.txt", "verlet");
+
     ODEsolvers solver(dt);
-    int plot_counter = 99;
+    int plot_counter = 100;
     string init_text = to_string(NumTimesteps) + " " +  to_string(dt) + "\n";
 
     // Solving for Sun - Earth system - Euler method
-    System.write_file("Earth_Sun_Euler.txt", init_text);
+    System.write_file("Earth_Sun_Euler.txt", to_string(NumTimesteps), to_string(dt)+"\n");
     for (int step=0; step<NumTimesteps; step++){
         if (plot_counter == 100){
             // Saves every 25 steps.
-            System.write_file("Earth_Sun_Euler.txt", "");
+            cout << "write" << endl;
+            System.write_file("Earth_Sun_Euler.txt", "", "");
             plot_counter = 0;
+           //init_text = " LALAL";
         }
         solver.Euler_step(System);
         plot_counter += 1;
     }
+    /*
 
     // Solving for Sun - Earth system - Euler Cromer
     System.write_file("Earth_Sun_EulerCromer.txt", init_text);
@@ -123,17 +195,21 @@ int main(){
     }
 
     // Solving for all planets
-    System.write_file("Celestial_position.txt", init_text);
+    //System.write_file("Celestial_positions.txt", init_text);
+
+    int plot_counter = 100;
+    ODEsolvers solver(dt);
+    System.write_file("Celestial_positions.txt", "HEYAAAAAAA \n");
     for (int step=0; step<NumTimesteps; step++){
         if (plot_counter == 100){
-            // Saves every 25 steps.
-            System.write_file("Celestial_position.txt", "");
+            // Saves every 100 steps.
+            System.write_file("Celestial_positions.txt", "");
             plot_counter = 0;
         }
         solver.Verlet(System);
         plot_counter += 1;
     }
-
+    */
     /*
     SolarSystem MercurySys;
     MercurySys.createCelestialBody(vec3(0,0,0), vec3(0,0,0), 1);

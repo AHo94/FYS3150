@@ -7,7 +7,6 @@ SolarSystem::SolarSystem()
 {
     new_tot_energy = 0;
     old_tot_energy = 0;
-    m_file << "TEST HELLO ????";
 }
 
 Celestials &SolarSystem::createCelestialBody(vec3 position, vec3 velocity, double mass)
@@ -110,7 +109,7 @@ void SolarSystem::CalculateAccelerationAndEnergy_GR(){
             */
 }
 
-void SolarSystem::write_file(string filename, string init_text){
+void SolarSystem::write_file(string filename, string N, string init_text){
     // Writes the positions of the celestial bodies to a file.
     if(!m_file.good()) {
         m_file.open(filename.c_str(), ofstream::out);
@@ -119,7 +118,8 @@ void SolarSystem::write_file(string filename, string init_text){
             terminate();
         }
     }
-    m_file << init_text;
+    cout << init_text << endl;
+    m_file << N << init_text;
     for(Celestials &body : m_bodies){
         m_file << body.position.x() << " " << body.position.y() << " " << body.position.z() << " ";
     }
