@@ -1,0 +1,55 @@
+\documentclass[12pt]{article}
+\author{Alex Ho}
+\title{FYS4150 - Computational Physics \\ Project 3}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\lstset{
+language=Python,
+basicstyle=\ttfamily,
+otherkeywords={self},             
+keywordstyle=\ttfamily\color{blue!90!black},
+keywords=[2]{True,False},
+%keywords=[3]{ttk},
+keywordstyle={[2]\ttfamily\color{blue!90!black}},
+emph={MyClass,__init__},          
+emphstyle=\ttfamily\color{red!80!black},    
+stringstyle=\color{blue!90!black},
+showstringspaces=false,
+commentstyle=\color{blue!90!black},
+breaklines=true,
+tabsize=3,
+moredelim=**[is][\color{blue}]{@}{@}
+}
+
+\begin{document}
+\maketitle
+\subsection*{3a)}
+\subsection*{3b)}
+Implementing the Euler and Verlet method is quite easy. We have the Euler method as
+\begin{align*}
+x_{i+1} = x_i + v_idt \\
+v_{i+1} = v_i + a_idt
+\end{align*}
+One needs to calculate the acceleration $a_i$ using the discretized equations that we have previously shown. One can also implement a more precise method, the Euler Cromer's method, which is given as
+\begin{align*}
+v_{i+1} = v_i + a_idt \\
+x_{i+1} = x_i + v_{i+1}dt
+\end{align*}
+Which is almost the same as the Euler method, however, the position now depends on the new velocity $v_{i+1}$. Unlike the Euler method, we now need to calculate the new velocity before calculating the new position. In the Euler method, we did not have to take this into account. In the C++ program, the ordering of the position and velocity calculation are swapped for these two methods, and we will see later that this will give two different results.
+
+The next method we will look at is the Verlet method. It is given as
+\begin{align*}
+x_{i+1} = x_i + v_idt + \frac{dt^2}{2}a_i\\
+v_{i+1} = v_i + \frac{dt}{2}\left(a_{i+1} + a_i \right)
+\end{align*}
+Implementing this may be a little tricky. Calculating the position is straight forward, but the velocity now depends on $a_{i+1}$ and $a_i$. To bypass this problem, we will have to save $a_i$ so its own variable and then calculate the new acceleration $a_{i+1}$ using the new calculated position $x_{i+1}$. 
+
+\subsection*{3c)}
+
+\end{document}
