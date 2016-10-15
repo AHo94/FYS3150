@@ -19,11 +19,16 @@ class Plotter():
 		data = []
 		for line in filename:
 			data_set = line.split()
-			data.append(data_set)
+			if i == 0:
+				self.Nsteps = float(data_set[0])
+				self.dt = float(data_set[1])
+				i = 1
+			else:
+				data.append(data_set)
 		filename.close()
 
 		self.N = len(data)
-		NumberofObjects = (len(data[0])/3.0)
+		self.Nsteps = int(self.Nsteps)
 		self.Sun_pos = np.zeros((3,self.N))
 		self.Earth_pos = np.zeros((3,self.N))
 		self.Jupiter_pos = np.zeros((3, self.N))
