@@ -109,7 +109,7 @@ void SolarSystem::CalculateAccelerationAndEnergy_GR(){
             */
 }
 
-void SolarSystem::write_file(string filename, string N, string init_text){
+void SolarSystem::write_file(string filename, string NumSteps, string dt){
     // Writes the positions of the celestial bodies to a file.
     if(!m_file.good()) {
         m_file.open(filename.c_str(), ofstream::out);
@@ -118,10 +118,11 @@ void SolarSystem::write_file(string filename, string N, string init_text){
             terminate();
         }
     }
-    cout << init_text << endl;
-    m_file << N << init_text;
+    cout << "Wrote shait " << endl;
+    m_file << NumSteps << dt;
     for(Celestials &body : m_bodies){
         m_file << body.position.x() << " " << body.position.y() << " " << body.position.z() << " ";
+        body.position.print("POSITIN   ");
     }
     m_file << "\n";
 }

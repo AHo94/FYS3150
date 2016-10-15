@@ -153,17 +153,19 @@ int main(){
 
     ODEsolvers solver(dt);
     int plot_counter = 100;
-    string init_text = to_string(NumTimesteps) + " " +  to_string(dt) + "\n";
-
+    string init_text = to_string(NumTimesteps) + " " +  to_string(dt) + " POOP \n";
+    string SNsteps = to_string(NumTimesteps) + " ";
+    string Sdt = to_string(dt) + "\n";
     // Solving for Sun - Earth system - Euler method
-    System.write_file("Earth_Sun_Euler.txt", to_string(NumTimesteps), to_string(dt)+"\n");
+    System.write_file("Testing.txt", SNsteps, Sdt);
     for (int step=0; step<NumTimesteps; step++){
         if (plot_counter == 100){
             // Saves every 25 steps.
-            cout << "write" << endl;
-            System.write_file("Earth_Sun_Euler.txt", "", "");
+            //cout << "write" << endl;
+            System.write_file("Testing.txt", SNsteps, Sdt);
             plot_counter = 0;
-           //init_text = " LALAL";
+            SNsteps = "";
+            Sdt = "";
         }
         solver.Euler_step(System);
         plot_counter += 1;
