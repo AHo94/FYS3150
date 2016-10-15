@@ -120,9 +120,12 @@ void solve_systems(SolarSystem &SolSys, int N, double dt, string filename, strin
                 "eulercromer" <<
                 "verletGR" << endl;
     }
+    cout << "Data saved to: " << filename << endl;
 }
 
-void New_system_and_solve(int N, double dt){
+void New_system_and_solve(int N, double dt, string names, double masses){
+    SolarSystem System;
+    cout << names[1] << endl;
 
 }
 
@@ -159,10 +162,13 @@ int main(){
         System.createCelestialBody(position, velocity, Celestial_masses[i]);
     }
 
+
     // Solving system
     double dt = 0.001;
-    int NumTimesteps = 100000;
+    int NumTimesteps = 150000;
     solve_systems(System, NumTimesteps, dt, "Celestial_positions.txt", "verlet");
+    //New_system_and_solve(NumTimesteps, dt, Celestial_names, Celestial_masses);
+
     /*
     ODEsolvers solver(dt);
     int plot_counter = 25;
