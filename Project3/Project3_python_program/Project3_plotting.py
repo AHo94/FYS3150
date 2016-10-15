@@ -215,6 +215,6 @@ class Plotter():
 		
 		plt.show()
 solve = Plotter(False)
-#solve.plotting_3D()
+solve.plotting_3D()
 #solve.animate()
-solve.plot_mercury_GR()
+#solve.plot_mercury_GR()
