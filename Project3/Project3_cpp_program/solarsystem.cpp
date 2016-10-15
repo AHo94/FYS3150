@@ -121,7 +121,7 @@ void SolarSystem::CalculateAccelerationAndEnergy_GR(){
             */
 }
 
-void SolarSystem::write_file(string filename){
+void SolarSystem::write_file(string filename, string SNsteps, string Sdt){
     // Writes the positions of the celestial bodies to a file.
     if(!m_file.good()) {
         m_file.open(filename.c_str(), ofstream::out);
@@ -130,6 +130,7 @@ void SolarSystem::write_file(string filename){
             terminate();
         }
     }
+    m_file << SNsteps << Sdt;
     for(Celestials &body : m_bodies){
         m_file << body.position.x() << " " << body.position.y() << " " << body.position.z() << " ";
     }
