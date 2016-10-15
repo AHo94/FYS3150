@@ -91,7 +91,7 @@ int main(){
         solver.Verlet(System);
         plot_counter += 1;
     }
-    */
+    *///
 
     SolarSystem MercurySys;
     MercurySys.createCelestialBody(vec3(0,0,0), vec3(0,0,0), 1);
