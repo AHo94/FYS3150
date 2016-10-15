@@ -118,11 +118,9 @@ void SolarSystem::write_file(string filename, string NumSteps, string dt){
             terminate();
         }
     }
-    cout << "Wrote shait " << endl;
     m_file << NumSteps << dt;
     for(Celestials &body : m_bodies){
         m_file << body.position.x() << " " << body.position.y() << " " << body.position.z() << " ";
-        body.position.print("POSITIN   ");
     }
     m_file << "\n";
 }
