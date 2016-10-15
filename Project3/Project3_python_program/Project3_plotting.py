@@ -8,6 +8,8 @@ file_directory = 'C:/Users/Alex/Documents/FYS3150/FYS3150_projects/Project3/buil
 
 class Plotter():
 	def __init__(self, savefile):
+		self.filename = "Celestial_positions.txt"
+		self.read_data(self.filename)
 		self.savefile = savefile
 
 
@@ -17,19 +19,18 @@ class Plotter():
 		data = []
 		for line in filename:
 			data_set = line.split()
-			#if i == 0:
-			#	self.N = float(data_set[0])
-			#	self.dt = float(data_set[0])
-			#else:
-			data.append(data_set)
+			if i == 0:
+				self.Nsteps = float(data_set[0])
+				self.dt = float(data_set[1])
+				i += 1
+			else:
+				data.append(data_set)
 
-			i += 1
 		filename.close()
 
-		self.N = len(data[0])
-		self.Numsteps = float(data[0][0])
-		self.dt = float(data[0][0])
-		self.Numsteps = int(self.Numsteps)
+		self.N = len(data)
+		self.Nstep = int(self.Nsteps)
+
 		self.Sun_pos = np.zeros((3,self.N))
 		self.Earth_pos = np.zeros((3,self.N))
 		self.Jupiter_pos = np.zeros((3, self.N))
@@ -40,8 +41,9 @@ class Plotter():
 		self.Uranus_pos = np.zeros((3, self.N))
 		self.Neptune_pos = np.zeros((3, self.N))
 		self.Pluto_pos = np.zeros((3,self.N))
+
 		for i in range(0,3):
-			for j in range(0,self.N-1):
+			for j in range(0,self.N):
 				self.Sun_pos[i][j] = data[j][i]
 				self.Earth_pos[i][j] = data[j][i+3]
 				self.Jupiter_pos[i][j] = data[j][i+6]
@@ -52,39 +54,6 @@ class Plotter():
 				self.Uranus_pos[i][j] = data[j][i+21]
 				self.Neptune_pos[i][j] = data[j][i+24]
 				self.Pluto_pos[i][j] = data[j][i+27]
-				"""
-				self.Sun_pos[i][j] = data[j+1][i]
-				self.Earth_pos[i][j] = data[j+1][i+3]
-				self.Jupiter_pos[i][j] = data[j+1][i+6]
-				self.Mercury_pos[i][j] = data[j+1][i+9]
-				self.Venus_pos[i][j] = data[j+1][i+12]
-				self.Mars_pos[i][j] = data[j+1][i+15]
-				self.Saturn_pos[i][j] = data[j+1][i+18]
-				self.Uranus_pos[i][j] = data[j+1][i+21]
-				self.Neptune_pos[i][j] = data[j+1][i+24]
-				self.Pluto_pos[i][j] = data[j+1][i+27]
-				"""
-
-	def read_data_EJ(self, filename_open):
-		filename = open(os.path.join(file_directory, filename_open), 'r')
-		i = 0
-		data = []
-		for line in filename:
-			data_set = line.split()
-			data.append(data_set)
-		filename.close()
-
-		self.N = len(data[0])
-		#self.dt = float(data[0][0])
-		self.Sun_pos = np.zeros((3,self.N))
-		self.Earth_pos = np.zeros((3,self.N))
-		self.Jupiter_pos = np.zeros((3, self.N))
-
-		for i in range(0,3):
-			for j in range(0,self.N):
-				self.Sun_pos[i][j] = data[j][i]
-				self.Earth_pos[i][j] = data[j][i+3]
-				self.Jupiter_pos[i][j] = data[j][i+6]
 
 	def read_data_mercury_GR(self, filename_open):
 		filename = open(os.path.join(file_directory, filename_open), 'r')
@@ -95,8 +64,8 @@ class Plotter():
 			data.append(data_set)
 		filename.close()
 
-		self.N = int(data[0][0])
-		self.dt = float(data[0][0])
+		self.N = len(data)
+		NumberofObjects = (len(data[0])/3.0)
 		self.Sun_pos_GR = np.zeros((3,self.N))
 		self.Mercury_pos_GR = np.zeros((3, self.N))
 
@@ -106,9 +75,8 @@ class Plotter():
 				self.Mercury_pos_GR[i][j] = data[j][i+3]
 
 				
-	def Earth_Sun_Jupiter(self):	
+	def Earth_Jupiter_test(self):	
 		fig = plt.figure()
-		self.read_data_EJ("Earth_Sun_Jupiter.txt")
 		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
 		plt.hold("on")
 		plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
@@ -124,8 +92,6 @@ class Plotter():
 			plt.show()
 
 	def plotting_2D(self):
-		self.filename = "Celestial_positions.txt"
-		self.read_data(self.filename)
 		fig = plt.figure()
 		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:], 'b--')
 		plt.hold("on")
@@ -141,16 +107,14 @@ class Plotter():
 		plt.xlabel('X - [AU]')
 		plt.ylabel('Y - [AU]')
 		plt.legend(['Earth', 'Sun', 'Jupiter', 'Mercury', 'Venus', 'Mars', 'Saturn', 'Uranus', 'Neptune', 'Pluto'])
-		plt.title('Orbits of the planets. N = %.g, dt = %.g, Years = %.g' %(self.Numsteps, self.dt, self.Numsteps*self.dt))
+		plt.title('Orbits of the planets. Timescale in years.')
 
 		if self.savefile:
 			fig.savefig('../Plots/'+'All_planets_2D_plot.pdf')
 		else:
 			plt.show()
 
-	def plotting_3D(self):	
-		self.filename = "Celestial_positions.txt"
-		self.read_data(self.filename)	
+	def plotting_3D(self):		
 		fig1 = plt.figure()
 		ax = fig1.gca(projection='3d')
 		ax.plot(self.Earth_pos[0][:], self.Earth_pos[1][:], self.Earth_pos[2][:], 'b--')
@@ -168,7 +132,7 @@ class Plotter():
 		ax.set_ylabel('Y - [AU]')
 		ax.set_zlabel('Z - [AU]')
 		ax.legend(['Earth', 'Sun', 'Jupiter', 'Mercury', 'Venus', 'Mars', 'Saturn', 'Uranus', 'Neptune', 'Pluto'])
-		ax.set_title('3D Orbits of all planets. N = %.g, dt = %.f, Years = %.f' %(self.N, self.dt, self.N*self.dt))
+		ax.set_title('Orbits of all planets')
 		fig2 = plt.figure()
 		ax2 = fig2.gca(projection='3d')
 		ax2.plot(self.Earth_pos[0][1:100], self.Earth_pos[1][1:100], self.Earth_pos[2][1:100], 'b-')
@@ -181,7 +145,7 @@ class Plotter():
 		ax2.set_ylabel('Y - [AU]')
 		ax2.set_zlabel('Z - [AU]')
 		ax2.legend(['Earth', 'Sun', 'Mercury', 'Venus', 'Mars'])
-		ax2.set_title('3D Plot of the planets within the asteroid belt. N = %.g, dt = %.g, Years = %.g' %(self.Numsteps, self.dt, self.Numsteps*self.dt))
+		ax2.set_title('Plot of the planets inside the asteroid belt')
 
 
 		ax.scatter(self.Jupiter_pos[0][0], self.Jupiter_pos[1][0], self.Jupiter_pos[2][0], color='green', s=200)
@@ -258,7 +222,6 @@ class Plotter():
 		
 		plt.show()
 solve = Plotter(False)
-#solve.plotting_3D()
+solve.plotting_3D()
 #solve.animate()
-solve.Earth_Sun_Jupiter()
 #solve.plot_mercury_GR()

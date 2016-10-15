@@ -6,10 +6,10 @@ class ODEsolvers
 public:
     ODEsolvers(double dt);
     double m_dt;
-    void Euler_step(class SolarSystem &system);
-    void EulerCromer(class SolarSystem &system);
-    void Verlet(class SolarSystem &system);
-    void Verlet_GR(class SolarSystem &system);
+    void Euler_step(class SolarSystem &Ssystem);
+    void EulerCromer(class SolarSystem &Ssystem);
+    void Verlet(class SolarSystem &Ssystem);
+    void Verlet_GR(class SolarSystem &Ssystem);
 };
 
 #endif // ODESOLVERS_H

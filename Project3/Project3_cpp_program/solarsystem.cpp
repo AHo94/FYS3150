@@ -70,9 +70,9 @@ void SolarSystem::CalculateAccelerationAndEnergy_GR(){
      * This assumes only two celestial bodies, the Sun and Mercury.
      * Also assumes that the Sun is the first celestial in m_bodies
      */
-   // m_kin_energy = 0;
-   // m_pot_energy = 0;
-   // old_tot_energy = new_tot_energy;
+    m_kin_energy = 0;
+    m_pot_energy = 0;
+    old_tot_energy = new_tot_energy;
 
     // Reset forces/acceleration on all bodies
     for (Celestials &body : m_bodies){
@@ -85,13 +85,11 @@ void SolarSystem::CalculateAccelerationAndEnergy_GR(){
     Celestials &Mercury = m_bodies[1];
     vec3 dRvector = Mercury.position - Sun.position;
     double dR = dRvector.length();
-    vec3 orbital_angular_momentum = Sun.position.cross(Mercury.velocity);
-    //vec3 orbital_angular_momentum = dRvector.cross(Mercury.velocity);
-    double l = orbital_angular_momentum.lengthSquared();
+    vec3 orbital_angular_mom = Mercury.position.cross(Mercury.velocity);
+    double l = orbital_angular_mom.lengthSquared();
     vec3 factor = -four_pi2*dRvector/(dR*dR*dR);
     Sun.acceleration += factor*Mercury.mass*(1 + 3*l/(dR*dR*c*c));
     Mercury.acceleration += factor*Sun.mass*(1 + 3*l/(dR*dR*c*c));
-    //cout << 3*l/(dR*dR*c*c) << endl;
 
 
     /*
@@ -106,10 +104,24 @@ void SolarSystem::CalculateAccelerationAndEnergy_GR(){
             dRvector.cross(body2.velocity)
             body1.acceleration += factor*body2.mass;
             body2.acceleration += factor*body1.mass;
+
+            m_pot_energy -= four_pi2*body1.mass*body2.mass;
+        }
+    m_kin_energy = 0.5*body1.mass*body1.velocity.dot(body1.velocity);
+    //angular_momentum = body1.mass*(body1.position.cross(body1.velocity));
+    }
+    new_tot_energy = m_kin_energy + m_pot_energy;   // New total energy
+    if (old_tot_energy != 0){
+        if (fabs(new_tot_energy - old_tot_energy) > 1e-4){
+            //cout << fabs(new_tot_energy - old_tot_energy) << endl;
+            cout << "Total energy not conserved, stopping program" << endl;
+            //terminate();
+        }
+    }
             */
 }
 
-void SolarSystem::write_file(string filename){//, string NumSteps, string dt){
+void SolarSystem::write_file(string filename, string SNsteps, string Sdt){
     // Writes the positions of the celestial bodies to a file.
     if(!m_file.good()) {
         m_file.open(filename.c_str(), ofstream::out);
@@ -118,7 +130,7 @@ void SolarSystem::write_file(string filename){//, string NumSteps, string dt){
             terminate();
         }
     }
-    //m_file << NumSteps << dt;
+    m_file << SNsteps << Sdt;
     for(Celestials &body : m_bodies){
         m_file << body.position.x() << " " << body.position.y() << " " << body.position.z() << " ";
     }
