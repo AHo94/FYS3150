@@ -74,8 +74,8 @@ class Plotter():
 			data.append(data_set)
 		filename.close()
 
-		self.N = int(data[0][0])
-		self.dt = float(data[0][0])
+		self.N = len(data[0])
+		#self.dt = float(data[0][0])
 		self.Sun_pos = np.zeros((3,self.N))
 		self.Earth_pos = np.zeros((3,self.N))
 		self.Jupiter_pos = np.zeros((3, self.N))
@@ -106,9 +106,9 @@ class Plotter():
 				self.Mercury_pos_GR[i][j] = data[j][i+3]
 
 				
-	def Earth_Jupiter_test(self):	
+	def Earth_Sun_Jupiter(self):	
 		fig = plt.figure()
-		self.read_data_EJ("Earth_Jupiter.txt")
+		self.read_data_EJ("Earth_Sun_Jupiter.txt")
 		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
 		plt.hold("on")
 		plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
@@ -258,7 +258,7 @@ class Plotter():
 		
 		plt.show()
 solve = Plotter(False)
-solve.plotting_3D()
+#solve.plotting_3D()
 #solve.animate()
-#solve.Earth_Jupiter_test()
+solve.Earth_Sun_Jupiter()
 #solve.plot_mercury_GR()

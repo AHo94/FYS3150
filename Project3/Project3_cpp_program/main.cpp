@@ -43,6 +43,7 @@ void set_initial_cond(vec3 &pos, vec3 &vel, string planet_name){
 }
 
 void solve_system(SolarSystem &Solar_system, double dt, double N, string filename, string method){
+    /*
     ODEsolvers solver(dt);
     string SNsteps = to_string(N) + " ";
     string Sdt = to_string(dt) + "\n ";
@@ -113,7 +114,7 @@ void solve_system(SolarSystem &Solar_system, double dt, double N, string filenam
              << "verletGR" <<endl;
         terminate();
     }
-
+    */
 }
 
 int main(){
@@ -157,12 +158,40 @@ int main(){
 
     // Solving system
     start = clock();
-    double dt = 0.0001;
+    double dt = 0.001;
     int NumTimesteps = 100000;
-    solve_system(System, dt, NumTimesteps, "Celestial_positions.txt", "verlet");
+    ODEsolvers solver(dt);
+    string SNsteps = to_string(NumTimesteps) + " ";
+    string Sdt = to_string(dt) + "\n ";
+    //solve_system(System, dt, NumTimesteps, "Celestial_positions.txt", "verlet");
     finish = clock();
     cout << "Time elapsed for non interactive case: " << ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
 
+    // Solving Earth-Jupiter and Sun system
+    SolarSystem EJ_SunSys;
+    EJ_SunSys.createCelestialBody(Sunpos, Sunvel, M_sun);
+    string EJ_names[] = {"earth", "jupiter"};
+    double EJ_masses[] = {M_earth, M_jupiter};
+
+    for (int i=0; i<sizeof(EJ_masses)/sizeof(*EJ_masses); i++){
+        vec3 position, velocity;
+        set_initial_cond(position, velocity, EJ_names[i]);
+        EJ_SunSys.createCelestialBody(position, velocity, EJ_masses[i]);
+    }
+    string filename = "Earth_Sun_Jupiter.txt";
+    int plot_counter = 100;
+    for (int step=0; step<NumTimesteps; step++){
+        if (plot_counter == 100){
+            // Saves every 100 steps.
+            EJ_SunSys.write_file(filename);//, SNsteps, Sdt);
+            plot_counter = 0;
+            SNsteps = "";
+            Sdt = "";
+        }
+        solver.Verlet(EJ_SunSys);
+        plot_counter += 1;
+    }
+    //solve_system(EJ_SunSys, dt, NumTimesteps, "Earth_Sun_Jupiter.txt", "verlet");
     /*
     ODEsolvers solver(dt);
     int plot_counter = 100;
