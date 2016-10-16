@@ -123,15 +123,28 @@ void solve_systems(SolarSystem &SolSys, int N, double dt, string filename, strin
     cout << "Data saved to: " << filename << endl;
 }
 
-void New_system_and_solve(int N, double dt, string names, double masses){
+void New_system_and_solve(int N, double dt, string *names, double *masses, int NumCelestials
+                          , string filename, string method){
     SolarSystem System;
-    cout << names[1] << endl;
+    // Hardcoding position and velocity of the Sun. Assuming at origin and at rest.
+    vec3 SunPos(0,0,0);
+    vec3 SunVel(0,0,0);
 
+    // Coding in the Sun
+    System.createCelestialBody(SunPos, SunVel, 1);
+
+    cout << sizeof(names) << endl;
+    for (int i=0; i<NumCelestials; i++){
+        vec3 position, velocity;
+        set_initial_cond(position, velocity, names[i]);
+        System.createCelestialBody(position, velocity, masses[i]);
+    }
+
+    // Solve system
+    solve_systems(System, N, dt, filename, method);
 }
 
 int main(){
-    //clock_t start, finish;
-    SolarSystem System;     // Initializes the solar system
     // Masses of the celestial bodies in the solar system
     double M_sun, M_earth, M_jupiter, M_mercury, M_venus, M_mars, M_saturn, M_uranus, M_neptune, M_pluto;
     M_sun = 1.0;
@@ -146,6 +159,15 @@ int main(){
     M_neptune = 1.03*pow(10,26)/M_sun_real;
     M_pluto = 1.31*pow(10,22)/M_sun_real;
 
+    // Hardcoding position and velocity of the Sun. Assuming at origin and at rest.
+    vec3 SunPos(0,0,0);
+    vec3 SunVel(0,0,0);
+
+    // Earth-Sun system
+
+
+    // Whole Solar system
+    //SolarSystem System;     // Initializes the solar system
     // Creates arrays for names and masses for the celestials
     string Celestial_names[] = {"earth", "jupiter", "mercury", "venus", "mars", "saturn",
                             "uranus", "neptune", "pluto"};
@@ -153,21 +175,24 @@ int main(){
                              M_uranus, M_neptune, M_pluto};
 
     // Hard coding the Sun into the system in the origin and at rest
-    System.createCelestialBody(vec3(0,0,0), vec3(0,0,0), M_sun);
-
+    //System.createCelestialBody(vec3(0,0,0), vec3(0,0,0), M_sun);
+    /*
+    System.createCelestialBody(SunPos, SunVel, M_sun);
     // Adds all the celestials to the system
     for (int i=0; i<sizeof(Celestial_masses)/sizeof(*Celestial_masses); i++){
         vec3 position, velocity;
         set_initial_cond(position, velocity, Celestial_names[i]);
         System.createCelestialBody(position, velocity, Celestial_masses[i]);
     }
-
+    */
 
     // Solving system
-    double dt = 0.001;
-    int NumTimesteps = 150000;
-    solve_systems(System, NumTimesteps, dt, "Celestial_positions.txt", "verlet");
-    //New_system_and_solve(NumTimesteps, dt, Celestial_names, Celestial_masses);
+    double dt = 0.01;
+    int NumTimesteps = 30000;
+    //solve_systems(System, NumTimesteps, dt, "Celestial_positions.txt", "verlet");
+    int NumCelestials = sizeof(Celestial_masses)/sizeof(*Celestial_masses);
+    New_system_and_solve(NumTimesteps, dt, Celestial_names, Celestial_masses, NumCelestials
+                         , "Celestial_positions.txt", "verlet");
 
     /*
     ODEsolvers solver(dt);
