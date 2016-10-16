@@ -75,6 +75,8 @@ void solve_systems(SolarSystem &SolSys, int N, double dt, string filename, strin
                 // Saves every 100 steps.
                 SolSys.write_file(filename, SNumsteps, Sdt);
                 plot_counter = 0;
+                SNumsteps = "";
+                Sdt = "";
             }
             solver.Euler_step(SolSys);
             plot_counter += 1;
@@ -90,6 +92,8 @@ void solve_systems(SolarSystem &SolSys, int N, double dt, string filename, strin
                 // Saves every 100 steps.
                 SolSys.write_file(filename, SNumsteps, Sdt);
                 plot_counter = 0;
+                SNumsteps = "";
+                Sdt = "";
             }
             solver.EulerCromer(SolSys);
             plot_counter += 1;
@@ -105,6 +109,8 @@ void solve_systems(SolarSystem &SolSys, int N, double dt, string filename, strin
                 // Saves every 100 steps.
                 SolSys.write_file(filename, SNumsteps, Sdt);
                 plot_counter = 0;
+                SNumsteps = "";
+                Sdt = "";
             }
             solver.Verlet_GR(SolSys);
             plot_counter += 1;
@@ -120,7 +126,7 @@ void solve_systems(SolarSystem &SolSys, int N, double dt, string filename, strin
                 "eulercromer" <<
                 "verletGR" << endl;
     }
-    cout << "Data saved to: " << filename << endl;
+    cout << "Data saved to: " << filename << "\n" << endl;
 }
 
 void New_system_and_solve(int N, double dt, string *names, double *masses, int NumCelestials
@@ -132,8 +138,6 @@ void New_system_and_solve(int N, double dt, string *names, double *masses, int N
 
     // Coding in the Sun
     System.createCelestialBody(SunPos, SunVel, 1);
-
-    cout << sizeof(names) << endl;
     for (int i=0; i<NumCelestials; i++){
         vec3 position, velocity;
         set_initial_cond(position, velocity, names[i]);
@@ -164,7 +168,19 @@ int main(){
     vec3 SunVel(0,0,0);
 
     // Earth-Sun system
+    double dt = 0.001;
+    int NumTimesteps = 30000;
+    string earthname[] = {"earth"};
+    double earth_mass[] = {M_earth};
+    New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_euler.txt", "euler");
+    New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_eulercromer.txt", "eulercromer");
+    New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_verlet.txt", "verlet");
 
+    // Earth-Sun-Jupiter system
+    string ESJ_names[] = {"earth", "jupiter"};
+    double ESJ_masses[] = {M_earth, M_jupiter};
+    int NumCelestials = sizeof(ESJ_masses)/sizeof(*ESJ_masses);
+    New_system_and_solve(NumTimesteps, dt, ESJ_names, ESJ_masses, NumCelestials, "ESJ_sys.txt", "verlet");
 
     // Whole Solar system
     //SolarSystem System;     // Initializes the solar system
@@ -187,12 +203,15 @@ int main(){
     */
 
     // Solving system
-    double dt = 0.01;
-    int NumTimesteps = 30000;
+    //double dt = 0.01;
+    //int NumTimesteps = 30000;
     //solve_systems(System, NumTimesteps, dt, "Celestial_positions.txt", "verlet");
+
+    /*
     int NumCelestials = sizeof(Celestial_masses)/sizeof(*Celestial_masses);
     New_system_and_solve(NumTimesteps, dt, Celestial_names, Celestial_masses, NumCelestials
                          , "Celestial_positions.txt", "verlet");
+    */
 
     /*
     ODEsolvers solver(dt);
