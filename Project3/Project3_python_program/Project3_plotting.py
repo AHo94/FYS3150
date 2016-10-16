@@ -214,6 +214,7 @@ class Plotter():
 
 		if self.savefile:
 			fig1.savefig('../Plots/All_planets_3D_plot.pdf')
+			fig2.savefig('../Plots/First_planets_3D_plot.pdf')
 		else:
 			plt.show()
 	def plot_mercury_GR(self):
