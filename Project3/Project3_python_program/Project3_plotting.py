@@ -55,28 +55,84 @@ class Plotter():
 				self.Neptune_pos[i][j] = data[j][i+24]
 				self.Pluto_pos[i][j] = data[j][i+27]
 
+	def read_data_ESJ_sys(self, filename_open, Add_jupiter):
+		filename = open(os.path.join(file_directory, filename_open), 'r')
+		i = 0
+		data = []
+		for line in filename:
+			data_set = line.split()
+			if i == 0:
+				self.Nsteps = float(data_set[0])
+				self.dt = float(data_set[1])
+				i += 1
+			else:
+				data.append(data_set)
+		filename.close()
+		self.N = len(data)
+		self.Nstep = int(self.Nsteps)
+		self.Sun_pos = np.zeros((3,self.N))
+		self.Earth_pos = np.zeros((3,self.N))
+
+		if Add_jupiter == True:
+			self.Jupiter_pos = np.zeros((3, self.N))
+			for i in range(0,3):
+				for j in range(0,self.N):
+					self.Sun_pos[i][j] = data[j][i]
+					self.Earth_pos[i][j] = data[j][i+3]
+					self.Jupiter_pos[i][j] = data[j][i+6]
+		else:
+			for i in range(0,3):
+				for j in range(0,self.N):
+					self.Sun_pos[i][j] = data[j][i]
+					self.Earth_pos[i][j] = data[j][i+3]
+
+
 	def read_data_mercury_GR(self, filename_open):
 		filename = open(os.path.join(file_directory, filename_open), 'r')
 		i = 0
 		data = []
 		for line in filename:
 			data_set = line.split()
-			data.append(data_set)
+			if i == 0:
+				self.Nsteps = float(data_set[0])
+				self.dt = float(data_set[1])
+				i += 1
+			else:
+				data.append(data_set)
 		filename.close()
 
 		self.N = len(data)
-		NumberofObjects = (len(data[0])/3.0)
+		self.Nsteps = int(self.Nsteps)
+
 		self.Sun_pos_GR = np.zeros((3,self.N))
 		self.Mercury_pos_GR = np.zeros((3, self.N))
-
 		for i in range(0,3):
 			for j in range(0,self.N):
 				self.Sun_pos_GR[i][j] = data[j][i]
 				self.Mercury_pos_GR[i][j] = data[j][i+3]
 
-				
-	def Earth_Jupiter_test(self):	
+	def Earth_Sun_sys(self):
+		method = ['Euler_method', 'Euler_Cromer_method', 'Verlet_method']
+		filename_method = ["Earth_Sun_sys_euler.txt", "Earth_Sun_sys_eulercromer.txt", "Earth_Sun_sys_verlet.txt"]
+		for i in range(0, len(method)):
+			fig = plt.figure()
+			self.read_data_ESJ_sys(filename_method[i], False)
+			plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
+			plt.hold("on")
+			plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
+			plt.xlabel('X - [AU]')
+			plt.ylabel('Y - [AU]')
+			plt.legend(['Earth', 'Sun'])
+			plt.title('Earth and Sun system, '+method[i]+' N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+
+			if self.savefile:
+				fig.savefig('../Plots/Earth_sun_'+method[i]+'.pdf')
+			else:		
+				plt.show()
+
+	def ESJ_System(self):	
 		fig = plt.figure()
+		self.read_data_ESJ_sys("ESJ_sys.txt", True)
 		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
 		plt.hold("on")
 		plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
@@ -84,10 +140,10 @@ class Plotter():
 		plt.xlabel('X - [AU]')
 		plt.ylabel('Y - [AU]')
 		plt.legend(['Earth', 'Sun', 'Jupiter'])
-		plt.title('Orbits for a system with the Sun, Earth and Jupiter.')
+		plt.title('Earth, Jupiter and Sun system. N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 
 		if self.savefile:
-			fig.savefig('../Plots/'+'Earth_Jupiter_test.pdf')
+			fig.savefig('../Plots/Earth_Sun_Jupiter.pdf')
 		else:		
 			plt.show()
 
@@ -222,6 +278,8 @@ class Plotter():
 		
 		plt.show()
 solve = Plotter(False)
-solve.plotting_3D()
+#solve.Earth_Sun_sys()
+solve.ESJ_System()
+#solve.plotting_3D()
 #solve.animate()
 #solve.plot_mercury_GR()
