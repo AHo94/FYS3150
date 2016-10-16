@@ -126,7 +126,7 @@ class Plotter():
 			plt.title('Earth and Sun system, '+method[i]+' N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 
 			if self.savefile:
-				fig.savefig('../Plots/Earth_sun_'+method[i]+'.pdf')
+				fig.savefig('../Plots/Earth_Sun_'+method[i]+'.pdf')
 			else:		
 				plt.show()
 
@@ -279,9 +279,9 @@ class Plotter():
 		anim = animation.FuncAnimation(fig, update, frames=300, interval=20, blit=True)
 		
 		plt.show()
-solve = Plotter(False)
-#solve.Earth_Sun_sys()
-#solve.ESJ_System()
+solve = Plotter(True)
+solve.Earth_Sun_sys()
+solve.ESJ_System()
 solve.plotting_3D()
 #solve.animate()
 #solve.plot_mercury_GR()
