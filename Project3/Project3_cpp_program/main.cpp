@@ -207,11 +207,12 @@ int main(){
     //int NumTimesteps = 30000;
     //solve_systems(System, NumTimesteps, dt, "Celestial_positions.txt", "verlet");
 
-    /*
-    int NumCelestials = sizeof(Celestial_masses)/sizeof(*Celestial_masses);
+    dt = 0.01;
+    NumTimesteps = 30000;
+    NumCelestials = sizeof(Celestial_masses)/sizeof(*Celestial_masses);
     New_system_and_solve(NumTimesteps, dt, Celestial_names, Celestial_masses, NumCelestials
-                         , "Celestial_positions.txt", "verlet");
-    */
+                         , "SolarSys_All_planets.txt", "verlet");
+
 
     /*
     ODEsolvers solver(dt);
