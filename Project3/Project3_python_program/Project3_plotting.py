@@ -211,7 +211,7 @@ class Plotter():
 		ax.scatter(self.Neptune_pos[0][0], self.Neptune_pos[1][0], self.Neptune_pos[2][0], color='green', s=90)
 		ax.scatter(self.Uranus_pos[0][0], self.Uranus_pos[1][0], self.Uranus_pos[2][0], color='green', s=100)
 		ax.scatter(self.Pluto_pos[0][0], self.Pluto_pos[1][0], self.Pluto_pos[2][0], color='green', s=5)
-		
+
 		if self.savefile:
 			fig1.savefig('../Plots/All_planets_3D_plot.pdf')
 		else:
