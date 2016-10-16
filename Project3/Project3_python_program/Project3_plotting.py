@@ -8,8 +8,8 @@ file_directory = 'C:/Users/Alex/Documents/FYS3150/FYS3150_projects/Project3/buil
 
 class Plotter():
 	def __init__(self, savefile):
-		self.filename = "Celestial_positions.txt"
-		self.read_data(self.filename)
+		#self.filename = "Celestial_positions.txt"
+		#self.read_data(self.filename)
 		self.savefile = savefile
 
 
@@ -149,6 +149,7 @@ class Plotter():
 
 	def plotting_2D(self):
 		fig = plt.figure()
+		self.read_data("SolarSys_All_planets.txt")
 		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:], 'b--')
 		plt.hold("on")
 		plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:], 'r--')
@@ -163,15 +164,16 @@ class Plotter():
 		plt.xlabel('X - [AU]')
 		plt.ylabel('Y - [AU]')
 		plt.legend(['Earth', 'Sun', 'Jupiter', 'Mercury', 'Venus', 'Mars', 'Saturn', 'Uranus', 'Neptune', 'Pluto'])
-		plt.title('Orbits of the planets. Timescale in years.')
+		plt.title('2D Orbits of the planets. N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 
 		if self.savefile:
-			fig.savefig('../Plots/'+'All_planets_2D_plot.pdf')
+			fig.savefig('../Plots/All_planets_2D_plot.pdf')
 		else:
 			plt.show()
 
 	def plotting_3D(self):		
 		fig1 = plt.figure()
+		self.read_data("SolarSys_All_planets.txt")
 		ax = fig1.gca(projection='3d')
 		ax.plot(self.Earth_pos[0][:], self.Earth_pos[1][:], self.Earth_pos[2][:], 'b--')
 		plt.hold("on")
@@ -188,7 +190,7 @@ class Plotter():
 		ax.set_ylabel('Y - [AU]')
 		ax.set_zlabel('Z - [AU]')
 		ax.legend(['Earth', 'Sun', 'Jupiter', 'Mercury', 'Venus', 'Mars', 'Saturn', 'Uranus', 'Neptune', 'Pluto'])
-		ax.set_title('Orbits of all planets')
+		ax.set_title('3D Orbits of all planets. N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 		fig2 = plt.figure()
 		ax2 = fig2.gca(projection='3d')
 		ax2.plot(self.Earth_pos[0][1:100], self.Earth_pos[1][1:100], self.Earth_pos[2][1:100], 'b-')
@@ -201,7 +203,7 @@ class Plotter():
 		ax2.set_ylabel('Y - [AU]')
 		ax2.set_zlabel('Z - [AU]')
 		ax2.legend(['Earth', 'Sun', 'Mercury', 'Venus', 'Mars'])
-		ax2.set_title('Plot of the planets inside the asteroid belt')
+		ax2.set_title('3D Plot inner planets. N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 
 
 		ax.scatter(self.Jupiter_pos[0][0], self.Jupiter_pos[1][0], self.Jupiter_pos[2][0], color='green', s=200)
@@ -209,9 +211,9 @@ class Plotter():
 		ax.scatter(self.Neptune_pos[0][0], self.Neptune_pos[1][0], self.Neptune_pos[2][0], color='green', s=90)
 		ax.scatter(self.Uranus_pos[0][0], self.Uranus_pos[1][0], self.Uranus_pos[2][0], color='green', s=100)
 		ax.scatter(self.Pluto_pos[0][0], self.Pluto_pos[1][0], self.Pluto_pos[2][0], color='green', s=5)
-		#ax.add_artist(circle_Jupiter)
+		
 		if self.savefile:
-			fig1.savefig('../Plots/'+'All_planets_3D_plot.pdf')
+			fig1.savefig('../Plots/All_planets_3D_plot.pdf')
 		else:
 			plt.show()
 	def plot_mercury_GR(self):
@@ -279,7 +281,7 @@ class Plotter():
 		plt.show()
 solve = Plotter(False)
 #solve.Earth_Sun_sys()
-solve.ESJ_System()
-#solve.plotting_3D()
+#solve.ESJ_System()
+solve.plotting_3D()
 #solve.animate()
 #solve.plot_mercury_GR()
