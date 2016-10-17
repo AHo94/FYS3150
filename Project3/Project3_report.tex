@@ -83,19 +83,19 @@ Time elapsed for Verlet method:0.202s
 Data saved to: Earth_Sun_sys_verlet.txt@
 \end{lstlisting}
 
-One can also use the Euler Cromer method to solve these systems. A plot of the Earth-Sun system using the Euler Cromer method can be found in the appendix. As we can see, the results practically identical to the Verlet method. The time it took to finish the Euler Cromer method was just a tiny bit faster than the ordinary Euler method.
+One can also use the Euler Cromer method to solve these systems. A plot of the Earth-Sun system using the Euler Cromer method can be found in the appendix. As we can see, the results practically identical to the Verlet method. The computation speed of the Euler Cromer method is practically the same as Euler method.
 
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Euler_method.pdf}
-\includegraphics[width=\linewidth]{Plots/Earth_Sun_Euler_methodlower_dt.pdf} 
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Euler_method_larger_dt.pdf} 
 \caption{Euler method comparison for different $\delta t$}
 \end{figure}
 
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Verlet_method.pdf}
-\includegraphics[width=\linewidth]{Plots/Earth_Sun_Verlet_methodlower_dt.pdf}
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Verlet_method_larger_dt.pdf}
 \caption{Verlet method comparison for different $\delta t$}
 \end{figure}
 
@@ -111,7 +111,7 @@ A 3D plot of this system can be found in the appendix.
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Jupiter.pdf}
-\caption{Orbits of the Earth, Jupiter and the Sun}
+\caption{Orbits of the Earth, Jupiter and the Sun.}
 \end{figure}
 
 \begin{figure}[hbtp]
@@ -120,19 +120,25 @@ A 3D plot of this system can be found in the appendix.
 \caption{Plot of the Earth and the Sun in the Earth-Sun-Jupiter system.}
 \end{figure}
 
+\newpage
 
 \subsection*{3e)}
-We will now add all planets, including Pluto, into our system. This is quite straight forward to do. In the C++ program, all we have to do is to add an extra force to each planet. Figure 4 shows the orbits of all planets in 3 dimensions. Because of the orbit sizes of the outer planets (i.e Pluto and Neptune), the orbits of the first four planets will be packed in the center of the system, which is quite hard to analyse. 
+We will now add all planets, including Pluto, into our system. This is quite straight forward to do. In the C++ program, all we have to do is to add an extra force to each planet. Figure 4 shows the orbits of all planets in 3 dimensions. Because of the orbit sizes of the outer planets (i.e Jupiter, Saturn, Uranus, Neptune and Pluto), the orbits of the first four planets will be packed in the center of the system, which is quite hard to analyse. 
 
-What we can do, is to reduce the am
+What we can do, is to reduce the value of $\delta t$ to simulate the first four planets, while still taking the effect of the gravitational forces of the other planets into account. This will of course reduce the number of years the simulation shows, which means that the outer planets will not have full orbits.
 
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=\linewidth]{Plots/All_planets_3D_plot.pdf}
-\caption{Plot of all planets in 3D.}
+\caption{Plot of all planets in 3D. Note: the scatter plot (spheres) of the planet does not scale with it's real size.}
+\end{figure}
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=\linewidth]{Plots/First_planets_3D_plot.pdf}
+\caption{3D plot of the first four planets orbit. Note: the scatter plot (spheres) of the planet does not scale with it's real size.}
 \end{figure}
 
-
+\newpage
 \section*{Appendix}
 \begin{figure}[hbtp]
 \centering
