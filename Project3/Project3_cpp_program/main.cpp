@@ -163,7 +163,7 @@ int main(){
     M_pluto = 1.31*pow(10,22)/M_sun_real;
 
     // Earth-Sun system
-    double dt = 0.001;
+    double dt = 0.0001;
     int NumTimesteps = 30000;
     string earthname[] = {"earth"};
     double earth_mass[] = {M_earth};
@@ -182,11 +182,18 @@ int main(){
                             "uranus", "neptune", "pluto"};
     double Celestial_masses[] = {M_earth, M_jupiter, M_mercury, M_venus, M_mars, M_saturn,
                              M_uranus, M_neptune, M_pluto};
+    /*
     dt = 0.01;
     NumTimesteps = 30000;
     NumCelestials = sizeof(Celestial_masses)/sizeof(*Celestial_masses);
     New_system_and_solve(NumTimesteps, dt, Celestial_names, Celestial_masses, NumCelestials
                          , "SolarSys_All_planets.txt", "verlet");
+
+    dt = 0.0001;
+    NumTimesteps = 30000;
+    New_system_and_solve(NumTimesteps, dt, Celestial_names, Celestial_masses, NumCelestials
+                         , "SolarSys_All_planets_First4.txt", "verlet");
+    */
 
     /*
     SolarSystem MercurySys;
