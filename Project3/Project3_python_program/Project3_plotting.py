@@ -130,21 +130,21 @@ class Plotter():
 			else:		
 				plt.show()
 
-		lower_dt_method = ['Euler_method', 'Verlet_method']
-		lower_dt_filename_method = ["Earth_Sun_sys_euler_lowerdt.txt", "Earth_Sun_sys_verlet_lowerdt.txt"]	
-		for i in range(0, len(lower_dt_method)):
+		larger_dt_method = ['Euler_method', 'Verlet_method']
+		larger_dt_filename_method = ["Earth_Sun_sys_euler_largerdt.txt", "Earth_Sun_sys_verlet_largerdt.txt"]	
+		for i in range(0, len(larger_dt_method)):
 			fig = plt.figure()
-			self.read_data_ESJ_sys(lower_dt_filename_method[i], False)
+			self.read_data_ESJ_sys(larger_dt_filename_method[i], False)
 			plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
 			plt.hold("on")
 			plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
 			plt.xlabel('X - [AU]')
 			plt.ylabel('Y - [AU]')
 			plt.legend(['Earth', 'Sun'])
-			plt.title('Earth and Sun system, '+lower_dt_method[i]+' N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+			plt.title('Earth and Sun system, '+larger_dt_method[i]+' N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 
 			if self.savefile:
-				fig.savefig('../Plots/Earth_Sun_'+lower_dt_method[i]+'lower_dt'+'.pdf')
+				fig.savefig('../Plots/Earth_Sun_'+larger_dt_method[i]+'_larger_dt'+'.pdf')
 			else:		
 				plt.show()
 
@@ -323,7 +323,7 @@ class Plotter():
 		anim = animation.FuncAnimation(fig, update, frames=300, interval=20, blit=True)
 		
 		plt.show()
-solve = Plotter(False)
+solve = Plotter(True)
 solve.Earth_Sun_sys()
 #solve.ESJ_System()
 #solve.plotting_3D()
