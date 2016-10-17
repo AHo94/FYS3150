@@ -231,13 +231,13 @@ class Plotter():
 		ax.set_ylabel('Y - [AU]')
 		ax.set_zlabel('Z - [AU]')
 		ax.legend(['Earth', 'Sun', 'Jupiter', 'Mercury', 'Venus', 'Mars', 'Saturn', 'Uranus', 'Neptune', 'Pluto'])
-		ax.set_title('3D Orbits of all planets. N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+		ax.set_title('3D Orbits of all planets. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 
 		ax.scatter(self.Jupiter_pos[0][0], self.Jupiter_pos[1][0], self.Jupiter_pos[2][0], color='green', s=200)
 		ax.scatter(self.Saturn_pos[0][0], self.Saturn_pos[1][0], self.Saturn_pos[2][0], color='green', s=150)
 		ax.scatter(self.Neptune_pos[0][0], self.Neptune_pos[1][0], self.Neptune_pos[2][0], color='green', s=90)
 		ax.scatter(self.Uranus_pos[0][0], self.Uranus_pos[1][0], self.Uranus_pos[2][0], color='green', s=100)
-		ax.scatter(self.Pluto_pos[0][0], self.Pluto_pos[1][0], self.Pluto_pos[2][0], color='green', s=5)
+		ax.scatter(self.Pluto_pos[0][0], self.Pluto_pos[1][0], self.Pluto_pos[2][0], color='green', s=20)
 
 
 		fig2 = plt.figure()
@@ -253,7 +253,13 @@ class Plotter():
 		ax2.set_ylabel('Y - [AU]')
 		ax2.set_zlabel('Z - [AU]')
 		ax2.legend(['Earth', 'Sun', 'Mercury', 'Venus', 'Mars'])
-		ax2.set_title('3D Plot inner planets. N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+		ax2.set_title('3D Plot inner planets. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+
+		ax2.scatter(self.Sun_pos[0][0], self.Sun_pos[1][0], self.Sun_pos[2][0], color='green', s=300)
+		ax2.scatter(self.Mercury_pos[0][0], self.Mercury_pos[1][0], self.Mercury_pos[2][0], color='green', s=30)
+		ax2.scatter(self.Venus_pos[0][0], self.Venus_pos[1][0], self.Venus_pos[2][0], color='green', s=65)
+		ax2.scatter(self.Earth_pos[0][0], self.Earth_pos[1][0], self.Earth_pos[2][0], color='green', s=80)
+		ax2.scatter(self.Mars_pos[0][0], self.Mars_pos[1][0], self.Mars_pos[2][0], color='green', s=70)
 
 		if self.savefile:
 			fig1.savefig('../Plots/All_planets_3D_plot.pdf')
@@ -324,8 +330,8 @@ class Plotter():
 		
 		plt.show()
 solve = Plotter(True)
-solve.Earth_Sun_sys()
+#solve.Earth_Sun_sys()
 #solve.ESJ_System()
-#solve.plotting_3D()
+solve.plotting_3D()
 #solve.animate()
 #solve.plot_mercury_GR()
