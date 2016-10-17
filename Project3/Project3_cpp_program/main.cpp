@@ -164,12 +164,17 @@ int main(){
 
     // Earth-Sun system
     double dt = 0.0001;
-    int NumTimesteps = 30000;
+    int NumTimesteps = 300000;
     string earthname[] = {"earth"};
     double earth_mass[] = {M_earth};
     New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_euler.txt", "euler");
     New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_eulercromer.txt", "eulercromer");
     New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_verlet.txt", "verlet");
+
+    dt = 0.001;
+    NumTimesteps = 30000;
+    New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_euler_lowerdt.txt", "euler");
+    New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_verlet_lowerdt.txt", "verlet");
 
     // Earth-Sun-Jupiter system
     string ESJ_names[] = {"earth", "jupiter"};
