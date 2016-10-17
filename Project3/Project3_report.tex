@@ -57,7 +57,15 @@ One can assume that the total energy for the whole system is conserved as the to
 
 Another way to determine that the energy must be conserved is because the forces in this system are conservative.
 
-We will now test the Euler and Verlet method, presented earlier, to solve the Earth-Sun system. Figure 1 shows the plots of the Earth-Sun system using Euler (top image) and Verlet method (bottom image). As we can see, the Verlet method gives a more precise and stable Earth orbit, whereas the Euler method gives a less stable Earth orbit.
+%We will now test the Euler and Verlet method, presented earlier, to solve the Earth-Sun system. Figure 1 shows the plots of the Earth-Sun system using Euler (top image) and Verlet method (bottom image). As we can see, the Verlet method gives a more precise and stable Earth orbit, whereas the Euler method gives a less stable Earth orbit.
+
+We will now test the Euler and Verlet method, presented earlier, to solve the Earth-Sun system. We will also see how stable these methods are for different values of $\delta t$. For the C++ program, we have tested $\delta t$ values of 0.0001 and 0.001. The number of mesh points used for each $\delta t$ values is $N = 300 000$ and $N=30 000$ respectively. This is to ensure that the time elapsed, for both simulations, are the same.
+
+Figure 1 shows a comparison of the Euler method with the given $\delta t$ values respectively. The system is a little more stable for a lower $\delta $t value, but Earth seems to go closer and closer to the Sun for every circular orbit. This does not exactly fit with what we observe, so the Euler method is clearly not the most ideal algorithm we can use for these kinds of systems.
+
+Let us now look at the Verlet method. Figure 2 compares the Verlet method of the given $\delta t$ values. As we can see, the system for $\delta t = 0.0001$ is incredibly stable, giving an almost perfect circular orbit for the Earth. The orbit is not perfectly circular is due to very small fluctuations in the orbit of Earth. For a smaller $\delta t$ value, the orbit is still circular, and unlike the Euler method, Earth will not fall towards the Sun. However, the fluctuations now are a little bigger, which is why the circular line in figure 2 is a little bit thicker. 
+
+%  As we can see, lower values of $\delta t$ gives a more stable system. However, even though the system is more stable, the orbit of Earth seems to differ quite significantly for each 
 
 For the C++ program, the time difference between these two methods are almost negligible for a small number of time steps. The Verlet method had to run roughly 2 times longer compared to the Euler method, which is not surprising due to the increased number of FLOPS required to solve one time step. However, as we saw from the plots, the extra time it took for the Verlet method gave a much better result than the one using Euler method.
 
@@ -76,17 +84,27 @@ Data saved to: Earth_Sun_sys_verlet.txt@
 \end{lstlisting}
 
 One can also use the Euler Cromer method to solve these systems. A plot of the Earth-Sun system using the Euler Cromer method can be found in the appendix. As we can see, the results practically identical to the Verlet method. The time it took to finish the Euler Cromer method was just a tiny bit faster than the ordinary Euler method.
+
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Euler_method.pdf}
-\includegraphics[width=\linewidth]{Plots/Earth_Sun_Verlet_method.pdf}
-\caption{Comparison of Euler and Verlet method for the Earth-Sun system}
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Euler_methodlower_dt.pdf} 
+\caption{Euler method comparison for different $\delta t$}
 \end{figure}
 
-\subsection*{3d)}
-We already know that Earth's orbit will change a little bit when we add Jupiter to the system. Figure 2 shows the orbit of the Earth and Jupiter, as well as the Sun. The orbits here looks nice, but it is hard to see how Jupiter affects the orbit of the Earth. Instead, we only plot the orbit of the Earth and the Sun (still taking Jupiter into account during the calculations) which can be found in figure 3. 
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Verlet_method.pdf}
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Verlet_methodlower_dt.pdf}
+\caption{Verlet method comparison for different $\delta t$}
+\end{figure}
 
-As we can see from figure 3, the orbit of the Earth has changed quite a bit compared to the system without Jupiter. Before we added Jupiter into the system, Earth's orbit was circular. Now that we have added Jupiter into the system, Earth's orbit is now ecliptic, which is a little bit more realistic if we compare it to the orbit we observe. In addition to that, the position of the Sun is also affected a little bit. The Sun is no longer at rest, which means that the Sun is not the center of mass in the system.
+\newpage
+
+\subsection*{3d)}
+We already know that Earth's orbit will change a little bit when we add Jupiter to the system. Figure 3 shows the orbit of the Earth and Jupiter, as well as the Sun. The orbits here looks nice, but it is hard to see how Jupiter affects the orbit of the Earth. Instead, we only plot the orbit of the Earth and the Sun (still taking Jupiter into account during the calculations) which can be found in figure 3. 
+
+As we can see from figure 4, the orbit of the Earth has changed quite a bit compared to the system without Jupiter. Before we added Jupiter into the system, Earth's orbit was circular. Now that we have added Jupiter into the system, Earth's orbit is now ecliptic, which is a little bit more realistic if we compare it to the orbit we observe. In addition to that, the position of the Sun is also affected a little bit. The Sun is no longer at rest, which means that the Sun is not the center of mass in the system.
 
 A 3D plot of this system can be found in the appendix.
 
@@ -104,7 +122,9 @@ A 3D plot of this system can be found in the appendix.
 
 
 \subsection*{3e)}
-We will now add all planets, including Pluto, into our system. This is quite straight forward to do. In the C++ program, all we have to do is to add an extra force to each planet. Figure 4 shows the orbits of all planets in 3 dimensions. Because of the orbit sizes of the outer planets (i.e Pluto and Neptune), the orbits of the first four planets will be packed in the center of the system.
+We will now add all planets, including Pluto, into our system. This is quite straight forward to do. In the C++ program, all we have to do is to add an extra force to each planet. Figure 4 shows the orbits of all planets in 3 dimensions. Because of the orbit sizes of the outer planets (i.e Pluto and Neptune), the orbits of the first four planets will be packed in the center of the system, which is quite hard to analyse. 
+
+What we can do, is to reduce the am
 
 \begin{figure}[hbtp]
 \centering
