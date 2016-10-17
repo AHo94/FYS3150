@@ -84,7 +84,34 @@ One can also use the Euler Cromer method to solve these systems. A plot of the E
 \end{figure}
 
 \subsection*{3d)}
+We already know that Earth's orbit will change a little bit when we add Jupiter to the system. Figure 2 shows the orbit of the Earth and Jupiter, as well as the Sun. The orbits here looks nice, but it is hard to see how Jupiter affects the orbit of the Earth. Instead, we only plot the orbit of the Earth and the Sun (still taking Jupiter into account during the calculations) which can be found in figure 3. 
+
+As we can see from figure 3, the orbit of the Earth has changed quite a bit compared to the system without Jupiter. Before we added Jupiter into the system, Earth's orbit was circular. Now that we have added Jupiter into the system, Earth's orbit is now ecliptic, which is a little bit more realistic if we compare it to the orbit we observe. In addition to that, the position of the Sun is also affected a little bit. The Sun is no longer at rest, which means that the Sun is not the center of mass in the system.
+
+A 3D plot of this system can be found in the appendix.
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Jupiter.pdf}
+\caption{Orbits of the Earth, Jupiter and the Sun}
+\end{figure}
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=\linewidth]{Plots/ESJ_EarthandSun.pdf}
+\caption{Plot of the Earth and the Sun in the Earth-Sun-Jupiter system.}
+\end{figure}
+
+
 \subsection*{3e)}
+We will now add all planets, including Pluto, into our system. This is quite straight forward to do. In the C++ program, all we have to do is to add an extra force to each planet. Figure 4 shows the orbits of all planets in 3 dimensions. Because of the orbit sizes of the outer planets (i.e Pluto and Neptune), the orbits of the first four planets will be packed in the center of the system.
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=\linewidth]{Plots/All_planets_3D_plot.pdf}
+\caption{Plot of all planets in 3D.}
+\end{figure}
+
 
 \section*{Appendix}
 \begin{figure}[hbtp]
@@ -92,5 +119,12 @@ One can also use the Euler Cromer method to solve these systems. A plot of the E
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Euler_Cromer_method.pdf}
 \caption{Earth-Sun system using Euler Cromer method}
 \end{figure}
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Jupiter_3D.pdf}
+\caption{3D Plot of the Earth-Sun-Jupiter system.}
+\end{figure}
+
 
 \end{document}
