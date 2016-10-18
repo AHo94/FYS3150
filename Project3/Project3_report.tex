@@ -29,6 +29,11 @@ moredelim=**[is][\color{blue}]{@}{@}
 
 \begin{document}
 \maketitle
+\section*{Implementation}
+For the C++ program, it is divided in two parts. Creating the system and calculation the forces between the planets are done in C++. The data will then be saved to a .txt file which is then read and plotted in Python.
+
+Unit test for energy conservation applies to every system. The program will first calculate the total energy, for one time step, of the whole system and then save it to a variable. In the next time step, it will again calculate the total energy and then compare it to the previous total energy. The absolute value of the difference between these two total energies should ideally be zero. However, due to round off errors in programming, this will not be the case, so we will have to set a certain error threshold $\epsilon$. In the C++ program, we have selected $\epsilon = 10^{-4}$.
+
 \subsection*{3a)}
 \subsection*{3b)}
 Implementing the Euler and Verlet method is quite easy. We have the Euler method as
@@ -115,23 +120,28 @@ v_{escape} = \sqrt{\frac{8\pi^2}{r}} \text{AU}/\text{yr}
 \end{align*}
 It is now quite easy to implement the escape velocity. In the C++ program, we have assumed that the planet has the mass of Earth and start 1 AU away from the Sun in the x direction. The velocity will be the escape velocity directed in the y-direction. 
 
+Figure 3 shows a plot of a the planet with mass $M_{earth}$ and how the orbit is if the initial velocity is equal to the escape velocity. As we can see, starting with the escape velocity allows the planet to break free from it's intended orbit and leave the system. The orbit of Earth, which was used previously, is also plotted as a comparison.
+
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=\linewidth]{Plots/Escape_velocity.pdf}
 \caption{Plot shows a planet with the mass of Earth with and without escape velocity.}
 \end{figure}
 
-
 \newpage 
 \subsection*{3e) - Three body problem}
-We already know that Earth's orbit will change a little bit when we add Jupiter to the system. Figure 3 shows the orbit of the Earth and Jupiter, as well as the Sun. The orbits themselves does not look particularly odd in any way, but it is hard to see how Jupiter affects the orbit of the Earth. Instead, we only plot the orbit of the Earth and the Sun (still taking Jupiter into account during the calculations) which can be found in figure 4. 
+We already know that Earth's orbit will change a little bit , from the theory we previously introduced, when we add Jupiter to the system. Figure 4 shows the orbit of the Earth and Jupiter, as well as the Sun. The orbits themselves does not look particularly odd in any way, but it is hard to see how Jupiter affects the orbit of the Earth. Instead, we only plot the orbit of the Earth and the Sun (still taking Jupiter into account during the calculations) which can be found in figure 5. 
 
-As we can see from figure 4, the orbit of the Earth has changed quite a bit compared to the system without Jupiter. Before we added Jupiter into the system, Earth's orbit was circular. Now that we have added Jupiter into the system, Earth's orbit is now ecliptic, which is a little bit more realistic if we compare it to the orbit we observe. In addition to that, the position of the Sun is also affected a little bit. The Sun is no longer at rest, which means that the Sun is not the center of mass in the system.
+As we can see from figure 5, the orbit of the Earth has changed quite a bit compared to the system without Jupiter. Before we added Jupiter into the system, Earth's orbit was circular. Now that we have added Jupiter into the system, Earth's orbit is now ecliptic, which is a little bit more realistic if we compare it to the orbit we observe. In addition to that, the position of the Sun is also affected a little bit. The Sun is no longer at rest, which means that the Sun is not the center of mass in the system.
+
+Increasing the mass of Jupiter will change the orbits of Earth, the Sun, as well as Jupiter itself even more. In figure 4, the top image shows the system when increase the mass of Jupiter by a factor of 10. 
+
+The bottom image of figure 4 shows the system when the mass of Jupiter is increased by a factor of $1000$. At this point, Jupiter has practically the same mass the Sun, so the gravitational effects from that should be quite dramatic. This is clearly seen from the plot, where the Sun, along with Earth, now moves away and will move away from it's initial position. 
 
 A 3D plot of this system can be found in the appendix.
 
 \begin{figure}[hbtp]
-\centering\textbf{•}
+\centering
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Jupiter.pdf}
 \caption{Orbits of the Earth, Jupiter and the Sun.}
 \end{figure}
@@ -142,12 +152,19 @@ A 3D plot of this system can be found in the appendix.
 \caption{Plot of the Earth and the Sun in the Earth-Sun-Jupiter system.}
 \end{figure}
 
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Jupiter_10MJ.pdf}
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Jupiter_1000MJ.pdf}
+\caption{Earth-Sun-Jupiter system for $M_J = 10M_J$ (top image) and $M_J = 1000M_J$ (bottom image).}
+\end{figure}
+
 \newpage
 
-\subsection*{3f)}
-We will now add all planets, including Pluto, into our system. This is quite straight forward to do. In the C++ program, all we have to do is to add an extra force to each planet. Figure 4 shows the orbits of all planets in 3 dimensions. Because of the orbit sizes of the outer planets (i.e Jupiter, Saturn, Uranus, Neptune and Pluto), the orbits of the first four planets will be packed in the center of the system, which is quite hard to analyse. 
+\subsection*{3f) - All planets}
+We will now add all planets, including Pluto, into our system. This is quite straight forward to do. In the C++ program, all we have to do is to add an extra force to each planet. Figure 7 shows the orbits of all planets in 3 dimensions. Because of the orbit sizes of the outer planets (i.e Jupiter, Saturn, Uranus, Neptune and Pluto), the orbits of the first four planets will be packed in the center of the system, which is quite hard to analyse. 
 
-What we can do, is to reduce the value of $\delta t$ to simulate the first four planets, while still taking the effect of the gravitational forces of the other planets into account. This will of course reduce the number of years the simulation shows, which means that the outer planets will not have full orbits.
+What we can do, is to reduce the value of $\delta t$ to simulate the first four planets, while still taking the effect of the gravitational forces of the other planets into account. This will of course reduce the number of years the simulation shows, which means that the outer planets will not have full orbits. The orbits of the first four planets under these settings can be found in figure 8.
 
 \begin{figure}[hbtp]
 \centering
