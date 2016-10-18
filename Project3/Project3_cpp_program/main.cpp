@@ -181,18 +181,13 @@ int main(){
     dt= 0.0001;
     NumTimesteps = 300000;
 
-    vec3 PlanetPos3(1,0,0);
-    double EscapeVel = sqrt(2*4*acos(-1)*acos(-1)*M_earth/(PlanetPos3.length()));
-    vec3 PlanetVel3(0,EscapeVel,0);
+    vec3 PlanetPos(1,0,0);
+    double EscapeVel = sqrt(2*4*acos(-1)*acos(-1)*M_earth/(PlanetPos.length()));
+    vec3 PlanetVel(0,EscapeVel,0);
 
-    vec3 PlanetPos;
-    vec3 PlanetVel;
-    set_initial_cond(PlanetPos, PlanetVel, "earth");
-    cout << PlanetVel3.length() << endl;
-    cout << PlanetVel.length() << endl;
     SolarSystem EscapeVelSystem;
     EscapeVelSystem.createCelestialBody(vec3(0,0,0), vec3(0,0,0), 1);
-    EscapeVelSystem.createCelestialBody(PlanetPos3, PlanetVel3, M_earth);
+    EscapeVelSystem.createCelestialBody(PlanetPos, PlanetVel, M_earth);
     solve_systems(EscapeVelSystem, NumTimesteps, dt, "Escape_velocity_system.txt", "verlet");
 
     // Earth-Sun-Jupiter system
