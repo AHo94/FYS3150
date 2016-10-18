@@ -29,7 +29,8 @@ moredelim=**[is][\color{blue}]{@}{@}
 \begin{document}
 \maketitle
 \section*{Implementation}
-For the C++ program, it is divided in two parts. Creating the system and calculation the forces between the planets are done in C++. The data will then be saved to a .txt file which is then read and plotted in Python.
+For the C++ program, it is divided in two parts. Creating the system and calculation the forces between the planets are done in C++. The data will then be saved to a .txt file which is then read and plotted in Python. All planetary data (with the exception for the escape velocity of a planet), which is used to determine the initial conditions of the planets, were obtained from NASA's Horizons page \url{http://ssd.jpl.nasa.gov/horizons.cgi}. 
+
 
 Unit test for energy conservation applies to every system. The program will first calculate the total energy, for one time step, of the whole system and then save it to a variable. In the next time step, it will again calculate the total energy and then compare it to the previous total energy. The absolute value of the difference between these two total energies should ideally be zero. However, due to round off errors in programming, this will not be the case, so we will have to set a certain error threshold $\epsilon$. In the C++ program, we have selected $\epsilon = 10^{-4}$.
 
@@ -87,7 +88,7 @@ Time elapsed for Verlet method:0.202s
 Data saved to: Earth_Sun_sys_verlet.txt@
 \end{lstlisting}
 
-One can also use the Euler Cromer method to solve these systems. A plot of the Earth-Sun system using the Euler Cromer method can be found in the appendix. As we can see, the results practically identical to the Verlet method. The computation speed of the Euler Cromer method is practically the same as Euler method.
+One can also use the Euler Cromer method to solve these systems. A plot of the Earth-Sun system using the Euler Cromer method can be found in the appendix. As we can see, the results practically identical to the Verlet method. The computation speed of the Euler Cromer method is almost identical as the computation speed of the Euler method.
 
 \begin{figure}[hbtp]
 \centering
