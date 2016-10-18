@@ -111,6 +111,31 @@ class Plotter():
 				self.Sun_pos_GR[i][j] = data[j][i]
 				self.Mercury_pos_GR[i][j] = data[j][i+3]
 
+	def read_data_escape_vel(self, filename_open):
+		filename = open(os.path.join(file_directory, filename_open), 'r')
+		i = 0
+		data = []
+		for line in filename:
+			data_set = line.split()
+			if i == 0:
+				self.Nsteps = float(data_set[0])
+				self.dt = float(data_set[1])
+				i += 1
+			else:
+				data.append(data_set)
+		filename.close()
+
+		self.N = len(data)
+		self.Nsteps = int(self.Nsteps)
+		self.Sun_pos = np.zeros((3,self.N))
+		self.Earth_pos = np.zeros((3,self.N))
+		for i in range(0,3):
+			for j in range(0,self.N):
+				self.Sun_pos[i][j] = data[j][i]
+				self.Earth_pos[i][j] = data[j][i+3]
+
+
+
 	def Earth_Sun_sys(self):
 		method = ['Euler_method', 'Euler_Cromer_method', 'Verlet_method']
 		filename_method = ["Earth_Sun_sys_euler.txt", "Earth_Sun_sys_eulercromer.txt", "Earth_Sun_sys_verlet.txt"]
@@ -187,6 +212,22 @@ class Plotter():
 			fig3.savefig('../Plots/Earth_Sun_Jupiter_3D.pdf')
 		else:		
 			plt.show()
+
+	def plot_escape_velocity(self):
+		fig = plt.figure()
+		self.read_data_escape_vel("Escape_velocity_system.txt")
+		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
+		plt.hold("on")
+		plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
+		plt.xlabel('X - [AU]')
+		plt.ylabel('Y - [AU]')
+		plt.legend(['Planet', 'Sun'])
+		plt.title('Testing escape velocity of a planet. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))		
+		if self.savefile:
+			fig.savefig('../Plots/Escape_velocity.pdf')
+		else:		
+			plt.show()
+
 
 	def plotting_2D(self):
 		fig = plt.figure()
@@ -329,9 +370,10 @@ class Plotter():
 		anim = animation.FuncAnimation(fig, update, frames=300, interval=20, blit=True)
 		
 		plt.show()
-solve = Plotter(True)
+solve = Plotter(False)
 #solve.Earth_Sun_sys()
+solve.plot_escape_velocity()
 #solve.ESJ_System()
-solve.plotting_3D()
+#solve.plotting_3D()
 #solve.animate()
 #solve.plot_mercury_GR()
