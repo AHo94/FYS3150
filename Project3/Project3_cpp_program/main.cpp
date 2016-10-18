@@ -54,7 +54,7 @@ void solve_systems(SolarSystem &SolSys, int N, double dt, string filename, strin
         cout << "Running Verlet method" << endl;
         start = clock();
         for (int step=0; step<N; step++){
-            if (plot_counter == 100){
+            if (plot_counter == 10){
                 // Saves every 100 steps.
                 SolSys.write_file(filename, SNumsteps, Sdt);
                 plot_counter = 0;
@@ -164,27 +164,25 @@ int main(){
 
     // Earth-Sun system
     double dt = 0.0001;
-    int NumTimesteps = 300000;
+    int NumTimesteps = 100000;
     string earthname[] = {"earth"};
     double earth_mass[] = {M_earth};
-    /*
+
     New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_euler.txt", "euler");
     New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_eulercromer.txt", "eulercromer");
     New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_verlet.txt", "verlet");
 
     dt = 0.001;
-    NumTimesteps = 30000;
+    NumTimesteps = 10000;
     New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_euler_largerdt.txt", "euler");
     New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_verlet_largerdt.txt", "verlet");
-    */
+
     // Finding the escape velocity of a planet
     dt= 0.0001;
-    NumTimesteps = 300000;
-
+    NumTimesteps = 100000;
     vec3 PlanetPos(1,0,0);
-    double EscapeVel = sqrt(2*4*acos(-1)*acos(-1)*M_earth/(PlanetPos.length()));
+    double EscapeVel = sqrt(8*acos(-1)*acos(-1)/(PlanetPos.length()));
     vec3 PlanetVel(0,EscapeVel,0);
-
     SolarSystem EscapeVelSystem;
     EscapeVelSystem.createCelestialBody(vec3(0,0,0), vec3(0,0,0), 1);
     EscapeVelSystem.createCelestialBody(PlanetPos, PlanetVel, M_earth);
