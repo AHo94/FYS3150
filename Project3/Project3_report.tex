@@ -50,7 +50,7 @@ v_{i+1} = v_i + \frac{dt}{2}\left(a_{i+1} + a_i \right)
 \end{align*}
 Implementing this may be a little tricky. Calculating the position is straight forward, but the velocity now depends on $a_{i+1}$ and $a_i$. To bypass this problem, we will have to save $a_i$ so its own variable and then calculate the new acceleration $a_{i+1}$ using the new calculated position $x_{i+1}$. 
 
-\subsection*{3c)}
+\subsection*{3c) - Testing algorithm}
 The initial velocity of Earth is retrieved by data from NASA.
 
 One can assume that the total energy for the whole system is conserved as the total energy will confined within this system. That is, we think of this system that is in a box. The energy for this system will not leave the box, thus the energy is conserved. We are also not taking into account of gravitational waves, which have some energy as well.
@@ -100,9 +100,24 @@ One can also use the Euler Cromer method to solve these systems. A plot of the E
 \end{figure}
 
 \newpage
+\subsection*{3d) - Escape velocity}
+One can calculate the escape velocity of a planet analytically. The escape velocity of an object with mass $M_1$ is the velocity when the object's kinetic energy is equal to the potential energy. That is
+\begin{align*}
+\frac{1}{2}M_1v = \frac{GM_1M_2}{r}
+\end{align*}
+Let us consider a planet with mass $M$ orbiting around the Sun. The escape velocity for this planet is then
+\begin{align*}
+v_{escape} = \sqrt{\frac{2GM_{\odot}}{r}}
+\end{align*}
+In terms of AU per year, we have that $GM_{\odot} = 4\pi^2 \text{AU}^3/\text{yr}^2$, so
+\begin{align*}
+v_{escape} = \sqrt{\frac{8\pi^2}{r}} \text{AU}/\text{yr}
+\end{align*}
+It is now quite easy to implement the escape velocity. In the C++ program, we have assumed that the planet has the mass of Earth and start 1 AU away from the Sun in the x direction. The velocity will be the escape velocity directed in the y-direction.
 
-\subsection*{3d)}
-We already know that Earth's orbit will change a little bit when we add Jupiter to the system. Figure 3 shows the orbit of the Earth and Jupiter, as well as the Sun. The orbits here looks nice, but it is hard to see how Jupiter affects the orbit of the Earth. Instead, we only plot the orbit of the Earth and the Sun (still taking Jupiter into account during the calculations) which can be found in figure 3. 
+\newpage 
+\subsection*{3e) - Three body problem}
+We already know that Earth's orbit will change a little bit when we add Jupiter to the system. Figure 3 shows the orbit of the Earth and Jupiter, as well as the Sun. The orbits themselves does not look particularly odd in any way, but it is hard to see how Jupiter affects the orbit of the Earth. Instead, we only plot the orbit of the Earth and the Sun (still taking Jupiter into account during the calculations) which can be found in figure 4. 
 
 As we can see from figure 4, the orbit of the Earth has changed quite a bit compared to the system without Jupiter. Before we added Jupiter into the system, Earth's orbit was circular. Now that we have added Jupiter into the system, Earth's orbit is now ecliptic, which is a little bit more realistic if we compare it to the orbit we observe. In addition to that, the position of the Sun is also affected a little bit. The Sun is no longer at rest, which means that the Sun is not the center of mass in the system.
 
@@ -122,7 +137,7 @@ A 3D plot of this system can be found in the appendix.
 
 \newpage
 
-\subsection*{3e)}
+\subsection*{3f)}
 We will now add all planets, including Pluto, into our system. This is quite straight forward to do. In the C++ program, all we have to do is to add an extra force to each planet. Figure 4 shows the orbits of all planets in 3 dimensions. Because of the orbit sizes of the outer planets (i.e Jupiter, Saturn, Uranus, Neptune and Pluto), the orbits of the first four planets will be packed in the center of the system, which is quite hard to analyse. 
 
 What we can do, is to reduce the value of $\delta t$ to simulate the first four planets, while still taking the effect of the gravitational forces of the other planets into account. This will of course reduce the number of years the simulation shows, which means that the outer planets will not have full orbits.
