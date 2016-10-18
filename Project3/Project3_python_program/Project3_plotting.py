@@ -205,11 +205,36 @@ class Plotter():
 		ax.legend(['Earth', 'Sun', 'Jupiter'])
 		ax.set_title('3D Orbits of the Earth-Jupiter-Sun system. N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 
+		fig4 = plt.figure()
+		self.read_data_ESJ_sys("ESJ_sys_10MJ.txt", True)
+		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
+		plt.hold("on")
+		plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
+		plt.plot(self.Jupiter_pos[0][:], self.Jupiter_pos[1][:])
+		plt.xlabel('X - [AU]')
+		plt.ylabel('Y - [AU]')
+		plt.legend(['Earth', 'Sun'])
+		plt.title('Plot Earth-Jupiter-Sun system. $M_J$ = $10M_J$. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+
+		fig5 = plt.figure()
+		self.read_data_ESJ_sys("ESJ_sys_1000MJ.txt", True)
+		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
+		plt.hold("on")
+		plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
+		plt.plot(self.Jupiter_pos[0][:], self.Jupiter_pos[1][:])
+		plt.xlabel('X - [AU]')
+		plt.ylabel('Y - [AU]')
+		plt.legend(['Earth', 'Sun'])
+		plt.title('Plot Earth-Jupiter-Sun system. $M_J$ = $1000M_J$. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+				
+
 		if self.savefile:
 			fig.savefig('../Plots/Earth_Sun_Jupiter.pdf')
 			fig2.savefig('../Plots/ESJ_EarthandSun.pdf')
 			fig3.savefig('../Plots/Earth_Sun_Jupiter_3D.pdf')
-		else:		
+			fig4.savefig('../Plots/Earth_Sun_Jupiter_10MJ.pdf')
+			fig5.savefig('../Plots/Earth_Sun_Jupiter_1000MJ.pdf')
+		else:
 			plt.show()
 
 	def plot_escape_velocity(self):
@@ -309,7 +334,7 @@ class Plotter():
 		ax2.legend(['Earth', 'Sun', 'Mercury', 'Venus', 'Mars'])
 		ax2.set_title('3D Plot inner planets. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 
-		ax2.scatter(self.Sun_pos[0][0], self.Sun_pos[1][0], self.Sun_pos[2][0], color='green', s=300)
+		ax2.scatter(self.Sun_pos[0][0], self.Sun_pos[1][0], self.Sun_pos[2][0], color='green', s=400)
 		ax2.scatter(self.Mercury_pos[0][0], self.Mercury_pos[1][0], self.Mercury_pos[2][0], color='green', s=30)
 		ax2.scatter(self.Venus_pos[0][0], self.Venus_pos[1][0], self.Venus_pos[2][0], color='green', s=65)
 		ax2.scatter(self.Earth_pos[0][0], self.Earth_pos[1][0], self.Earth_pos[2][0], color='green', s=80)
@@ -385,9 +410,9 @@ class Plotter():
 		
 		plt.show()
 solve = Plotter(True)
-solve.Earth_Sun_sys()
-solve.plot_escape_velocity()
-solve.ESJ_System()
-#solve.plotting_3D()
+#solve.Earth_Sun_sys()
+#solve.plot_escape_velocity()
+#solve.ESJ_System()
+solve.plotting_3D()
 #solve.animate()
 #solve.plot_mercury_GR()
