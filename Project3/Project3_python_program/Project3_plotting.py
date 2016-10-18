@@ -8,10 +8,7 @@ file_directory = 'C:/Users/Alex/Documents/FYS3150/FYS3150_projects/Project3/buil
 
 class Plotter():
 	def __init__(self, savefile):
-		#self.filename = "Celestial_positions.txt"
-		#self.read_data(self.filename)
-		self.savefile = savefile
-
+		self.savefile = savefile	# If True, saves the plots to a file
 
 	def read_data(self, filename_open):
 		filename = open(os.path.join(file_directory, filename_open), 'r')
@@ -25,7 +22,6 @@ class Plotter():
 				i += 1
 			else:
 				data.append(data_set)
-
 		filename.close()
 
 		self.N = len(data)
@@ -127,16 +123,18 @@ class Plotter():
 
 		self.N = len(data)
 		self.Nsteps = int(self.Nsteps)
-		self.Sun_pos = np.zeros((3,self.N))
-		self.Earth_pos = np.zeros((3,self.N))
+		self.Sun_pos_escape_vel = np.zeros((3,self.N))
+		self.Earth_pos_escape_vel = np.zeros((3,self.N))
 		for i in range(0,3):
 			for j in range(0,self.N):
-				self.Sun_pos[i][j] = data[j][i]
-				self.Earth_pos[i][j] = data[j][i+3]
-
-
+				self.Sun_pos_escape_vel[i][j] = data[j][i]
+				self.Earth_pos_escape_vel[i][j] = data[j][i+3]
 
 	def Earth_Sun_sys(self):
+		""" 
+		Function that plots for the Earth - Sun system.
+		This function plots for two different values of dt.
+		"""
 		method = ['Euler_method', 'Euler_Cromer_method', 'Verlet_method']
 		filename_method = ["Earth_Sun_sys_euler.txt", "Earth_Sun_sys_eulercromer.txt", "Earth_Sun_sys_verlet.txt"]
 		for i in range(0, len(method)):
@@ -144,7 +142,7 @@ class Plotter():
 			self.read_data_ESJ_sys(filename_method[i], False)
 			plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
 			plt.hold("on")
-			plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
+			plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:], 'o')
 			plt.xlabel('X - [AU]')
 			plt.ylabel('Y - [AU]')
 			plt.legend(['Earth', 'Sun'])
@@ -162,7 +160,7 @@ class Plotter():
 			self.read_data_ESJ_sys(larger_dt_filename_method[i], False)
 			plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
 			plt.hold("on")
-			plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
+			plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:], 'o')
 			plt.xlabel('X - [AU]')
 			plt.ylabel('Y - [AU]')
 			plt.legend(['Earth', 'Sun'])
@@ -173,12 +171,13 @@ class Plotter():
 			else:		
 				plt.show()
 
-	def ESJ_System(self):	
+	def ESJ_System(self):
+		""" Function that plots the system consisting of Earth, Sun and Jupiter. """
 		fig = plt.figure()
 		self.read_data_ESJ_sys("ESJ_sys.txt", True)
 		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
 		plt.hold("on")
-		plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
+		plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:], 'o')
 		plt.plot(self.Jupiter_pos[0][:], self.Jupiter_pos[1][:])
 		plt.xlabel('X - [AU]')
 		plt.ylabel('Y - [AU]')
@@ -188,7 +187,7 @@ class Plotter():
 		fig2 = plt.figure()
 		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
 		plt.hold("on")
-		plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
+		plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:], 'o')
 		plt.xlabel('X - [AU]')
 		plt.ylabel('Y - [AU]')
 		plt.legend(['Earth', 'Sun'])
@@ -198,7 +197,7 @@ class Plotter():
 		ax = fig3.gca(projection='3d')
 		ax.plot(self.Earth_pos[0][:], self.Earth_pos[1][:], self.Earth_pos[2][:])
 		plt.hold("on")
-		ax.plot(self.Sun_pos[0][:], self.Sun_pos[1][:], self.Sun_pos[2][:])
+		ax.plot(self.Sun_pos[0][:], self.Sun_pos[1][:], self.Sun_pos[2][:], 'o')
 		ax.plot(self.Jupiter_pos[0][:], self.Jupiter_pos[1][:], self.Jupiter_pos[2][:])
 		ax.set_xlabel('X - [AU]')
 		ax.set_ylabel('Y - [AU]')
@@ -214,15 +213,22 @@ class Plotter():
 			plt.show()
 
 	def plot_escape_velocity(self):
+		""" 
+		Function that plots the escape velocity of a planet.
+		Also reads and plots the planetary orbit of Earth from previous exercises
+		which is used to compare the orbits with and without escape velocity.
+		"""
 		fig = plt.figure()
 		self.read_data_escape_vel("Escape_velocity_system.txt")
-		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
+		self.read_data_ESJ_sys("Earth_Sun_sys_verlet_largerdt.txt", False)
+		plt.plot(self.Earth_pos_escape_vel[0][:], self.Earth_pos_escape_vel[1][:])
 		plt.hold("on")
-		plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
+		plt.plot(self.Sun_pos_escape_vel[0][:], self.Sun_pos_escape_vel[1][:], 'o')
+		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
 		plt.xlabel('X - [AU]')
 		plt.ylabel('Y - [AU]')
-		plt.legend(['Planet', 'Sun'])
-		plt.title('Testing escape velocity of a planet. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))		
+		plt.legend(['Planet $v = v_{escape}$', 'Sun', r'Planet $v \neq v_{escape}$'])
+		plt.title('Escape velocity of a planet. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))		
 		if self.savefile:
 			fig.savefig('../Plots/Escape_velocity.pdf')
 		else:		
@@ -253,7 +259,13 @@ class Plotter():
 		else:
 			plt.show()
 
-	def plotting_3D(self):		
+	def plotting_3D(self):	
+		""" 
+		Function that plots all the planets in 3 dimensions.
+		Creates a scatter plot to show the final position of the planets. 
+		(Scatter plot size not scaled to the real planet sizes)
+		Also plots the first four planets in it's own plot to better see their orbits.
+		"""	
 		fig1 = plt.figure()
 		self.read_data("SolarSys_All_planets.txt")
 		ax = fig1.gca(projection='3d')
@@ -308,6 +320,7 @@ class Plotter():
 		else:
 			plt.show()
 	def plot_mercury_GR(self):
+		""" Function plotting the effect of general relativity correction for Mercury """
 		self.read_data_mercury_GR("Mercury_GR.txt")
 		fig1 = plt.figure()
 		ax = fig1.gca(projection='3d')
@@ -372,8 +385,8 @@ class Plotter():
 		plt.show()
 solve = Plotter(False)
 #solve.Earth_Sun_sys()
-solve.plot_escape_velocity()
-#solve.ESJ_System()
+#solve.plot_escape_velocity()
+solve.ESJ_System()
 #solve.plotting_3D()
 #solve.animate()
 #solve.plot_mercury_GR()
