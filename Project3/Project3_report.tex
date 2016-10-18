@@ -15,7 +15,6 @@ basicstyle=\ttfamily,
 otherkeywords={self},             
 keywordstyle=\ttfamily\color{blue!90!black},
 keywords=[2]{True,False},
-%keywords=[3]{ttk},
 keywordstyle={[2]\ttfamily\color{blue!90!black}},
 emph={MyClass,__init__},          
 emphstyle=\ttfamily\color{red!80!black},    
@@ -55,7 +54,7 @@ v_{i+1} = v_i + \frac{dt}{2}\left(a_{i+1} + a_i \right)
 \end{align*}
 Implementing this may be a little tricky. Calculating the position is straight forward, but the velocity now depends on $a_{i+1}$ and $a_i$. To bypass this problem, we will have to save $a_i$ so its own variable and then calculate the new acceleration $a_{i+1}$ using the new calculated position $x_{i+1}$. 
 
-\subsection*{3c) - Testing algorithm}
+\subsection*{3c) - Testing the algorithm}
 The initial velocity of Earth is retrieved by data from NASA.
 
 One can assume that the total energy for the whole system is conserved as the total energy will confined within this system. That is, we think of this system that is in a box. The energy for this system will not leave the box, thus the energy is conserved. We are also not taking into account of gravitational waves, which have some energy as well.
@@ -64,11 +63,11 @@ Another way to determine that the energy must be conserved is because the forces
 
 %We will now test the Euler and Verlet method, presented earlier, to solve the Earth-Sun system. Figure 1 shows the plots of the Earth-Sun system using Euler (top image) and Verlet method (bottom image). As we can see, the Verlet method gives a more precise and stable Earth orbit, whereas the Euler method gives a less stable Earth orbit.
 
-We will now test the Euler and Verlet method, presented earlier, to solve the Earth-Sun system. We will also see how stable these methods are for different values of $\delta t$. For the C++ program, we have tested $\delta t$ values of 0.0001 and 0.001. The number of mesh points used for each $\delta t$ values is $N = 300 000$ and $N=30 000$ respectively. This is to ensure that the time elapsed, for both simulations, are the same.
+We will now test the Euler and Verlet method, presented earlier, to solve the Earth-Sun system. We will also see how stable these methods are for different values of $\Delta t$. For the C++ program, we have tested $\Delta t$ values of $10^{-3}$ and $10^{-3}$. The number of mesh points used for each $\Delta t$ values is $N = 300 000$ and $N=30 000$ respectively. This is to ensure that the time elapsed, for both simulations, are the same.
 
-Figure 1 shows a comparison of the Euler method with the given $\delta t$ values respectively. The system is a little more stable for a lower $\delta $t value, but Earth seems to go closer and closer to the Sun for every circular orbit. This does not exactly fit with what we observe, so the Euler method is clearly not the most ideal algorithm we can use for these kinds of systems.
+Figure 1 shows a comparison of the Euler method with the given $\Delta t$ values respectively. The system is a little more stable for a lower $\Delta $t value, but Earth seems to go closer and closer to the Sun for every circular orbit. This does not exactly fit with what we observe, so the Euler method is clearly not the most ideal algorithm we can use for these kinds of systems.
 
-Let us now look at the Verlet method. Figure 2 compares the Verlet method of the given $\delta t$ values. As we can see, the system for $\delta t = 0.0001$ is incredibly stable, giving an almost perfect circular orbit for the Earth. The orbit is not perfectly circular is due to very small fluctuations in the orbit of Earth. For a smaller $\delta t$ value, the orbit is still circular, and unlike the Euler method, Earth will not fall towards the Sun. However, the fluctuations now are a little bigger, which is why the circular line in figure 2 is a little bit thicker. 
+Let us now look at the Verlet method. Figure 2 compares the Verlet method of the given $\Delta t$ values. As we can see, the system for $\Delta t = 10^{-4}$ is incredibly stable, giving an almost perfect circular orbit for the Earth. The orbit is not perfectly circular is due to very small fluctuations in the orbit of Earth. For a smaller $\Delta t$ value, the orbit is still circular, and unlike the Euler method, Earth will not fall towards the Sun. However, the fluctuations now are a little bigger, which is why the circular line in figure 2 is a little bit thicker. 
 
 %  As we can see, lower values of $\delta t$ gives a more stable system. However, even though the system is more stable, the orbit of Earth seems to differ quite significantly for each 
 
@@ -94,14 +93,14 @@ One can also use the Euler Cromer method to solve these systems. A plot of the E
 \centering
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Euler_method.pdf}
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Euler_method_larger_dt.pdf} 
-\caption{Euler method comparison for different $\delta t$}
+\caption{Euler method comparison for different $\Delta t$}
 \end{figure}
 
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Verlet_method.pdf}
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Verlet_method_larger_dt.pdf}
-\caption{Verlet method comparison for different $\delta t$}
+\caption{Verlet method comparison for different $\Delta t$}
 \end{figure}
 
 \newpage
@@ -138,6 +137,8 @@ Increasing the mass of Jupiter will change the orbits of Earth, the Sun, as well
 
 The bottom image of figure 4 shows the system when the mass of Jupiter is increased by a factor of $1000$. At this point, Jupiter has practically the same mass the Sun, so the gravitational effects from that should be quite dramatic. This is clearly seen from the plot, where the Sun, along with Earth, now moves away and will move away from it's initial position. 
 
+The Verlet method for both these cases are still quite stable, given that $\Delta t = 10^{-4}$.
+
 A 3D plot of this system can be found in the appendix.
 
 \begin{figure}[hbtp]
@@ -164,7 +165,7 @@ A 3D plot of this system can be found in the appendix.
 \subsection*{3f) - All planets}
 We will now add all planets, including Pluto, into our system. This is quite straight forward to do. In the C++ program, all we have to do is to add an extra force to each planet. Figure 7 shows the orbits of all planets in 3 dimensions. Because of the orbit sizes of the outer planets (i.e Jupiter, Saturn, Uranus, Neptune and Pluto), the orbits of the first four planets will be packed in the center of the system, which is quite hard to analyse. 
 
-What we can do, is to reduce the value of $\delta t$ to simulate the first four planets, while still taking the effect of the gravitational forces of the other planets into account. This will of course reduce the number of years the simulation shows, which means that the outer planets will not have full orbits. The orbits of the first four planets under these settings can be found in figure 8.
+What we can do, is to reduce the value of $\Delta t$ to simulate the first four planets, while still taking the effect of the gravitational forces of the other planets into account. This will of course reduce the number of years the simulation shows, which means that the outer planets will not have full orbits. The orbits of the first four planets under these settings can be found in figure 8.
 
 \begin{figure}[hbtp]
 \centering
