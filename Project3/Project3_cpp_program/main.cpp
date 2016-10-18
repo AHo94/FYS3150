@@ -167,6 +167,7 @@ int main(){
     int NumTimesteps = 300000;
     string earthname[] = {"earth"};
     double earth_mass[] = {M_earth};
+    /*
     New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_euler.txt", "euler");
     New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_eulercromer.txt", "eulercromer");
     New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_verlet.txt", "verlet");
@@ -175,12 +176,32 @@ int main(){
     NumTimesteps = 30000;
     New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_euler_largerdt.txt", "euler");
     New_system_and_solve(NumTimesteps, dt, earthname, earth_mass, 1, "Earth_Sun_sys_verlet_largerdt.txt", "verlet");
+    */
+    // Finding the escape velocity of a planet
+    dt= 0.0001;
+    NumTimesteps = 300000;
+
+    vec3 PlanetPos3(1,0,0);
+    double EscapeVel = sqrt(2*4*acos(-1)*acos(-1)*M_earth/(PlanetPos3.length()));
+    vec3 PlanetVel3(0,EscapeVel,0);
+
+    vec3 PlanetPos;
+    vec3 PlanetVel;
+    set_initial_cond(PlanetPos, PlanetVel, "earth");
+    cout << PlanetVel3.length() << endl;
+    cout << PlanetVel.length() << endl;
+    SolarSystem EscapeVelSystem;
+    EscapeVelSystem.createCelestialBody(vec3(0,0,0), vec3(0,0,0), 1);
+    EscapeVelSystem.createCelestialBody(PlanetPos3, PlanetVel3, M_earth);
+    solve_systems(EscapeVelSystem, NumTimesteps, dt, "Escape_velocity_system.txt", "verlet");
 
     // Earth-Sun-Jupiter system
+    dt = 0.0001;
+    NumTimesteps = 30000;
     string ESJ_names[] = {"earth", "jupiter"};
     double ESJ_masses[] = {M_earth, M_jupiter};
     int NumCelestials = sizeof(ESJ_masses)/sizeof(*ESJ_masses);
-    New_system_and_solve(NumTimesteps, dt, ESJ_names, ESJ_masses, NumCelestials, "ESJ_sys.txt", "verlet");
+    //New_system_and_solve(NumTimesteps, dt, ESJ_names, ESJ_masses, NumCelestials, "ESJ_sys.txt", "verlet");
 
     // Whole Solar system
     string Celestial_names[] = {"earth", "jupiter", "mercury", "venus", "mars", "saturn",
