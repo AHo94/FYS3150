@@ -113,7 +113,14 @@ In terms of AU per year, we have that $GM_{\odot} = 4\pi^2 \text{AU}^3/\text{yr}
 \begin{align*}
 v_{escape} = \sqrt{\frac{8\pi^2}{r}} \text{AU}/\text{yr}
 \end{align*}
-It is now quite easy to implement the escape velocity. In the C++ program, we have assumed that the planet has the mass of Earth and start 1 AU away from the Sun in the x direction. The velocity will be the escape velocity directed in the y-direction.
+It is now quite easy to implement the escape velocity. In the C++ program, we have assumed that the planet has the mass of Earth and start 1 AU away from the Sun in the x direction. The velocity will be the escape velocity directed in the y-direction. 
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=\linewidth]{Plots/Escape_velocity.pdf}
+\caption{Plot shows a planet with the mass of Earth with and without escape velocity.}
+\end{figure}
+
 
 \newpage 
 \subsection*{3e) - Three body problem}
@@ -124,7 +131,7 @@ As we can see from figure 4, the orbit of the Earth has changed quite a bit comp
 A 3D plot of this system can be found in the appendix.
 
 \begin{figure}[hbtp]
-\centering
+\centering\textbf{•}
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Jupiter.pdf}
 \caption{Orbits of the Earth, Jupiter and the Sun.}
 \end{figure}
