@@ -216,7 +216,7 @@ class Plotter():
 		plt.xlabel('X - [AU]')
 		plt.ylabel('Y - [AU]')
 		plt.legend(['Earth', 'Sun'])
-		plt.title('Plot Earth-Jupiter-Sun system. $M_{Jupiter}$ = $10M_{Jupiter}$. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+		plt.title('Plot Earth-Jupiter-Sun system, with $10M_{Jupiter}$. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 		plt.axis('equal')
 
 		fig5 = plt.figure()
@@ -228,7 +228,7 @@ class Plotter():
 		plt.xlabel('X - [AU]')
 		plt.ylabel('Y - [AU]')
 		plt.legend(['Earth', 'Sun', 'Jupiter'])
-		plt.title('Plot Earth-Jupiter-Sun system. $M_{Jupiter}$ = $1000M_{Jupiter}$. \
+		plt.title('Plot Earth-Jupiter-Sun system, with $1000M_{Jupiter}$. \
 			\n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 		plt.axis('equal')
 
@@ -242,8 +242,20 @@ class Plotter():
 		ax2.set_ylabel('Y - [AU]')
 		ax2.set_zlabel('Z - [AU]')
 		ax2.legend(['Earth', 'Sun', 'Jupiter'], bbox_to_anchor=(-0.1, 0.9), loc=2)
-		ax2.set_title('3D Orbits of the Earth-Jupiter-Sun system, $M_{Jupiter} = 1000M_{Jupiter}$.\
+		ax2.set_title('3D Orbits of the Earth-Jupiter-Sun system, with $1000M_{Jupiter}$.\
 				 \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+
+		fig7 = plt.figure()
+		self.read_data_ESJ_sys("ESJ_sys_largerdt.txt", True)
+		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
+		plt.hold("on")
+		plt.plot(self.Sun_pos[0][:], self.Sun_pos[1][:])
+		plt.plot(self.Jupiter_pos[0][:], self.Jupiter_pos[1][:])
+		plt.xlabel('X - [AU]')
+		plt.ylabel('Y - [AU]')
+		plt.legend(['Earth', 'Sun', 'Jupiter'])
+		plt.title('Earth, Jupiter and Sun system. N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+		plt.axis('equal')
 				
 		if self.savefile:
 			fig.savefig('../Plots/Earth_Sun_Jupiter.pdf')
@@ -252,6 +264,7 @@ class Plotter():
 			fig4.savefig('../Plots/Earth_Sun_Jupiter_10MJ.pdf')
 			fig5.savefig('../Plots/Earth_Sun_Jupiter_1000MJ.pdf')
 			fig6.savefig('../Plots/Earth_Sun_Jupiter_1000MJ_3D.pdf')
+			fig7.savefig('../Plots/Earth_Sun_Jupiter_largerdt.pdf')
 		else:
 			plt.show()
 
@@ -328,7 +341,7 @@ class Plotter():
 		ax.set_ylabel('Y - [AU]')
 		ax.set_zlabel('Z - [AU]')
 		ax.legend(['Sun', 'Earth', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'], bbox_to_anchor=(-0.1, 0.9), loc=2)
-		ax.set_title('3D Orbits of all planets. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+		ax.set_title('3D Orbits of all planets. \n N=%.f, dt=%.g, years = %.1f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 
 		ax.scatter(self.Jupiter_pos[0][0], self.Jupiter_pos[1][0], self.Jupiter_pos[2][0], color='green', s=200)
 		ax.scatter(self.Saturn_pos[0][0], self.Saturn_pos[1][0], self.Saturn_pos[2][0], color='green', s=150)
@@ -344,13 +357,13 @@ class Plotter():
 		plt.hold("on")
 		ax2.plot(self.Mercury_pos[0][:], self.Mercury_pos[1][:], self.Mercury_pos[2][:], 'k-')
 		ax2.plot(self.Venus_pos[0][:], self.Venus_pos[1][:], self.Venus_pos[2][:], 'm-')
-		ax2.plot(self.Earth_pos[0][1:100], self.Earth_pos[1][1:100], self.Earth_pos[2][1:100], 'b-')
+		ax2.plot(self.Earth_pos[0][:], self.Earth_pos[1][:], self.Earth_pos[2][:], 'b-')
 		ax2.plot(self.Mars_pos[0][:], self.Mars_pos[1][:], self.Mars_pos[2][:], 'c-')
 		ax2.set_xlabel('X - [AU]')
 		ax2.set_ylabel('Y - [AU]')
 		ax2.set_zlabel('Z - [AU]')
 		ax2.legend(['Sun', 'Mercury', 'Earth', 'Venus', 'Mars'], bbox_to_anchor=(-0.1, 0.9), loc=2)
-		ax2.set_title('3D Plot inner planets. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+		ax2.set_title('3D Plot inner planets. \n N=%.f, dt=%.g, years = %.1f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 
 		ax2.scatter(self.Sun_pos[0][0], self.Sun_pos[1][0], self.Sun_pos[2][0], color='green', s=400)
 		ax2.scatter(self.Mercury_pos[0][0], self.Mercury_pos[1][0], self.Mercury_pos[2][0], color='green', s=30)
@@ -428,9 +441,9 @@ class Plotter():
 		
 		plt.show()
 solve = Plotter(False)
-solve.Earth_Sun_sys()
+#solve.Earth_Sun_sys()
 #solve.plot_escape_velocity()
 #solve.ESJ_System()
-#solve.plotting_3D()
+solve.plotting_3D()
 #solve.animate()
 #solve.plot_mercury_GR()
