@@ -31,19 +31,7 @@ moredelim=**[is][\color{blue}]{@}{@}
 
 \begin{document}
 \maketitle
-\section*{Implementation}
-For the C++ program, it is divided in two parts. Creating the system and calculation the forces between the planets are done in C++. The data will then be saved to a .txt file which is then read and plotted in Python. All planetary data (with the exception for the escape velocity of a planet), which is used to determine the initial conditions of the planets, were obtained from NASA's Horizons page \url{http://ssd.jpl.nasa.gov/horizons.cgi}. 
-
-This program is an object oriented program, in which we use classes to create objects and use them to calculate. The C++ program has multiple classes which is as follows:
-\begin{itemize}
-\item \texttt{vec3}: This class is a vector class which allows us to do basic vector operations. I.e vector dot products, vector cross products, find the length of the vector, additions of two vectors and so on.
-\item \texttt{celestials}: A class that sets the initial conditions and masses for each planet. 
-\item \texttt{odesolvers}: Contains all the algorithms that we will use for the project. That is the Verlet, Euler and Euler Cromer method.
-\item \texttt{solarsystem}: This class sets up the whole system of the program. It will use the \texttt{celestials} class to set the initial conditions and masses of a given planet. This class will also calculate the forces when we call one of the solvers from \texttt{odesolvers}. In addition to that, this class will save the positions of all objects to a file.
-\end{itemize}
-
-Unit test for energy conservation applies to every system. The program will first calculate the total energy, for one time step, of the whole system and then save it to a variable. In the next time step, it will again calculate the total energy and then compare it to the previous total energy. The absolute value of the difference between these two total energies should ideally be zero. However, due to round off errors in programming, this will not be the case, so we will have to set a certain error threshold $\epsilon$. In the C++ program, we have selected $\epsilon = 10^{-4}$.
-\section*{Results}
+\section*{Theory}
 \subsection*{3b)}
 Implementing the Euler and Verlet method is quite easy. We have the Euler method as
 \begin{align*}
@@ -64,8 +52,23 @@ v_{i+1} = v_i + \frac{dt}{2}\left(a_{i+1} + a_i \right)
 \end{align*}
 Implementing this may be a little tricky. Calculating the position is straight forward, but the velocity now depends on $a_{i+1}$ and $a_i$. To bypass this problem, we will have to save $a_i$ so its own variable and then calculate the new acceleration $a_{i+1}$ using the new calculated position $x_{i+1}$. 
 
+
+\section*{Implementation}
+For the C++ program, it is divided in two parts. Creating the system and calculation the forces between the planets are done in C++. The data will then be saved to a .txt file which is then read and plotted in Python. All planetary data (with the exception for the escape velocity of a planet), which is used to determine the initial conditions of the planets, were obtained from NASA's Horizons page \url{http://ssd.jpl.nasa.gov/horizons.cgi}. 
+
+This program is an object oriented program, in which we use classes to create objects and use them to calculate. The C++ program has multiple classes which is as follows:
+\begin{itemize}
+\item \texttt{vec3}: This class is a vector class which allows us to do basic vector operations. I.e vector dot products, vector cross products, find the length of the vector, additions of two vectors and so on.
+\item \texttt{celestials}: A class that sets the initial conditions and masses for each planet. 
+\item \texttt{odesolvers}: Contains all the algorithms that we will use for the project. That is the Verlet, Euler and Euler Cromer method.
+\item \texttt{solarsystem}: This class sets up the whole system of the program. It will use the \texttt{celestials} class to set the initial conditions and masses of a given planet. This class will also calculate the forces when we call one of the solvers from \texttt{odesolvers}. In addition to that, this class will save the positions of all objects to a file.
+\end{itemize}
+
+Unit test for energy conservation applies to every system. The program will first calculate the total energy, for one time step, of the whole system and then save it to a variable. In the next time step, it will again calculate the total energy and then compare it to the previous total energy. The absolute value of the difference between these two total energies should ideally be zero. However, due to round off errors in programming (from float numbers), this will not be the case, so we will have to set a certain error threshold $\epsilon$. In the C++ program, we have selected $\epsilon = 3\cdot10^{-4}$, and if energy is not conserved, the whole program will stop and also give us a message that the energy is no longer conserved.
+\section*{Results}
+
 \subsection*{3c) - Testing the algorithm}
-The initial velocity of Earth is retrieved by data from NASA.
+All initial conditions, i.e positions and velocities of both the Sun and Earth are obtained from NASA. The date of the data is 2016.10.05.
 
 One can assume that the total energy for the whole system is conserved as the total energy will confined within this system. That is, we think of this system that is in a box. The energy for this system will not leave the box, thus the energy is conserved. We are also not taking into account of gravitational waves, which have some energy as well.
 
@@ -125,6 +128,8 @@ Running Verlet method
 Time elapsed for Verlet method:0.202s
 Data saved to: Earth_Sun_sys_verlet.txt@
 \end{lstlisting}
+
+The total energy for the whole system was also conserved throughout the simulation for all three algorithms. 
 
 One can also use the Euler Cromer method to solve these systems. Figure \ref{fig:Appendix_EulerCromer} shows a plot of the Earth-Sun system using the Euler Cromer method. As we can see, the results practically identical to the Verlet method. The computation speed of the Euler Cromer method is almost identical as the computation speed of the Euler method.
 \FloatBarrier
@@ -222,6 +227,9 @@ What we can do is to only plot the first four planets, while still taking the ef
 \caption{3D plot of the first four planets orbit. Note: the scatter plot (spheres) of the planet does not scale with it's real size.}
 \label{fig:First4_planets_3D}
 \end{figure}
+
+The results are promising. The orbits of all planets resembles to the orbits we observe. When looking at the plot for the first four planets, one may quickly be confused on the orbits, as it seems like the planets (with the exception of Earth) goes very high up in the z-axis. But this movement is at most up to $\pm 0.04AU$, which is a very very small change.
+
 \FloatBarrier
 
 \section*{Appendix}
