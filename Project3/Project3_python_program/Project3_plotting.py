@@ -183,6 +183,7 @@ class Plotter():
 		plt.ylabel('Y - [AU]')
 		plt.legend(['Earth', 'Sun', 'Jupiter'])
 		plt.title('Earth, Jupiter and Sun system. N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+		plt.axis('equal')
 
 		fig2 = plt.figure()
 		plt.plot(self.Earth_pos[0][:], self.Earth_pos[1][:])
@@ -192,6 +193,7 @@ class Plotter():
 		plt.ylabel('Y - [AU]')
 		plt.legend(['Earth', 'Sun'])
 		plt.title('Plot of Earth and Sun in the Earth-Sun-Jupiter system.\n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+		plt.axis('equal')
 
 		fig3 = plt.figure()
 		ax = fig3.gca(projection='3d')
@@ -215,6 +217,7 @@ class Plotter():
 		plt.ylabel('Y - [AU]')
 		plt.legend(['Earth', 'Sun'])
 		plt.title('Plot Earth-Jupiter-Sun system. $M_{Jupiter}$ = $10M_{Jupiter}$. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+		plt.axis('equal')
 
 		fig5 = plt.figure()
 		self.read_data_ESJ_sys("ESJ_sys_1000MJ.txt", True)
@@ -224,9 +227,10 @@ class Plotter():
 		plt.plot(self.Jupiter_pos[0][:], self.Jupiter_pos[1][:])
 		plt.xlabel('X - [AU]')
 		plt.ylabel('Y - [AU]')
-		plt.legend(['Earth', 'Sun'])
+		plt.legend(['Earth', 'Sun', 'Jupiter'])
 		plt.title('Plot Earth-Jupiter-Sun system. $M_{Jupiter}$ = $1000M_{Jupiter}$. \
 			\n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+		plt.axis('equal')
 
 		fig6 = plt.figure()
 		ax2 = fig6.gca(projection='3d')
@@ -240,9 +244,7 @@ class Plotter():
 		ax2.legend(['Earth', 'Sun', 'Jupiter'], bbox_to_anchor=(-0.1, 0.9), loc=2)
 		ax2.set_title('3D Orbits of the Earth-Jupiter-Sun system, $M_{Jupiter} = 1000M_{Jupiter}$.\
 				 \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
-
 				
-
 		if self.savefile:
 			fig.savefig('../Plots/Earth_Sun_Jupiter.pdf')
 			fig2.savefig('../Plots/ESJ_EarthandSun.pdf')
@@ -425,10 +427,10 @@ class Plotter():
 		anim = animation.FuncAnimation(fig, update, frames=300, interval=20, blit=True)
 		
 		plt.show()
-solve = Plotter(True)
-#solve.Earth_Sun_sys()
+solve = Plotter(False)
+solve.Earth_Sun_sys()
 #solve.plot_escape_velocity()
-solve.ESJ_System()
+#solve.ESJ_System()
 #solve.plotting_3D()
 #solve.animate()
 #solve.plot_mercury_GR()
