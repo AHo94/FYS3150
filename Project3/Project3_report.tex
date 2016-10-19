@@ -31,6 +31,13 @@ moredelim=**[is][\color{blue}]{@}{@}
 \section*{Implementation}
 For the C++ program, it is divided in two parts. Creating the system and calculation the forces between the planets are done in C++. The data will then be saved to a .txt file which is then read and plotted in Python. All planetary data (with the exception for the escape velocity of a planet), which is used to determine the initial conditions of the planets, were obtained from NASA's Horizons page \url{http://ssd.jpl.nasa.gov/horizons.cgi}. 
 
+This program is an object oriented program, in which we use classes to create objects and use them to calculate. The C++ program has multiple classes which is as follows:
+\begin{itemize}
+\item \texttt{vec3}: This class is a vector class which allows us to do basic vector operations. I.e vector dot products, vector cross products, find the length of the vector, additions of two vectors and so on.
+\item \texttt{celestials}: A class that sets the initial conditions and masses for each planet. 
+\item \texttt{odesolvers}: Contains all the algorithms that we will use for the project. That is the Verlet, Euler and Euler Cromer method.
+\item \texttt{solarsystem}: This class sets up the whole system of the program. It will use the \texttt{celestials} class to 
+\end{itemize}
 
 Unit test for energy conservation applies to every system. The program will first calculate the total energy, for one time step, of the whole system and then save it to a variable. In the next time step, it will again calculate the total energy and then compare it to the previous total energy. The absolute value of the difference between these two total energies should ideally be zero. However, due to round off errors in programming, this will not be the case, so we will have to set a certain error threshold $\epsilon$. In the C++ program, we have selected $\epsilon = 10^{-4}$.
 
@@ -130,17 +137,17 @@ Figure 3 shows a plot of a the planet with mass $M_{earth}$ and how the orbit is
 
 \newpage 
 \subsection*{3e) - Three body problem}
-We already know that Earth's orbit will change a little bit , from the theory we previously introduced, when we add Jupiter to the system. Figure 4 shows the orbit of the Earth and Jupiter, as well as the Sun. The orbits themselves does not look particularly odd in any way, but it is hard to see how Jupiter affects the orbit of the Earth. Instead, we only plot the orbit of the Earth and the Sun (still taking Jupiter into account during the calculations) which can be found in figure 5. 
+We already know that Earth's orbit will change, from the theory we previously introduced, when we add Jupiter to the system. Figure 4 shows the orbit of the Earth and Jupiter, as well as the Sun. The orbits themselves does not look particularly odd in any way, but it is hard to see how Jupiter affects the orbit of the Earth. Instead, we only plot the orbit of the Earth and the Sun (still taking Jupiter into account during the calculations) which can be found in figure 5. 
 
-As we can see from figure 5, the orbit of the Earth has changed quite a bit compared to the system without Jupiter. Before we added Jupiter into the system, Earth's orbit was circular. Now that we have added Jupiter into the system, Earth's orbit is now ecliptic, which is a little bit more realistic if we compare it to the orbit we observe. In addition to that, the position of the Sun is also affected a little bit. The Sun is no longer at rest, which means that the Sun is not the center of mass in the system.
+As we can see from figure 5, the orbit of the Earth has changed quite a bit compared to the system without Jupiter. Before we added Jupiter into the system, Earth's orbit was circular. Now that we have added Jupiter into the system, Earth's orbit is now ecliptic, which is more realistic if we compare it to the orbit we observe. In addition to that, the position of the Sun is also affected a little bit. The Sun is no longer at rest, which means that the Sun is not the center of mass in the system.
 
-Increasing the mass of Jupiter will change the orbits of Earth, the Sun, as well as Jupiter itself even more. In figure 4, the top image shows the system when increase the mass of Jupiter by a factor of 10. 
+Increasing the mass of Jupiter will change the orbits of Earth, the Sun, as well as Jupiter itself even more. In figure 6, the top image shows the system when increase the mass of Jupiter by a factor of 10. We can already see that Earth's orbit has changed a little bit, but the effect of a 10 times more massive Jupiter is not very significant to the whole system. Both planets, even after 20 years, are still in orbit around the Sun.
 
-The bottom image of figure 4 shows the system when the mass of Jupiter is increased by a factor of $1000$. At this point, Jupiter has practically the same mass the Sun, so the gravitational effects from that should be quite dramatic. This is clearly seen from the plot, where the Sun, along with Earth, now moves away and will move away from it's initial position. 
+The bottom image of figure 6 shows the system when the mass of Jupiter is increased by a factor of $1000$. At this point, Jupiter has practically the same mass the Sun, so the gravitational effects from that should be quite dramatic. This is clearly seen from the plot, where the Sun, along with Earth, now moves away and will move away from it's initial position. 
 
-The Verlet method for both these cases are still quite stable, given that $\Delta t = 10^{-4}$.
+The Verlet method for both these cases are still quite stable, given that $\Delta t = 10^{-4}$. 
 
-A 3D plot of this system can be found in the appendix.
+3D Plots of this systems with unchanged Jupiter mass and $1000$ times the Jupiter mass can be found in the appendix.
 
 \begin{figure}[hbtp]
 \centering
@@ -191,6 +198,12 @@ What we can do, is to reduce the value of $\Delta t$ to simulate the first four 
 \centering
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Jupiter_3D.pdf}
 \caption{3D Plot of the Earth-Sun-Jupiter system.}
+\end{figure}
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Jupiter_1000MJ_3D.pdf}
+\caption{3D plot for Earth-Sun-Jupiter system with the mass of Jupiter as $1000M_{Jupiter}$}
 \end{figure}
 
 
