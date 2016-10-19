@@ -202,7 +202,7 @@ class Plotter():
 		ax.set_xlabel('X - [AU]')
 		ax.set_ylabel('Y - [AU]')
 		ax.set_zlabel('Z - [AU]')
-		ax.legend(['Earth', 'Sun', 'Jupiter'])
+		ax.legend(['Earth', 'Sun', 'Jupiter'], bbox_to_anchor=(-0.1, 0.9), loc=2)
 		ax.set_title('3D Orbits of the Earth-Jupiter-Sun system. N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 
 		fig4 = plt.figure()
@@ -214,7 +214,7 @@ class Plotter():
 		plt.xlabel('X - [AU]')
 		plt.ylabel('Y - [AU]')
 		plt.legend(['Earth', 'Sun'])
-		plt.title('Plot Earth-Jupiter-Sun system. $M_J$ = $10M_J$. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+		plt.title('Plot Earth-Jupiter-Sun system. $M_{Jupiter}$ = $10M_{Jupiter}$. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 
 		fig5 = plt.figure()
 		self.read_data_ESJ_sys("ESJ_sys_1000MJ.txt", True)
@@ -225,7 +225,22 @@ class Plotter():
 		plt.xlabel('X - [AU]')
 		plt.ylabel('Y - [AU]')
 		plt.legend(['Earth', 'Sun'])
-		plt.title('Plot Earth-Jupiter-Sun system. $M_J$ = $1000M_J$. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+		plt.title('Plot Earth-Jupiter-Sun system. $M_{Jupiter}$ = $1000M_{Jupiter}$. \
+			\n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+
+		fig6 = plt.figure()
+		ax2 = fig6.gca(projection='3d')
+		ax2.plot(self.Earth_pos[0][:], self.Earth_pos[1][:], self.Earth_pos[2][:])
+		plt.hold("on")
+		ax2.plot(self.Sun_pos[0][:], self.Sun_pos[1][:], self.Sun_pos[2][:])
+		ax2.plot(self.Jupiter_pos[0][:], self.Jupiter_pos[1][:], self.Jupiter_pos[2][:])
+		ax2.set_xlabel('X - [AU]')
+		ax2.set_ylabel('Y - [AU]')
+		ax2.set_zlabel('Z - [AU]')
+		ax2.legend(['Earth', 'Sun', 'Jupiter'], bbox_to_anchor=(-0.1, 0.9), loc=2)
+		ax2.set_title('3D Orbits of the Earth-Jupiter-Sun system, $M_{Jupiter} = 1000M_{Jupiter}$.\
+				 \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+
 				
 
 		if self.savefile:
@@ -234,6 +249,7 @@ class Plotter():
 			fig3.savefig('../Plots/Earth_Sun_Jupiter_3D.pdf')
 			fig4.savefig('../Plots/Earth_Sun_Jupiter_10MJ.pdf')
 			fig5.savefig('../Plots/Earth_Sun_Jupiter_1000MJ.pdf')
+			fig6.savefig('../Plots/Earth_Sun_Jupiter_1000MJ_3D.pdf')
 		else:
 			plt.show()
 
@@ -412,7 +428,7 @@ class Plotter():
 solve = Plotter(True)
 #solve.Earth_Sun_sys()
 #solve.plot_escape_velocity()
-#solve.ESJ_System()
-solve.plotting_3D()
+solve.ESJ_System()
+#solve.plotting_3D()
 #solve.animate()
 #solve.plot_mercury_GR()
