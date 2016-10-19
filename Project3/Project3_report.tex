@@ -5,9 +5,12 @@
 \usepackage{graphicx}
 \usepackage{verbatim}
 \usepackage{amsmath}
+\usepackage{float}
 \usepackage[utf8]{inputenc}
 \usepackage{xcolor}
 \usepackage{hyperref}
+\usepackage{placeins}
+
 
 \lstset{
 language=Python,
@@ -73,9 +76,9 @@ Another way to determine that the energy must be conserved is because the forces
 
 We will now test the Euler and Verlet method, presented earlier, to solve the Earth-Sun system. We will also see how stable these methods are for different values of $\Delta t$. For the C++ program, we have tested $\Delta t$ values of $10^{-3}$ and $10^{-3}$. The number of mesh points used for each $\Delta t$ values is $N = 300 000$ and $N=30 000$ respectively. This is to ensure that the time elapsed, for both simulations, are the same.
 
-Figure 1 shows a comparison of the Euler method with the given $\Delta t$ values respectively. The system is a little more stable for a lower $\Delta $t value, but Earth seems to go closer and closer to the Sun for every circular orbit. This does not exactly fit with what we observe, so the Euler method is clearly not the most ideal algorithm we can use for these kinds of systems.
+Figure \ref{fig:balle} shows a comparison of the Euler method with the given $\Delta t$ values respectively. The system is a little more stable for a lower $\Delta $t value, but Earth seems to go closer and closer to the Sun for every circular orbit. This does not exactly fit with what we observe, so the Euler method is clearly not the most ideal algorithm we can use for these kinds of systems.
 
-Let us now look at the Verlet method. Figure 2 compares the Verlet method of the given $\Delta t$ values. As we can see, the system for $\Delta t = 10^{-4}$ is incredibly stable, giving an almost perfect circular orbit for the Earth. The orbit is not perfectly circular is due to very small fluctuations in the orbit of Earth. For a smaller $\Delta t$ value, the orbit is still circular, and unlike the Euler method, Earth will not fall towards the Sun. However, the fluctuations now are a little bigger, which is why the circular line in figure 2 is a little bit thicker. 
+Let us now look at the Verlet method. Figure \ref{fig:balle2} compares the Verlet method of the given $\Delta t$ values. As we can see, the system for $\Delta t = 10^{-4}$ is incredibly stable, giving an almost perfect circular orbit for the Earth. The orbit is not perfectly circular is due to very small fluctuations in the orbit of Earth. For a smaller $\Delta t$ value, the orbit is still circular, and unlike the Euler method, Earth will not fall towards the Sun. However, the fluctuations now are a little bigger, which is why the circular line in figure \ref{fig:balle2} is a little bit thicker. 
 
 %  As we can see, lower values of $\delta t$ gives a more stable system. However, even though the system is more stable, the orbit of Earth seems to differ quite significantly for each 
 
@@ -97,19 +100,35 @@ Data saved to: Earth_Sun_sys_verlet.txt@
 
 One can also use the Euler Cromer method to solve these systems. A plot of the Earth-Sun system using the Euler Cromer method can be found in the appendix. As we can see, the results practically identical to the Verlet method. The computation speed of the Euler Cromer method is almost identical as the computation speed of the Euler method.
 
-\begin{figure}[hbtp]
+\begin{figure}[!h]
 \centering
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Euler_method.pdf}
-\includegraphics[width=\linewidth]{Plots/Earth_Sun_Euler_method_larger_dt.pdf} 
 \caption{Euler method comparison for different $\Delta t$}
+\label{fig:balle}
 \end{figure}
 
-\begin{figure}[hbtp]
+\begin{figure}[!h]
+\centering
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Euler_method_larger_dt.pdf}
+\caption{Euler method comparison for different $\Delta t$}
+\label{fig:balle1}
+\end{figure}
+
+\begin{figure}[!h]
 \centering
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Verlet_method.pdf}
+\caption{Verlet method comparison for different $\Delta t$}
+\label{fig:balle2}
+\end{figure}
+
+
+\begin{figure}[!h]
+\centering
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Verlet_method_larger_dt.pdf}
 \caption{Verlet method comparison for different $\Delta t$}
+\label{fig:balle3}
 \end{figure}
+\FloatBarrier
 
 \newpage
 \subsection*{3d) - Escape velocity}
