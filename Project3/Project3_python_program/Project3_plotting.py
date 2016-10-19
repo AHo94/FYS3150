@@ -146,7 +146,8 @@ class Plotter():
 			plt.xlabel('X - [AU]')
 			plt.ylabel('Y - [AU]')
 			plt.legend(['Earth', 'Sun'])
-			plt.title('Earth and Sun system, '+method[i]+' N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+			plt.title('Earth and Sun system, '+method[i]+'.\n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+			plt.axis('equal')
 
 			if self.savefile:
 				fig.savefig('../Plots/Earth_Sun_'+method[i]+'.pdf')
@@ -164,7 +165,8 @@ class Plotter():
 			plt.xlabel('X - [AU]')
 			plt.ylabel('Y - [AU]')
 			plt.legend(['Earth', 'Sun'])
-			plt.title('Earth and Sun system, '+larger_dt_method[i]+' N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+			plt.title('Earth and Sun system, '+larger_dt_method[i]+'. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+			plt.axis('equal')
 
 			if self.savefile:
 				fig.savefig('../Plots/Earth_Sun_'+larger_dt_method[i]+'_larger_dt'+'.pdf')
@@ -284,7 +286,8 @@ class Plotter():
 		plt.xlabel('X - [AU]')
 		plt.ylabel('Y - [AU]')
 		plt.legend(['Planet $v = v_{escape}$', 'Sun', r'Planet $v \neq v_{escape}$'])
-		plt.title('Escape velocity of a planet. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))		
+		plt.title('Escape velocity of a planet. \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))	
+		plt.axis('equal')	
 		if self.savefile:
 			fig.savefig('../Plots/Escape_velocity.pdf')
 		else:		
@@ -348,6 +351,7 @@ class Plotter():
 		ax.scatter(self.Neptune_pos[0][0], self.Neptune_pos[1][0], self.Neptune_pos[2][0], color='green', s=90)
 		ax.scatter(self.Uranus_pos[0][0], self.Uranus_pos[1][0], self.Uranus_pos[2][0], color='green', s=100)
 		ax.scatter(self.Pluto_pos[0][0], self.Pluto_pos[1][0], self.Pluto_pos[2][0], color='green', s=20)
+		ax.set_aspect('equal')
 
 
 		fig2 = plt.figure()
@@ -363,13 +367,14 @@ class Plotter():
 		ax2.set_ylabel('Y - [AU]')
 		ax2.set_zlabel('Z - [AU]')
 		ax2.legend(['Sun', 'Mercury', 'Earth', 'Venus', 'Mars'], bbox_to_anchor=(-0.1, 0.9), loc=2)
-		ax2.set_title('3D Plot inner planets. \n N=%.f, dt=%.g, years = %.1f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+		ax2.set_title('3D Plot of the first four planets. \n N=%.f, dt=%.g, years = %.1f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 
 		ax2.scatter(self.Sun_pos[0][0], self.Sun_pos[1][0], self.Sun_pos[2][0], color='green', s=400)
 		ax2.scatter(self.Mercury_pos[0][0], self.Mercury_pos[1][0], self.Mercury_pos[2][0], color='green', s=30)
 		ax2.scatter(self.Venus_pos[0][0], self.Venus_pos[1][0], self.Venus_pos[2][0], color='green', s=65)
 		ax2.scatter(self.Earth_pos[0][0], self.Earth_pos[1][0], self.Earth_pos[2][0], color='green', s=80)
 		ax2.scatter(self.Mars_pos[0][0], self.Mars_pos[1][0], self.Mars_pos[2][0], color='green', s=70)
+		ax2.set_aspect('equal')
 
 		if self.savefile:
 			fig1.savefig('../Plots/All_planets_3D_plot.pdf')
@@ -440,7 +445,7 @@ class Plotter():
 		anim = animation.FuncAnimation(fig, update, frames=300, interval=20, blit=True)
 		
 		plt.show()
-solve = Plotter(False)
+solve = Plotter(True)
 #solve.Earth_Sun_sys()
 #solve.plot_escape_velocity()
 #solve.ESJ_System()
