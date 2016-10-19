@@ -54,7 +54,7 @@ void solve_systems(SolarSystem &SolSys, int N, double dt, string filename, strin
         cout << "Running Verlet method" << endl;
         start = clock();
         for (int step=0; step<N; step++){
-            if (plot_counter == 10){
+            if (plot_counter == 20){
                 // Saves every 100 steps.
                 SolSys.write_file(filename, SNumsteps, Sdt);
                 plot_counter = 0;
@@ -71,7 +71,7 @@ void solve_systems(SolarSystem &SolSys, int N, double dt, string filename, strin
         cout << "Running Euler method" << endl;
         start = clock();
         for (int step=0; step<N; step++){
-            if (plot_counter == 10){
+            if (plot_counter == 20){
                 // Saves every 100 steps.
                 SolSys.write_file(filename, SNumsteps, Sdt);
                 plot_counter = 0;
@@ -88,7 +88,7 @@ void solve_systems(SolarSystem &SolSys, int N, double dt, string filename, strin
         cout << "Running Euler Cromer method" << endl;
         start = clock();
         for (int step=0; step<N; step++){
-            if (plot_counter == 100){
+            if (plot_counter == 20){
                 // Saves every 100 steps.
                 SolSys.write_file(filename, SNumsteps, Sdt);
                 plot_counter = 0;
@@ -105,7 +105,7 @@ void solve_systems(SolarSystem &SolSys, int N, double dt, string filename, strin
         cout << "Running Verlet method with GR adjustment" << endl;
         start = clock();
         for (int step=0; step<N; step++){
-            if (plot_counter == 100){
+            if (plot_counter == 20){
                 // Saves every 100 steps.
                 SolSys.write_file(filename, SNumsteps, Sdt);
                 plot_counter = 0;
@@ -190,7 +190,7 @@ int main(){
     EscapeVelSystem.createCelestialBody(vec3(0,0,0), vec3(0,0,0), 1);
     EscapeVelSystem.createCelestialBody(PlanetPos, PlanetVel, M_earth);
     solve_systems(EscapeVelSystem, NumTimesteps, dt, "Escape_velocity_system.txt", "verlet");
-    */
+
     // Earth-Sun-Jupiter system
     dt = 0.0001;
     NumTimesteps = 150000;
@@ -199,32 +199,37 @@ int main(){
     int NumCelestials = sizeof(ESJ_masses)/sizeof(*ESJ_masses);
     New_system_and_solve(NumTimesteps, dt, ESJ_names, ESJ_masses, NumCelestials, "ESJ_sys.txt", "verlet");
 
+    // Stability test of verlet method in Earth-Sun-Jupiter system
+    dt = 0.001;
+    New_system_and_solve(NumTimesteps, dt, ESJ_names, ESJ_masses, NumCelestials, "ESJ_sys_largerdt.txt", "verlet");
+
+    dt = 0.0001;
     // Jupiter mass now 10 times larger
     double ESJ_masses2[] = {M_earth, 10*M_jupiter};
     New_system_and_solve(NumTimesteps, dt, ESJ_names, ESJ_masses2, NumCelestials, "ESJ_sys_10MJ.txt", "verlet");
     // Jupiter mass now 1000 times larger
-    dt = 0.0001;
     double ESJ_masses3[] = {M_earth, 1000*M_jupiter};
     New_system_and_solve(NumTimesteps, dt, ESJ_names, ESJ_masses3, NumCelestials, "ESJ_sys_1000MJ.txt", "verlet");
-    return 0;
+    */
+
     // Whole Solar system
     string Celestial_names[] = {"earth", "jupiter", "mercury", "venus", "mars", "saturn",
                             "uranus", "neptune", "pluto"};
     double Celestial_masses[] = {M_earth, M_jupiter, M_mercury, M_venus, M_mars, M_saturn,
                              M_uranus, M_neptune, M_pluto};
 
-    /*
-    dt = 0.01;
-    NumTimesteps = 30000;
-    NumCelestials = sizeof(Celestial_masses)/sizeof(*Celestial_masses);
-    New_system_and_solve(NumTimesteps, dt, Celestial_names, Celestial_masses, NumCelestials
-                         , "SolarSys_All_planets.txt", "verlet");
+
+    dt = 0.001;
+    NumTimesteps = 250000;
+    double NumCelestials = sizeof(Celestial_masses)/sizeof(*Celestial_masses);
+    //New_system_and_solve(NumTimesteps, dt, Celestial_names, Celestial_masses, NumCelestials
+    //                     , "SolarSys_All_planets.txt", "verlet");
 
     dt = 0.0001;
-    NumTimesteps = 30000;
+    NumTimesteps = 25000;
     New_system_and_solve(NumTimesteps, dt, Celestial_names, Celestial_masses, NumCelestials
                          , "SolarSys_All_planets_First4.txt", "verlet");
-    */
+
 
     /*
     SolarSystem MercurySys;
