@@ -50,12 +50,12 @@ void SolarSystem::CalculateAccelerationAndEnergy(){
 
             m_pot_energy -= four_pi2*body1.mass*body2.mass;
         }
-    m_kin_energy = 0.5*body1.mass*body1.velocity.dot(body1.velocity);
+        m_kin_energy += 0.5*body1.mass*body1.velocity.dot(body1.velocity);
     //angular_momentum = body1.mass*(body1.position.cross(body1.velocity));
     }
     new_tot_energy = m_kin_energy + m_pot_energy;   // New total energy
     if (old_tot_energy != 0){
-        if (fabs(new_tot_energy - old_tot_energy) > 1e-4){
+        if (fabs(new_tot_energy - old_tot_energy) > 3e-4){
             //cout << fabs(new_tot_energy - old_tot_energy) << endl;
             cout << "Total energy not conserved, stopping program" << endl;
             //terminate();
