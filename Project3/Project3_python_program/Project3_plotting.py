@@ -445,10 +445,10 @@ class Plotter():
 		anim = animation.FuncAnimation(fig, update, frames=300, interval=20, blit=True)
 		
 		plt.show()
-solve = Plotter(True)
+solve = Plotter(False)
 #solve.Earth_Sun_sys()
-#solve.plot_escape_velocity()
+solve.plot_escape_velocity()
 #solve.ESJ_System()
-solve.plotting_3D()
+#solve.plotting_3D()
 #solve.animate()
 #solve.plot_mercury_GR()
