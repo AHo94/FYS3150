@@ -209,9 +209,11 @@ int main(){
 
     // Stability test of verlet method in Earth-Sun-Jupiter system
     dt = 0.001;
+    NumTimesteps = 15000;
     New_system_and_solve(NumTimesteps, dt, ESJ_names, ESJ_masses, NumCelestials, "ESJ_sys_largerdt.txt", "verlet");
 
     dt = 0.0001;
+    NumTimesteps = 150000;
     // Jupiter mass now 10 times larger
     double ESJ_masses2[] = {M_sun, M_earth, 10*M_jupiter};
     New_system_and_solve(NumTimesteps, dt, ESJ_names, ESJ_masses2, NumCelestials, "ESJ_sys_10MJ.txt", "verlet");
