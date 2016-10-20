@@ -132,13 +132,6 @@ void solve_systems(SolarSystem &SolSys, int N, double dt, string filename, strin
 void New_system_and_solve(int N, double dt, string *names, double *masses, int NumCelestials
                           , string filename, string method){
     SolarSystem System;
-    // Hardcoding position and velocity of the Sun. Assuming at origin and at rest.
-    //vec3 SunPos(0,0,0);
-    //vec3 SunVel(0,0,0);
-
-    // Coding in the Sun
-    //System.createCelestialBody(SunPos, SunVel, 1);
-
     for (int i=0; i<NumCelestials; i++){
         vec3 position, velocity;
         set_initial_cond(position, velocity, names[i]);
