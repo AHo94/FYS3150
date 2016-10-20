@@ -197,7 +197,7 @@ int main(){
     EscapeVelSystem.createCelestialBody(vec3(0,0,0), vec3(0,0,0), 1);
     EscapeVelSystem.createCelestialBody(PlanetPos, PlanetVel, M_earth);
     solve_systems(EscapeVelSystem, NumTimesteps, dt, "Escape_velocity_system.txt", "verlet");
-    return 0;
+
 
     // Earth-Sun-Jupiter system
     dt = 0.0001;

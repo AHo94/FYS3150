@@ -27,7 +27,8 @@ private:
     double m_pot_energy;
     double new_tot_energy;
     double old_tot_energy;
-    vec3 angular_momentum;
+    double angular_momentum;
+    double old_angular_momentum;
 };
 
 #endif // SOLARSYSTEM_H

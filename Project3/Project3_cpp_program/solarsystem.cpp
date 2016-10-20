@@ -7,6 +7,8 @@ SolarSystem::SolarSystem()
 {
     new_tot_energy = 0;
     old_tot_energy = 0;
+    angular_momentum = 0;
+    old_angular_momentum = 0;
 }
 
 Celestials &SolarSystem::createCelestialBody(vec3 position, vec3 velocity, double mass)
@@ -31,6 +33,7 @@ void SolarSystem::CalculateAccelerationAndEnergy(){
     m_kin_energy = 0;
     m_pot_energy = 0;
     old_tot_energy = new_tot_energy;
+    old_angular_momentum = angular_momentum;
 
     // Reset forces/acceleration on all bodies
     for (Celestials &body : m_bodies){
@@ -51,13 +54,18 @@ void SolarSystem::CalculateAccelerationAndEnergy(){
             m_pot_energy -= four_pi2*body1.mass*body2.mass;
         }
         m_kin_energy += 0.5*body1.mass*body1.velocity.dot(body1.velocity);
-    //angular_momentum = body1.mass*(body1.position.cross(body1.velocity));
+        angular_momentum += body1.mass*(body1.position.cross(body1.velocity)).length();
     }
     new_tot_energy = m_kin_energy + m_pot_energy;   // New total energy
     if (old_tot_energy != 0){
         if (fabs(new_tot_energy - old_tot_energy) > 3e-4){
             //cout << fabs(new_tot_energy - old_tot_energy) << endl;
             cout << "Total energy not conserved, stopping program" << endl;
+            //terminate();
+        }
+        if (fabs(angular_momentum - old_angular_momentum) > 3e-4){
+            //cout << fabs(angular_momentum - old_angular_momentum) << endl;
+            cout << "Total angular momentum not conserved, stopping program" << endl;
             //terminate();
         }
     }
