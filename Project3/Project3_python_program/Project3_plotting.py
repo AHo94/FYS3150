@@ -210,7 +210,9 @@ class Plotter():
 		plt.ylabel('Y - [AU]')
 		ax2.legend()
 		plt.title('Plot of Earth and Sun in the Earth-Sun-Jupiter system.\n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
-		plt.axis('equal')
+		ax2.set_xlim(-2,2)
+		ax2.set_ylim(-2,2)
+		ax2.set_aspect('equal')
 
 		# 3D Plot
 		fig3 = plt.figure()
@@ -427,32 +429,28 @@ class Plotter():
 	def plot_mercury_GR(self):
 		""" Function plotting the effect of general relativity correction for Mercury """
 		self.read_data_mercury_GR("Mercury_GR.txt")
-		fig1 = plt.figure()
-		ax = fig1.gca(projection='3d')
-		plt.hold("on")
-		ax.plot(self.Sun_pos_GR[0][:], self.Sun_pos_GR[1][:], self.Sun_pos_GR[2][:], 'r-')
-		ax.plot(self.Mercury_pos_GR[0][:], self.Mercury_pos_GR[1][:], self.Mercury_pos_GR[2][:], 'b-')
-		ax.set_xlabel('X - [AU]')
-		ax.set_ylabel('Y - [AU]')
-		ax.set_zlabel('Z - [AU]')
-		ax.legend(['Sun', 'Mercury'])
-		ax.set_title('Orbital path of Mercury around the Sun')
-		ax.scatter(self.Sun_pos_GR[0][0], self.Sun_pos_GR[1][0], self.Sun_pos_GR[2][0], color='red', s=200)
-		ax.scatter(self.Mercury_pos_GR[0][0], self.Mercury_pos_GR[1][0], self.Mercury_pos_GR[2][0], color='blue', s=30)
 		fig2 = plt.figure()
-		plt.plot(self.Sun_pos_GR[0][:], self.Sun_pos_GR[1][:], 'r-')
+		ax2 = fig2.add_subplot(1,1,1)
 		plt.hold("on")
-		plt.plot(self.Mercury_pos_GR[0][:], self.Mercury_pos_GR[1][:], 'b-')
+		line1, = ax2.plot(self.Mercury_pos_GR[0][:], self.Mercury_pos_GR[1][:], label='Mercury')
+		line2, = ax2.plot(self.Sun_pos_GR[0][:], self.Sun_pos_GR[1][:], label='Sun')
+		plt.plot(self.Mercury_pos_GR[0][-1], self.Mercury_pos_GR[1][-1], 'o', color=line1.get_color())
+		plt.plot(self.Sun_pos_GR[0][-1], self.Sun_pos_GR[1][-1], 'o', color=line2.get_color())
 		plt.xlabel('X - [AU]')
 		plt.ylabel('Y - [AU]')
-		plt.legend(['Sun', 'Mercury'])
-		plt.show()
+		ax2.legend()
+		plt.title('Orbital path of Mercury with GR correction. \n N=%.f, dt=%.g, years = %.1f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+		plt.axis('equal')
 
+		if self.savefile == True:
+			fig2.savefig('../Plots/Mercury_orbit_GR.pdf')
+		else:
+			plt.show()
 
 
 solve = Plotter(True)
-solve.Earth_Sun_sys()
-solve.plot_escape_velocity()
+#solve.Earth_Sun_sys()
+#solve.plot_escape_velocity()
 solve.ESJ_System()
-solve.plotting_3D()
+#solve.plotting_3D()
 #solve.plot_mercury_GR()
