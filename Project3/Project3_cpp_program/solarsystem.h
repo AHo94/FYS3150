@@ -29,6 +29,7 @@ private:
     double old_tot_energy;
     double angular_momentum;
     double old_angular_momentum;
+    int test_counter;
 };
 
 #endif // SOLARSYSTEM_H
