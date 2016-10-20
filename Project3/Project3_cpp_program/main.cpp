@@ -221,19 +221,19 @@ int main(){
     double Celestial_masses[] = {M_sun, M_earth, M_jupiter, M_mercury, M_venus, M_mars, M_saturn,
                              M_uranus, M_neptune, M_pluto};
 
-    /*
+
     dt = 0.001;
     NumTimesteps = 250000;
     NumCelestials = sizeof(Celestial_masses)/sizeof(*Celestial_masses);
 
-    New_system_and_solve(NumTimesteps, dt, Celestial_names, Celestial_masses, NumCelestials
-                         , "SolarSys_All_planets.txt", "verlet");
+    //New_system_and_solve(NumTimesteps, dt, Celestial_names, Celestial_masses, NumCelestials
+    //                     , "SolarSys_All_planets.txt", "verlet");
 
     dt = 0.0001;
     NumTimesteps = 25000;
     New_system_and_solve(NumTimesteps, dt, Celestial_names, Celestial_masses, NumCelestials
                          , "SolarSys_All_planets_First4.txt", "verlet");
-    */
+
 
     /*
     SolarSystem MercurySys;
