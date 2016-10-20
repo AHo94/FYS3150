@@ -130,13 +130,26 @@ void solve_systems(SolarSystem &SolSys, int N, double dt, string filename, strin
 }
 
 void New_system_and_solve(int N, double dt, string *names, double *masses, int NumCelestials
-                          , string filename, string method){
+                          , string filename, string method, int Earth_SunSys = 0){
     SolarSystem System;
-    for (int i=0; i<NumCelestials; i++){
-        vec3 position, velocity;
-        set_initial_cond(position, velocity, names[i]);
-        System.createCelestialBody(position, velocity, masses[i]);
+    if (Earth_SunSys == 0){
+        for (int i=0; i<NumCelestials; i++){
+            vec3 position, velocity;
+            set_initial_cond(position, velocity, names[i]);
+            System.createCelestialBody(position, velocity, masses[i]);
+        }
     }
+    else if (Earth_SunSys == 1){
+        System.createCelestialBody(vec3(0,0,0), vec3(0,0,0), masses[0]);
+        System.createCelestialBody(vec3(1,0,0), vec3(0,2*acos(-1),0), masses[1]);
+    }
+    else{
+        cout << "Variable: Earth_SunSys, not properly set. Try: \n"
+             << "Earth_SunSys = 0 \n"
+             << "Earth_SunSys = 1" << endl;
+        terminate();
+    }
+
 
     // Solve system
     solve_systems(System, N, dt, filename, method);
@@ -165,19 +178,19 @@ int main(){
     int NumCelestials = sizeof(earth_sun_mass)/sizeof(*earth_sun_mass);
 
     New_system_and_solve(NumTimesteps, dt, earth_sun_name, earth_sun_mass,
-                         NumCelestials, "Earth_Sun_sys_euler.txt", "euler");
+                         NumCelestials, "Earth_Sun_sys_euler.txt", "euler", 1);
     New_system_and_solve(NumTimesteps, dt, earth_sun_name, earth_sun_mass,
-                         NumCelestials, "Earth_Sun_sys_eulercromer.txt", "eulercromer");
+                         NumCelestials, "Earth_Sun_sys_eulercromer.txt", "eulercromer", 1);
     New_system_and_solve(NumTimesteps, dt, earth_sun_name, earth_sun_mass,
-                         NumCelestials, "Earth_Sun_sys_verlet.txt", "verlet");
+                         NumCelestials, "Earth_Sun_sys_verlet.txt", "verlet", 1);
 
     // Increase dt as a comparison
     dt = 0.001;
     NumTimesteps = 10000;
     New_system_and_solve(NumTimesteps, dt, earth_sun_name, earth_sun_mass,
-                         NumCelestials, "Earth_Sun_sys_euler_largerdt.txt", "euler");
+                         NumCelestials, "Earth_Sun_sys_euler_largerdt.txt", "euler", 1);
     New_system_and_solve(NumTimesteps, dt, earth_sun_name, earth_sun_mass,
-                         NumCelestials, "Earth_Sun_sys_verlet_largerdt.txt", "verlet");
+                         NumCelestials, "Earth_Sun_sys_verlet_largerdt.txt", "verlet", 1);
 
     // Finding the escape velocity of a planet
 
@@ -211,7 +224,8 @@ int main(){
     double ESJ_masses2[] = {M_sun, M_earth, 10*M_jupiter};
     New_system_and_solve(NumTimesteps, dt, ESJ_names, ESJ_masses2, NumCelestials, "ESJ_sys_10MJ.txt", "verlet");
     // Jupiter mass now 1000 times larger
-    dt = 0.00001;
+    dt = 0.0001;
+    NumTimesteps = 70000;
     double ESJ_masses3[] = {M_sun, M_earth, 1000*M_jupiter};
     New_system_and_solve(NumTimesteps, dt, ESJ_names, ESJ_masses3, NumCelestials, "ESJ_sys_1000MJ.txt", "verlet");
 
