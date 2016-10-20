@@ -147,9 +147,11 @@ In terms of AU per year, we have that $GM_{\odot} = 4\pi^2 \text{AU}^3/\text{yr}
 \begin{align*}
 v_{escape} = \sqrt{\frac{8\pi^2}{r}} \text{AU}/\text{yr}
 \end{align*}
-It is now quite easy to implement the escape velocity. In the C++ program, we have assumed that the planet has the mass of Earth and start 1 AU away from the Sun in the x direction. The velocity will be the escape velocity directed in the y-direction. 
+It is now quite easy to implement the escape velocity. In the C++ program, we have assumed, for simplicity, that the planet has the mass of Earth and start 1 AU away from the Sun in the x direction. The velocity will be the escape velocity directed in the y-direction. 
 
-Figure \ref{fig:EscapeVel} shows a plot of a the planet with mass $M_{earth}$ and how the orbit is if the initial velocity is equal to the escape velocity. As we can see, starting with the escape velocity allows the planet to break free from it's intended orbit and leave the system. The orbit of Earth, which was used previously, is also plotted as a comparison.
+Figure \ref{fig:EscapeVel} shows a plot of a the planet with mass $M_{earth}$ and how the orbit is if the initial velocity is equal to the escape velocity. As we can see, starting with the escape velocity allows the planet to break free from it's intended orbit and leave the system. The orbit of Earth, which was used previously, is also plotted as a comparison. 
+
+One thing to note is that the initial position of Earth , without the escape velocity, is different from the one with the escape velocity.
 
 \begin{figure}[!h]
 \centering
@@ -209,15 +211,21 @@ Figure \ref{fig:ESJ_1000MJ} shows the system when the mass of Jupiter is increas
 \FloatBarrier
 
 \subsection*{3f) - All planets}
-We will now add all planets, including Pluto, into our system. This is quite straight forward to do. In the C++ program, all we have to do is to add an extra force to each planet. Figure \ref{fig:All_planets_3D} shows the orbits of all planets in 3 dimensions, for 250 years. Because of the orbit sizes of the outer planets (i.e Jupiter, Saturn, Uranus, Neptune and Pluto), the orbits of the first four planets will be packed in the center of the system, which is quite hard to analyse. 
-
+We will now add all planets, including Pluto, into our system. This is quite straight forward to do. In the C++ program, all we have to do is to add an extra force to each planet. Figure \ref{fig:All_planets_3D} shows the orbits of all planets in 3 dimensions, for 250 years. The initial velocity of the Sun is set, so that the total momentum of the system is conserved, that is
+\begin{align}
+M_{\odot}v_{\odot} + \displaystyle \sum_i M_i v_i = 0
+\end{align}
+Unlike the Earth-Sun-Jupiter system, the Verlet method is quite stable for $\Delta t = 10^{-3}$ in the system with all planets. 
 \begin{figure}[!h]
 \centering
 \includegraphics[width=\linewidth]{Plots/All_planets_3D_plot.pdf}
 \caption{Plot of all planets in 3D. Note: the scatter plot (spheres) of the planet does not scale with it's real size.}
 \label{fig:All_planets_3D}
 \end{figure}
-What we can do is to only plot the first four planets, while still taking the effect of the gravitational effects of the other planets into account. However, plotting 250 years worth of orbits of the first four planets are quite redundant so we have decided to reduce the number of time steps, $\Delta t$. This is, again, mainly to reduce the number of simulated years, but it will also increase the stability of the Verlet method. The orbits of the first four planets under these settings can be found in figure \ref{fig:First4_planets_3D}. One thing to note is that the outer planets will no longer have full orbits, like in figure \ref{fig:All_planets_3D}. However, the effect from the gravitational pull of these planets are still present, which is the most important part.
+
+Because of the orbit sizes of the outer planets (i.e Jupiter, Saturn, Uranus, Neptune and Pluto), the orbits of the first four planets will be packed in the center of the system, which is quite hard to analyse. What we can do is to only plot the first four planets, while still taking the effect of the gravitational effects of the other planets into account. 
+
+However, plotting 250 years worth of orbits of the first four planets are quite redundant so we have decided to reduce the number of time steps, $\Delta t$. This is to, again, mainly to reduce the number of simulated years, but it will also increase the stability of the Verlet method. The orbits of the first four planets under these settings can be found in figure \ref{fig:First4_planets_3D}. One thing to note is that the outer planets will no longer have full orbits, like in figure \ref{fig:All_planets_3D}. However, the effect from the gravitational pull of these planets are still present, which is the most important part.
 
 %What we can do, is to reduce the value of $\Delta t$ to simulate the first four planets, while still taking the effect of the gravitational forces of the other planets into account. This will of course reduce the number of years the simulation shows, which means that the outer planets will not have full orbits. The orbits of the first four planets under these settings can be found in figure \ref{fig:First4_planets_3D}.
 
@@ -228,7 +236,7 @@ What we can do is to only plot the first four planets, while still taking the ef
 \label{fig:First4_planets_3D}
 \end{figure}
 
-The results are promising. The orbits of all planets resembles to the orbits we observe. When looking at the plot for the first four planets, one may quickly be confused on the orbits, as it seems like the planets (with the exception of Earth) goes very high up in the z-axis. But this movement is at most up to $\pm 0.04AU$, which is a very very small change.
+The results are promising. The orbits of all planets resembles to the orbits we observe. When looking at the plot for the first four planets, one may quickly be confused on the orbits, as it seems like the planets (with the exception of Earth) goes very high up in the z-axis. But this movement is at most up to $\pm 0.04AU$, which is a very very small change. By looking at figure \ref{fig:All_planets_3D}, the vertical movement of the first four planets are practically zero, especially when we include Pluto to the system.
 
 \FloatBarrier
 
