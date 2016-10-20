@@ -237,9 +237,9 @@ class Plotter():
 		line1, = ax3.plot(self.Earth_pos[0][:], self.Earth_pos[1][:], label='Earth')
 		line2, = ax3.plot(self.Sun_pos[0][:], self.Sun_pos[1][:], label='Sun')
 		line3, = ax3.plot(self.Jupiter_pos[0][:], self.Jupiter_pos[1][:], label='Jupiter')
-		plt.plot(self.Earth_pos[0][0], self.Earth_pos[1][0], 'o', color=line1.get_color())
-		plt.plot(self.Sun_pos[0][0], self.Sun_pos[1][0], 'o', color=line2.get_color())
-		plt.plot(self.Jupiter_pos[0][0], self.Jupiter_pos[1][0], 'o', color=line3.get_color())
+		plt.plot(self.Earth_pos[0][-1], self.Earth_pos[1][-1], 'o', color=line1.get_color())
+		plt.plot(self.Sun_pos[0][-1], self.Sun_pos[1][-1], 'o', color=line2.get_color())
+		plt.plot(self.Jupiter_pos[0][-1], self.Jupiter_pos[1][-1], 'o', color=line3.get_color())
 		plt.xlabel('X - [AU]')
 		plt.ylabel('Y - [AU]')
 		ax3.legend()
@@ -274,8 +274,8 @@ class Plotter():
 		ax5.set_ylabel('Y - [AU]')
 		ax5.set_zlabel('Z - [AU]')
 		ax5.legend(['Earth', 'Sun', 'Jupiter'], bbox_to_anchor=(-0.1, 0.9), loc=2)
-		ax5.set_title('3D Orbits of the Earth-Jupiter-Sun system, with $1000M_{Jupiter}$.\
-				 \n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
+		ax5.set_title('3D Orbits of the Earth-Jupiter-Sun system, with $1000M_{Jupiter}$. \
+				 	\n N=%.f, dt=%.g, years = %.f' %(self.Nsteps, self.dt, self.Nsteps*self.dt))
 
 		ax5.scatter(self.Jupiter_pos[0][-1], self.Jupiter_pos[1][-1], self.Jupiter_pos[2][-1], color='green', s=150)
 		ax5.scatter(self.Sun_pos[0][-1], self.Sun_pos[1][-1], self.Sun_pos[2][-1], color='green', s=300)
@@ -450,48 +450,9 @@ class Plotter():
 
 
 
-	def animate(self):
-		# Animates 
-		fig = plt.figure()
-		#ax = fig.gca(projection='3d')
-		ax = fig.add_subplot(111, projection='3d')
-		ax.set_xlabel('X - [AU]')
-		ax.set_ylabel('Y - [AU]')
-		ax.set_zlabel('Z - [AU]')
-
-		theta, phi = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
-		Jx = 0.1*np.cos(theta)*np.sin(phi)+self.Jupiter_pos[0][0]
-		Jy = 0.1*np.sin(theta)*np.sin(phi)+self.Jupiter_pos[1][0]
-		Jz = 0.1*np.cos(phi)+self.Jupiter_pos[2][0]
-		Jsphere =ax.plot_wireframe(Jx,Jy,Jz)
-		Sx = 0.6*np.cos(theta)*np.sin(phi)+self.Sun_pos[0][0]
-		Sy = 0.6*np.sin(theta)*np.sin(phi)+self.Sun_pos[1][0]
-		Sz = 0.6*np.cos(phi)+self.Sun_pos[2][0]
-		#Ssphere = ax.plot_wireframe(Sx, Sy, Sz, color='r')
-		#plt.show()
-		#jupiter = ax.scatter(self.Jupiter_pos[0][0], self.Jupiter_pos[1][0], self.Jupiter_pos[2][0], s=100, animated=True)
-		
-		def init():
-			return
-
-		def update(i):
-			#jupiter = ax.scatter(self.Jupiter_pos[0][i], self.Jupiter_pos[1][i], self.Jupiter_pos[2][i], s=100, animated=True)
-			#jupiter._offsets3D(self.Jupiter_pos[0][i], self.Jupiter_pos[1][i], self.Jupiter_pos[2][i])
-			#jupiter.set_data(self.Jupiter_pos[0][i], self.Jupiter_pos[1][i], self.Jupiter_pos[2][i])
-			Jx = 0.1*np.cos(theta)*np.sin(phi)+self.Jupiter_pos[0][i]
-			Jy = 0.1*np.sin(theta)*np.sin(phi)+self.Jupiter_pos[1][i]
-			Jz = 0.1*np.cos(phi)+self.Jupiter_pos[2][i]
-			Jsphere = ax.plot_wireframe(Jx, Jy, Jz, animated=True)
-			return Jsphere,
-
-
-		anim = animation.FuncAnimation(fig, update, frames=300, interval=20, blit=True)
-		
-		plt.show()
 solve = Plotter(True)
-#solve.Earth_Sun_sys()
-#solve.plot_escape_velocity()
+solve.Earth_Sun_sys()
+solve.plot_escape_velocity()
 solve.ESJ_System()
-#solve.plotting_3D()
-#solve.animate()
+solve.plotting_3D()
 #solve.plot_mercury_GR()
