@@ -64,17 +64,24 @@ This program is an object oriented program, in which we use classes to create ob
 \item \texttt{solarsystem}: This class sets up the whole system of the program. It will use the \texttt{celestials} class to set the initial conditions and masses of a given planet. This class will also calculate the forces when we call one of the solvers from \texttt{odesolvers}. In addition to that, this class will save the positions of all objects to a file.
 \end{itemize}
 
-Unit test for energy conservation applies to every system. The program will first calculate the total energy, for one time step, of the whole system and then save it to a variable. In the next time step, it will again calculate the total energy and then compare it to the previous total energy. The absolute value of the difference between these two total energies should ideally be zero. However, due to round off errors in programming (from float numbers), this will not be the case, so we will have to set a certain error threshold $\epsilon$. In the C++ program, we have selected $\epsilon = 3\cdot10^{-4}$, and if energy is not conserved, the whole program will stop and also give us a message that the energy is no longer conserved.
+Unit test for energy and angular momentum conservation applies to every system. The program will first calculate the total energy, for one time step, of the whole system and then save it to a variable. In the next time step, it will again calculate the total energy and then compare it to the previous total energy. That is
+\begin{align*}
+\Delta E = |E_{new} - E_{old}|
+\end{align*}
+The same idea applies for the total angular momentum.
+
+The absolute value of the difference between the old and new total energy/total angular momentum should ideally be zero. However, due to round off errors in programming (from float numbers), this will not be the case, so we will have to set a certain error threshold $\epsilon$. In the C++ program, we have selected $\epsilon = 3\cdot10^{-4}$.
+
+\section*{Unit tests}
+The energy of the system must be conserved because gravity as a force is a conservative force. This is also the only force we take into account in the project. The kinetic energy and potential energy will therefore not vanish due to forces like friction (which we have ignored).
+
+Angular momentum for the system must also be conserved because we assume that the system is not affected by an external torque. This is also because we assume that our system is isolated, and therefore not affected by external forces.
 \section*{Results}
 
 \subsection*{3c) - Testing the algorithm}
 All initial conditions, i.e positions and velocities of both the Sun and Earth are obtained from NASA. The date of the data is 2016.10.05.
 
-One can assume that the total energy for the whole system is conserved as the total energy will confined within this system. That is, we think of this system that is in a box. The energy for this system will not leave the box, thus the energy is conserved. We are also not taking into account of gravitational waves, which have some energy as well.
-
-Another way to determine that the energy must be conserved is because the forces in this system are conservative.
-
-%We will now test the Euler and Verlet method, presented earlier, to solve the Earth-Sun system. Figure 1 shows the plots of the Earth-Sun system using Euler (top image) and Verlet method (bottom image). As we can see, the Verlet method gives a more precise and stable Earth orbit, whereas the Euler method gives a less stable Earth orbit.
+%One can assume that the total energy for the whole system is conserved as the total energy will confined within this system. That is, we think of this system that is in a box. The energy for this system will not leave the box, thus the energy is conserved. We are also not taking into account of gravitational waves, which have some energy as well.
 
 We will now test the Euler and Verlet method, presented earlier, to solve the Earth-Sun system. We will also see how stable these methods are for different values of $\Delta t$. For the C++ program, we have tested $\Delta t$ values of $10^{-4}$ and $10^{-3}$. The number of mesh points used for each $\Delta t$ values is $N = 100 000$ and $N=10 000$ respectively. This is to ensure that the time elapsed, for both simulations, are the same.
 
@@ -94,11 +101,7 @@ Figure \ref{fig:balle} shows the Euler method with $\Delta t = 10^{-4}$ and figu
 \label{fig:balle1}
 \end{figure}
 
-%Figure \ref{fig:balle} shows a comparison of the Euler method with the given $\Delta t$ values respectively. The system is a little more stable for a lower $\Delta $t value, but Earth seems to go closer and closer to the Sun for every circular orbit. This does not exactly fit with what we observe, so the Euler method is clearly not the most ideal algorithm we can use for these kinds of systems.
-
-Let us now look at the Verlet method. Figure \ref{fig:balle2} shows the Verlet method using $\Delta t = 10^{-4}$. From this figure, we already see that the Verlet method gives a much better result compared to the ones using the Euler method. In figure \ref{fig:balle3}, we have increased the step length to $\Delta t = 10^{-3}$. However, the results appear to be identical, so for the Earth-Sun system, Verlet method is very stable up to $\Delta t = 10^{-3}$. This does however not apply to every system. We will see later that Verlet method is not quite stable with $\Delta t = 10^{-3}$ when we add Jupiter to the system.
-
-%Let us now look at the Verlet method. Figure \ref{fig:balle2} compares the Verlet method of the given $\Delta t$ values. As we can see, the system for $\Delta t = 10^{-4}$ is incredibly stable, giving an almost perfect circular orbit for the Earth. The orbit is not perfectly circular is due to very small fluctuations in the orbit of Earth. For a smaller $\Delta t$ value, the orbit is still circular, and unlike the Euler method, Earth will not fall towards the Sun. However, the fluctuations now are a little bigger, which is why the circular line in figure \ref{fig:balle2} is a little bit thicker. 
+Let us now look at the Verlet method. Figure \ref{fig:balle2} shows the Verlet method using $\Delta t = 10^{-4}$. From this figure, we already see that the Verlet method gives a much better result compared to the ones using the Euler method. In figure \ref{fig:balle3}, we have increased the step length to $\Delta t = 10^{-3}$. However, the results appear to be identical, so for the Earth-Sun system, Verlet method is very stable up to $\Delta t = 10^{-3}$. 
 
 \begin{figure}[!h]
 \centering
@@ -113,7 +116,7 @@ Let us now look at the Verlet method. Figure \ref{fig:balle2} shows the Verlet m
 \label{fig:balle3}
 \end{figure}
 
-For the C++ program, the time difference between these two methods are almost negligible for a small number of time steps. The Verlet method had to run roughly 2 times longer compared to the Euler method, which is not surprising due to the increased number of FLOPS required to solve one time step. However, as we saw from the plots, the extra time it took for the Verlet method gave a much better result than the one using Euler method. Also, as mentioned earlier in the methods sections, when we increase the number of planets we calculate, the computation time between Euler and Verlet method will be negligible. We will therefore stick with the Verlet method for the remainder of the project. 
+For the C++ program, the time difference between these two methods are almost negligible for a small number of time steps. As seen in the blue text below, the Verlet method had to run roughly 2 times longer compared to the Euler method, which is not surprising due to the increased number of FLOPS required to solve one time step. However, as we saw from the plots, the extra time it took for the Verlet method gave a much better result than the one using Euler method. Also, as mentioned earlier in the methods sections, when we increase the number of planets we calculate, the computation time between Euler and Verlet method will be negligible. We will therefore stick with the Verlet method for the remainder of the project. 
 
 \begin{lstlisting}
 @Running Euler method
@@ -129,7 +132,7 @@ Time elapsed for Verlet method:0.202s
 Data saved to: Earth_Sun_sys_verlet.txt@
 \end{lstlisting}
 
-The total energy for the whole system was also conserved throughout the simulation for all three algorithms. 
+Both the total energy and total angular momentum are conserved for the given tolerance, $\epsilon = 3\cdot 10^{-4}$, for all three algorithms, as the output gave no warnings of them.
 
 One can also use the Euler Cromer method to solve these systems. Figure \ref{fig:Appendix_EulerCromer} shows a plot of the Earth-Sun system using the Euler Cromer method. As we can see, the results practically identical to the Verlet method. The computation speed of the Euler Cromer method is almost identical as the computation speed of the Euler method.
 \FloatBarrier
@@ -150,8 +153,6 @@ v_{escape} = \sqrt{\frac{8\pi^2}{r}} \text{AU}/\text{yr}
 It is now quite easy to implement the escape velocity. In the C++ program, we have assumed, for simplicity, that the planet has the mass of Earth and start 1 AU away from the Sun in the x direction. The velocity will be the escape velocity directed in the y-direction. 
 
 Figure \ref{fig:EscapeVel} shows a plot of a the planet with mass $M_{earth}$ and how the orbit is if the initial velocity is equal to the escape velocity. As we can see, starting with the escape velocity allows the planet to break free from it's intended orbit and leave the system. The orbit of Earth, which was used previously, is also plotted as a comparison. 
-
-One thing to note is that the initial position of Earth , without the escape velocity, is different from the one with the escape velocity.
 
 \begin{figure}[!h]
 \centering
@@ -180,12 +181,12 @@ We already know that Earth's orbit will change, from the theory we previously in
 
 As we can see from figure \ref{fig:EJS_Earth_and_sun}, the orbit of the Earth has changed quite a bit compared to the system without Jupiter. Before we added Jupiter into the system, Earth's orbit was circular. Now that we have added Jupiter into the system, Earth's orbit is now slightly more ecliptic, which is more realistic if we compare it to the orbit we observe. In addition to that, the position of the Sun is also affected a little bit. The Sun is no longer at rest, which means that the Sun is not the center of mass in the system.
 
-The Verlet method for both these cases are still quite stable, given that $\Delta t = 10^{-4}$. However, unlike in the Earth-Sun system, the Verlet method starts to give slightly less stable results for $\Delta t = 10^{-3}$. This can be seen in figure \ref{fig:ESJ_stability}. The orbit of both the Earth and Jupiter starts to fluctuate a little more, but still remain in orbit.
+The Verlet method for this system is still quite stable, given that $\Delta t = 10^{-4}$. We can also test the stability of the algorithm by increasing the time step to $\Delta t = 10^{-3}$. At the same time, we will have to reduce the number of steps $N$ to match the simulation time. As seen in figure \ref{fig:ESJ_stability}, the result is practically identical to the one with $\Delta t = 10^{-4}$.
 
 \begin{figure}[!h]
 \centering
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Jupiter_largerdt.pdf}
-\caption{Earth-Sun-Jupiter system for larger $\Delta t$ value. We see that the system is less stable with larger step lengths.}
+\caption{Earth-Sun-Jupiter system for $\Delta t = 10^{-3}$. The result is identical to the system with $\Delta t = 10^{-4}$.}
 \label{fig:ESJ_stability}
 \end{figure}
 
