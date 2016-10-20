@@ -64,28 +64,43 @@ This program is an object oriented program, in which we use classes to create ob
 \item \texttt{solarsystem}: This class sets up the whole system of the program. It will use the \texttt{celestials} class to set the initial conditions and masses of a given planet. This class will also calculate the forces when we call one of the solvers from \texttt{odesolvers}. In addition to that, this class will save the positions of all objects to a file.
 \end{itemize}
 
-Unit test for energy and angular momentum conservation applies to every system. The program will first calculate the total energy, for one time step, of the whole system and then save it to a variable. In the next time step, it will again calculate the total energy and then compare it to the previous total energy. That is
+
+\section*{Unit tests}
+
+Unit test for energy and angular momentum conservation applies to every system. In the C++ program will first calculate the total energy, for one time step, of the whole system and then save it to a variable. In the next time step, it will again calculate the total energy and then compare it to the previous total energy. That is
 \begin{align*}
 \Delta E = |E_{new} - E_{old}|
 \end{align*}
-The same idea applies for the total angular momentum.
+This will therefore be the total difference between the energies. The same idea applies for the total angular momentum.
 
 The absolute value of the difference between the old and new total energy/total angular momentum should ideally be zero. However, due to round off errors in programming (from float numbers), this will not be the case, so we will have to set a certain error threshold $\epsilon$. In the C++ program, we have selected $\epsilon = 3\cdot10^{-4}$.
 
-\section*{Unit tests}
 The energy of the system must be conserved because gravity as a force is a conservative force. This is also the only force we take into account in the project. The kinetic energy and potential energy will therefore not vanish due to forces like friction (which we have ignored).
 
 Angular momentum for the system must also be conserved because we assume that the system is not affected by an external torque. This is also because we assume that our system is isolated, and therefore not affected by external forces.
 \section*{Results}
 
 \subsection*{3c) - Testing the algorithm}
-All initial conditions, i.e positions and velocities of both the Sun and Earth are obtained from NASA. The date of the data is 2016.10.05.
 
 %One can assume that the total energy for the whole system is conserved as the total energy will confined within this system. That is, we think of this system that is in a box. The energy for this system will not leave the box, thus the energy is conserved. We are also not taking into account of gravitational waves, which have some energy as well.
 
+One can calculate the initial velocity to, which ensures circular orbits, analytically. The only force in the system that we will think of is the gravitational force. Newton's second law says that
+\begin{align*}
+M_{earth}a = \frac{GM_{earth}M_{\odot}}{r^2}
+\end{align*}
+With circular orbits, the acceleration is given as $a = \frac{v^2}{r}$, plugging this in and doing some simple manipulations gives
+\begin{align*}
+v = \sqrt{\frac{GM_{\odot}}{r}}
+\end{align*}
+From the theory section we have shown that $GM_{\odot} = 4\pi^2$ and if Earth starts exactly 1 AU away from the Sun, then $r = 1$ and the initial velocity to get circular orbits will be
+\begin{align*}
+v = 2\pi
+\end{align*}
+For now, we will assume that Earth starts 1 AU away from the Sun in x-direction, and the velocity will be directed only in the y-direction.
+
 We will now test the Euler and Verlet method, presented earlier, to solve the Earth-Sun system. We will also see how stable these methods are for different values of $\Delta t$. For the C++ program, we have tested $\Delta t$ values of $10^{-4}$ and $10^{-3}$. The number of mesh points used for each $\Delta t$ values is $N = 100 000$ and $N=10 000$ respectively. This is to ensure that the time elapsed, for both simulations, are the same.
 
-Figure \ref{fig:balle} shows the Euler method with $\Delta t = 10^{-4}$ and figure \ref{fig:balle1} also shows the Euler method, but for $\Delta t = 10^{-3}$. As we can see, the stability is a lot better for smaller time steps. However, it appears that Earth is going further and further away from the Sun. The Euler method is not very good at calculating circular orbits, which is why the results are not exactly what we want.
+Figure \ref{fig:balle} shows the Euler method with $\Delta t = 10^{-4}$ and figure \ref{fig:balle1} also shows the Euler method, but for $\Delta t = 10^{-3}$. As we can see, the stability is a lot better for smaller time steps. However, it appears that Earth is going further and further away from the Sun. The Euler method is not very good at calculating circular orbits, which is why the results are not exactly what we want. Euler method calculates the tangent on the current point and it does not take into account the curvature of the points.
 
 \begin{figure}[!h]
 \centering
@@ -101,19 +116,13 @@ Figure \ref{fig:balle} shows the Euler method with $\Delta t = 10^{-4}$ and figu
 \label{fig:balle1}
 \end{figure}
 
-Let us now look at the Verlet method. Figure \ref{fig:balle2} shows the Verlet method using $\Delta t = 10^{-4}$. From this figure, we already see that the Verlet method gives a much better result compared to the ones using the Euler method. In figure \ref{fig:balle3}, we have increased the step length to $\Delta t = 10^{-3}$. However, the results appear to be identical, so for the Earth-Sun system, Verlet method is very stable up to $\Delta t = 10^{-3}$. 
+Let us now look at the Verlet method. Figure \ref{fig:balle2} shows the Verlet method using $\Delta t = 10^{-4}$. From this figure, we already see that the Verlet method gives a much better result compared to the ones using the Euler method. Increasing the step length to $\Delta t = 10^{-3}$ would give identical results, so for the Earth-Sun system, Verlet method is very stable up to $\Delta t = 10^{-3}$. A plot for the Verlet method with $\Delta t = 10^{-3}$ can be found in the appendix in figure \ref{fig:balle3}.
 
 \begin{figure}[!h]
 \centering
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Verlet_method.pdf}
 \caption{Verlet method using $\Delta t = 10^{-4}$}
 \label{fig:balle2}
-\end{figure}
-\begin{figure}[!h]
-\centering
-\includegraphics[width=\linewidth]{Plots/Earth_Sun_Verlet_method_larger_dt.pdf}
-\caption{Verlet method using $\Delta t = 10^{-3}$}
-\label{fig:balle3}
 \end{figure}
 
 For the C++ program, the time difference between these two methods are almost negligible for a small number of time steps. As seen in the blue text below, the Verlet method had to run roughly 2 times longer compared to the Euler method, which is not surprising due to the increased number of FLOPS required to solve one time step. However, as we saw from the plots, the extra time it took for the Verlet method gave a much better result than the one using Euler method. Also, as mentioned earlier in the methods sections, when we increase the number of planets we calculate, the computation time between Euler and Verlet method will be negligible. We will therefore stick with the Verlet method for the remainder of the project. 
@@ -152,7 +161,7 @@ v_{escape} = \sqrt{\frac{8\pi^2}{r}} \text{AU}/\text{yr}
 \end{align*}
 It is now quite easy to implement the escape velocity. In the C++ program, we have assumed, for simplicity, that the planet has the mass of Earth and start 1 AU away from the Sun in the x direction. The velocity will be the escape velocity directed in the y-direction. 
 
-Figure \ref{fig:EscapeVel} shows a plot of a the planet with mass $M_{earth}$ and how the orbit is if the initial velocity is equal to the escape velocity. As we can see, starting with the escape velocity allows the planet to break free from it's intended orbit and leave the system. The orbit of Earth, which was used previously, is also plotted as a comparison. 
+Figure \ref{fig:EscapeVel} shows a plot of a the planet with mass $M_{earth}$ and how the orbit is if the initial velocity is equal to the escape velocity. As we can see, starting with the escape velocity allows the planet to break free from it's intended orbit and leave the system. The orbit of Earth, with circular orbit used previously, is also plotted as a comparison. 
 
 \begin{figure}[!h]
 \centering
@@ -163,6 +172,8 @@ Figure \ref{fig:EscapeVel} shows a plot of a the planet with mass $M_{earth}$ an
 \FloatBarrier
 
 \subsection*{3e) - Three body problem}
+From now on, all the initial conditions, i.e positions and velocities of both the Sun and Earth will be obtained from NASA. The date of the data is 2016.10.05.
+
 We already know that Earth's orbit will change, from the theory we previously introduced, when we add Jupiter to the system. Figure \ref{fig:EJS_2D_Orbit} shows the orbit of the Earth and Jupiter, as well as the Sun. The orbits themselves does not look particularly odd in any way, but it is hard to see how Jupiter affects the orbit of the Earth. Instead, we only plot the orbit of the Earth and the Sun (still taking Jupiter into account during the calculations) which can be found in figure \ref{fig:EJS_Earth_and_sun}. 
 
 \begin{figure}[!h]
@@ -198,7 +209,10 @@ Increasing the mass of Jupiter will change the orbits of Earth, the Sun, as well
 \label{ESJ_10MJ}
 \end{figure}
 
-Figure \ref{fig:ESJ_1000MJ} shows the system when the mass of Jupiter is increased by a factor of $1000$. At this point, Jupiter has practically the same mass the Sun, so the gravitational effects from that should be quite dramatic. This is clearly seen from the plot, where the Sun, along with Earth, now moves away and will move away from it's initial position. (To be adjusted)
+Figure \ref{fig:ESJ_1000MJ} shows the system when the mass of Jupiter is increased by a factor of $1000$, and the result is very interesting. At this point, Jupiter has practically the same mass the Sun, so the gravitational effects from that should be quite dramatic. As we see from the figure, the Sun starts to move due to the increased mass of Jupiter. We also notice that Earth is getting flung around between these two massive objects. 
+
+The center of mass (CM) also starts to move because of the increased mass of Jupiter. The movement of the CM depends on the momentum of each object. Now that Jupiter has an increased mass, and the initial velocity is unchanged, the sudden increase of momentum will shift the CM as a whole. 
+
 
 3D Plots of this system with unchanged Jupiter mass and $1000$ times the Jupiter mass can be found in the appendix in figure \ref{fig:Appendix_3D_ESJ} and \ref{fig:Appendix_1000MJ} respectively.
 
@@ -237,11 +251,23 @@ However, plotting 250 years worth of orbits of the first four planets are quite 
 \label{fig:First4_planets_3D}
 \end{figure}
 
-The results are promising. The orbits of all planets resembles to the orbits we observe. When looking at the plot for the first four planets, one may quickly be confused on the orbits, as it seems like the planets (with the exception of Earth) goes very high up in the z-axis. But this movement is at most up to $\pm 0.04AU$, which is a very very small change. By looking at figure \ref{fig:All_planets_3D}, the vertical movement of the first four planets are practically zero, especially when we include Pluto to the system.
+The results are promising. The orbits of all planets resembles the orbits we observe. When looking at the plot for the first four planets, one may quickly be confused by the orbits, as it seems like the planets (with the exception of Earth) goes very high up in the z-axis. But this movement is at most up to $\pm 0.04AU$, which is a very small movement. By looking at figure \ref{fig:All_planets_3D}, the vertical movement of the first four planets are practically zero, when we include Pluto to the system.
 
 \FloatBarrier
 
+\section*{Conclusion}
+As we saw when we simulated the Earth-Sun system, the Verlet method was clearly the algorithm of choice, as the Euler method did not give stable circular systems. Even though the Verlet method requires more FLOPS to run, the computation time between it and the Euler method is negligible when we start to add more objects to the system.
+
+All the planetary orbits, whether it was for Earth-Sun system, Earth-Sun-Jupiter system or even the whole Solar system, gave promising results that resembles real orbits we observe. Increasing the mass of one of the Planets, as seen in the three body problem, changed the orbits of all the celestial objects. If we increase the mass enough, then the system would be very chaotic, which we saw when we increased Jupiter's mass by 1000.
+
 \section*{Appendix}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Verlet_method_larger_dt.pdf}
+\caption{Verlet method using $\Delta t = 10^{-3}$}
+\label{fig:balle3}
+\end{figure}
+
 \begin{figure}[!h]
 \centering
 \includegraphics[width=\linewidth]{Plots/Earth_Sun_Euler_Cromer_method.pdf}
