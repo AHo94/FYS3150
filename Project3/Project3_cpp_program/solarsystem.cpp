@@ -49,7 +49,7 @@ void SolarSystem::CalculateAccelerationAndEnergy(){
             vec3 dRvector = body2.position - body1.position;
             double dR = dRvector.length();
             vec3 factor = -four_pi2*dRvector/(dR*dR*dR);
-            body1.acceleration += factor*body2.mass;
+            body1.acceleration -= factor*body2.mass;
             body2.acceleration += factor*body1.mass;
 
             m_pot_energy -= four_pi2*body1.mass*body2.mass;

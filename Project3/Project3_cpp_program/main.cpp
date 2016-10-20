@@ -211,6 +211,7 @@ int main(){
     double ESJ_masses2[] = {M_sun, M_earth, 10*M_jupiter};
     New_system_and_solve(NumTimesteps, dt, ESJ_names, ESJ_masses2, NumCelestials, "ESJ_sys_10MJ.txt", "verlet");
     // Jupiter mass now 1000 times larger
+    dt = 0.00001;
     double ESJ_masses3[] = {M_sun, M_earth, 1000*M_jupiter};
     New_system_and_solve(NumTimesteps, dt, ESJ_names, ESJ_masses3, NumCelestials, "ESJ_sys_1000MJ.txt", "verlet");
 
@@ -226,8 +227,8 @@ int main(){
     NumTimesteps = 250000;
     NumCelestials = sizeof(Celestial_masses)/sizeof(*Celestial_masses);
 
-    //New_system_and_solve(NumTimesteps, dt, Celestial_names, Celestial_masses, NumCelestials
-    //                     , "SolarSys_All_planets.txt", "verlet");
+    New_system_and_solve(NumTimesteps, dt, Celestial_names, Celestial_masses, NumCelestials
+                         , "SolarSys_All_planets.txt", "verlet");
 
     dt = 0.0001;
     NumTimesteps = 25000;
