@@ -37,3 +37,6 @@
 
 # Unknown file
 *.db
+
+# Folder
+build-Project3_cpp_program-Desktop_Qt_5_7_0_MinGW_32bit-Debug
