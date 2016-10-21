@@ -1,0 +1,128 @@
+\documentclass[12pt]{article}
+\author{Alex Ho}
+\title{FYS4150 - Computational Physics \\ Project 4}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{placeins}
+
+
+\lstset{
+language=Python,
+basicstyle=\ttfamily,
+otherkeywords={self},             
+keywordstyle=\ttfamily\color{blue!90!black},
+keywords=[2]{True,False},
+keywordstyle={[2]\ttfamily\color{blue!90!black}},
+emph={MyClass,__init__},          
+emphstyle=\ttfamily\color{red!80!black},    
+stringstyle=\color{blue!90!black},
+showstringspaces=false,
+commentstyle=\color{blue!90!black},
+breaklines=true,
+tabsize=3,
+moredelim=**[is][\color{blue}]{@}{@}
+}
+\begin{document}
+\maketitle
+\section*{Introduction}
+\section*{Method}
+
+\subsection*{Simple 2 $\times$ 2 lattice}
+We will first consider a 2$\times$2 lattice and use that to test our analytical expression to the numerics. We assume that every spin has two directions, i.e. our states can be either be in spin up state or spin down state (shorthand notation as $\uparrow$ or $\downarrow$ respectively).
+
+The energy of the Ising model, without an external magnetic field, is given by
+\begin{align*}
+E_i = \displaystyle -J \sum_{<kl>}^Ns_k s_l
+\end{align*} 
+Where $J > 0$ is a coupling constant and $N$ is the total number of spins. The symbol $<kl>$ indicates that we only sum over the neighbours only. The values $s_k = \pm 1$ depends on which state it is in. We let $s_{\downarrow} = -1$ and $s_{\uparrow} = 1$. We also have the magnetic moment is given as
+\begin{align*}
+M_i = \displaystyle \sum_{<k>}^N s_k
+\end{align*}
+
+Since we have a $2\times2=4$ lattice, and we have two spin directions, then the number of micro state (or configuration) is $2^4 = 16$. What this means is that our we can have 16 different energies, as well as 16 different magnetic moment, for each respective micro state. Table \ref{table:All_microstates} shows all the possible micro states.
+
+
+\begin{table}
+\begin{center}
+	\begin{tabular}{c c c c}
+	Combinations of & ($s_1, s_2, s_3, s_4$)& $s_j = \lbrace \uparrow, \downarrow \rbrace$  = $\lbrace 1, -1 \rbrace$ &\\
+	\hline 
+	($\uparrow , \uparrow, \uparrow, \uparrow$) & 
+	($\uparrow , \uparrow, \uparrow, \downarrow$) & 
+	($\uparrow , \uparrow, \downarrow, \uparrow$)  & 
+	($\uparrow , \downarrow, \uparrow, \uparrow$) \\
+	($\downarrow , \uparrow, \uparrow, \uparrow$)& ($\uparrow, \uparrow, \downarrow, \downarrow$) & ($\uparrow, \downarrow, \uparrow, \downarrow$) & ($\downarrow, \uparrow, \uparrow, \downarrow$) \\
+	($\downarrow, \uparrow, \downarrow, \uparrow$)& ($\downarrow, \downarrow, \uparrow, \uparrow$) & ($\uparrow, \downarrow, \downarrow, \uparrow$) & ($\uparrow, \downarrow, \downarrow, \downarrow$) \\
+	($\downarrow, \uparrow, \downarrow, \downarrow$) & ($\downarrow, \downarrow, \uparrow, \downarrow$) & ($\downarrow, \downarrow, \downarrow, \uparrow$) & ($\downarrow, \downarrow, \downarrow, \downarrow$) \\
+	\hline
+	\end{tabular}
+\caption{All the micro states possible.}
+\label{table:All_microstates}
+\end{center}
+\end{table}
+
+Figure (ADD FIGURE OF GRID HERE) shows a $2\times2$ lattice. We see that the point $s_1$ has $s_2$ and $s_3$ as the closest neighbours. The energy term will then give the term $(s_1s_2 + s_2s_3)$ for the point $s_1$. It does not include $s_4$ as it is not the closest neighbour to $s_1$. We can then continue to add more terms for the three other points, but we need to be careful to not double count connections we already have. Doing this, the energy for each micro state $i$ will be
+\begin{align}
+E_i = -J\displaystyle \sum_{s_1 = \pm1} \sum_{s_2 = \pm1} \sum_{s_3 = \pm1} \sum_{s_4 = \pm1}(s_1s_2 + s_1s_3 + s_2s_4 + s_3s_4)
+\label{eq:Energy}
+\end{align}
+Similarly for the magnetic moment we get when we sum over all micro states 
+\begin{align}
+M_i = \displaystyle \sum_{s_1 = \pm1} \sum_{s_2 = \pm1} \sum_{s_3 = \pm1} \sum_{s_4 = \pm1} (s_1 + s_2 + s_3 + s_4)
+\label{eq:Magnetic_moment}
+\end{align}
+Let us now determine both the energies and magnetic moments for all micro states. Using table \ref{table:All_microstates}, we can determine equation (\ref{eq:Energy}) and (\ref{eq:Magnetic_moment}) to their respective micro state. Table \ref{table:All_energies} and \ref{table:All_magnetic_moment} shows the energies and momenta (using the same combinations in table \ref{table:All_microstates}) respectively.
+
+\begin{table}
+\begin{center}
+	\begin{tabular}{c c c c}
+	$E_i =$& & &\\
+	\hline
+	-4J& 0& 0& 0\\
+	0&0 &0 & 0\\
+	0& 0& 0& 0\\
+	0&0 & 0& 4J\\
+	\hline
+	\end{tabular}
+\caption{Energies for each respective micro state.}
+\label{table:All_energies}
+\end{center}
+\end{table}
+
+\begin{table}
+\begin{center}
+	\begin{tabular}{c c c c}
+	$M_i = $& & & \\
+	\hline
+	4& 2& 2& 2\\
+	2&0 &0 & 0\\
+	0& 0& 0& -2\\
+	-2&-2 & -2& -4\\
+	\hline
+	\end{tabular}
+\caption{Magnetic moments for each respective micro state.}
+\label{table:All_magnetic_moment}
+\end{center}
+\end{table}
+
+Let us now find an analytical expression for the partition function $Z$. It is defined as
+\begin{align*}
+Z = \displaystyle \sum_i e^{-\beta E_i}
+\end{align*}
+It sums over all micro states $i$ and $\beta = \frac{1}{k_bT}$, with $k_b$ as the Boltzmann constant and $T$ as the temperature. We already have all the energies given in table \ref{table:All_energies}. Using that, the partition function becomes
+\begin{align*}
+Z = e^{-4\beta J} + e^{4\beta J} + 14\times e^{0} = 2\cosh(4 \beta J) + 14
+\end{align*}
+
+\FloatBarrier
+\section*{Implementation}
+\section*{Results}
+\section*{Conclusion}
+\section*{Reference}
+\end{document}
