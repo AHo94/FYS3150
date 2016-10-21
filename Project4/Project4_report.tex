@@ -31,10 +31,16 @@ moredelim=**[is][\color{blue}]{@}{@}
 \begin{document}
 \maketitle
 \section*{Introduction}
+In fields like thermal dynamics, one will study the phenomena called a \emph{phase transition}. Not only do we study it, but we experience this phenomena on a day-by-day basis. An example of a phase transition is when water turns to steam when we boil the water. More general, a phase transition is when matter changes it's form, either from gas to liquid, or liquid to solid (and vice versa). We will in this project use a very popular model, the Ising model, to simulate phase transitions.
+
+%In fields like thermal dynamics, one will study the phenomena called phase transitions. A phase transition is when matter changes it's form. An example of a phase transition is when water turns into ice, i.e, liquid transitions into solid matter. We will in this project study a very popular model, the Ising model, to simulate phase transitions.
+
 \section*{Method}
 
 \subsection*{Simple 2 $\times$ 2 lattice}
-We will first consider a 2$\times$2 lattice and use that to test our analytical expression to the numerics. We assume that every spin has two directions, i.e. our states can be either be in spin up state or spin down state (shorthand notation as $\uparrow$ or $\downarrow$ respectively).
+We will first consider a 2$\times$2 lattice, find the analytical expression for partition function $Z$ and find the corresponding expectation value of energy $E$, mean magnetization $|M|$, specific heat $C_V$ and susceptibility $\xi$ as functions of temperature $T$. The boundaries for the lattice will be periodic. We will then compare the Ising model with the analytical expressions later.
+
+For this system, we will assume that every spin has two directions, i.e. our states can be either be in spin up state or spin down state (shorthand notation as $\uparrow$ or $\downarrow$ respectively).
 
 The energy of the Ising model, without an external magnetic field, is given by
 \begin{align*}
@@ -45,7 +51,7 @@ Where $J > 0$ is a coupling constant and $N$ is the total number of spins. The s
 M_i = \displaystyle \sum_{<k>}^N s_k
 \end{align*}
 
-Since we have a $2\times2=4$ lattice, and we have two spin directions, then the number of micro state (or configuration) is $2^4 = 16$. What this means is that our we can have 16 different energies, as well as 16 different magnetic moment, for each respective micro state. Table \ref{table:All_microstates} shows all the possible micro states.
+Since we have a $2\times2=4$ lattice, and we have two spin directions, then the number of microstate (or configuration) is $2^4 = 16$. What this means is that our we can have 16 different energies, as well as 16 different magnetic moment, for each respective microstate. Table \ref{table:All_microstates} shows all the possible microstates.
 
 
 \begin{table}
@@ -62,35 +68,43 @@ Since we have a $2\times2=4$ lattice, and we have two spin directions, then the 
 	($\downarrow, \uparrow, \downarrow, \downarrow$) & ($\downarrow, \downarrow, \uparrow, \downarrow$) & ($\downarrow, \downarrow, \downarrow, \uparrow$) & ($\downarrow, \downarrow, \downarrow, \downarrow$) \\
 	\hline
 	\end{tabular}
-\caption{All the micro states possible.}
+\caption{All the microstates possible.}
 \label{table:All_microstates}
 \end{center}
 \end{table}
 
-Figure (ADD FIGURE OF GRID HERE) shows a $2\times2$ lattice. We see that the point $s_1$ has $s_2$ and $s_3$ as the closest neighbours. The energy term will then give the term $(s_1s_2 + s_2s_3)$ for the point $s_1$. It does not include $s_4$ as it is not the closest neighbour to $s_1$. We can then continue to add more terms for the three other points, but we need to be careful to not double count connections we already have. Doing this, the energy for each micro state $i$ will be
+Figure \ref{fig:Lattice_illustration} shows a $2\times2$ lattice. We see that the point $s_1$ has $s_2$ and $s_3$ as the closest neighbours. Since we are considering periodic boundary conditions, then $s_1$ will connect to $s_2$ and $s_3$ twice. The energy term will then give the term $2(s_1s_2 + s_2s_3)$ for the point $s_1$. It does not include $s_4$ as it is not the closest neighbour to $s_1$. 
+\begin{figure}[!h]
+\centering
+\includegraphics[width=\linewidth]{2x2_lattice_illustration.png}
+\caption{An illustration of the $2\times 2$ lattice. The black points corresponds to the ordinary points $s_1, s_2, s_3, s_4$ (as point 1, 2, 3, 4 in the figure respectively). The blue points corresponds periodic boundary points.}
+\label{fig:Lattice_illustration}
+\end{figure}
+
+We can then continue to add more terms using the three other points, but we need to be careful to not include the connections of the points we previously have considered, which is to prevent double counting. Doing this, the energy for each microstate $i$ will be
 \begin{align}
-E_i = -J\displaystyle \sum_{s_1 = \pm1} \sum_{s_2 = \pm1} \sum_{s_3 = \pm1} \sum_{s_4 = \pm1}(s_1s_2 + s_1s_3 + s_2s_4 + s_3s_4)
+E_i = -2J\displaystyle \sum_{s_1 = \pm1} \sum_{s_2 = \pm1} \sum_{s_3 = \pm1} \sum_{s_4 = \pm1}(s_1s_2 + s_1s_3 + s_2s_4 + s_3s_4)
 \label{eq:Energy}
 \end{align}
-Similarly for the magnetic moment we get when we sum over all micro states 
+Similarly for the magnetic moment we get when we sum over all microstates 
 \begin{align}
 M_i = \displaystyle \sum_{s_1 = \pm1} \sum_{s_2 = \pm1} \sum_{s_3 = \pm1} \sum_{s_4 = \pm1} (s_1 + s_2 + s_3 + s_4)
 \label{eq:Magnetic_moment}
 \end{align}
-Let us now determine both the energies and magnetic moments for all micro states. Using table \ref{table:All_microstates}, we can determine equation (\ref{eq:Energy}) and (\ref{eq:Magnetic_moment}) to their respective micro state. Table \ref{table:All_energies} and \ref{table:All_magnetic_moment} shows the energies and momenta (using the same combinations in table \ref{table:All_microstates}) respectively.
+Let us now determine both the energies and magnetic moments for all microstates. Using table \ref{table:All_microstates}, we can determine equation (\ref{eq:Energy}) and (\ref{eq:Magnetic_moment}) to their respective microstate. Table \ref{table:All_energies} and \ref{table:All_magnetic_moment} shows the energies and momenta (using the same combinations in table \ref{table:All_microstates}) respectively.
 
 \begin{table}
 \begin{center}
 	\begin{tabular}{c c c c}
 	$E_i =$& & &\\
 	\hline
-	-4J& 0& 0& 0\\
-	0&0 &0 & 0\\
-	0& 0& 0& 0\\
-	0&0 & 0& 4J\\
+	-8J & 0 & 0 & 0\\
+	0 & 8J & 0 & 0\\
+	0 & 8J & 0 & 0\\
+	0 & 0 & 0 & -8J\\
 	\hline
 	\end{tabular}
-\caption{Energies for each respective micro state.}
+\caption{Energies for each respective microstate.}
 \label{table:All_energies}
 \end{center}
 \end{table}
@@ -100,26 +114,42 @@ Let us now determine both the energies and magnetic moments for all micro states
 	\begin{tabular}{c c c c}
 	$M_i = $& & & \\
 	\hline
-	4& 2& 2& 2\\
-	2&0 &0 & 0\\
-	0& 0& 0& -2\\
-	-2&-2 & -2& -4\\
+	4 & 2 & 2 & 2\\
+	2 & 0 & 0 & 0\\
+	0 & 0 & 0 & -2\\
+	-2 & -2 & -2 & -4\\
 	\hline
 	\end{tabular}
-\caption{Magnetic moments for each respective micro state.}
+\caption{Magnetic moments for each respective microstate.}
 \label{table:All_magnetic_moment}
 \end{center}
 \end{table}
 
-Let us now find an analytical expression for the partition function $Z$. It is defined as
+Now that we have the energies of each microstate, we can find an analytical expression for the partition function $Z$. It is defined as
 \begin{align*}
 Z = \displaystyle \sum_i e^{-\beta E_i}
 \end{align*}
-It sums over all micro states $i$ and $\beta = \frac{1}{k_bT}$, with $k_b$ as the Boltzmann constant and $T$ as the temperature. We already have all the energies given in table \ref{table:All_energies}. Using that, the partition function becomes
+It sums over all microstates $i$ and $\beta = \frac{1}{k_bT}$, with $k_b$ as the Boltzmann constant and $T$ as the temperature. Using the energies given in table \ref{table:All_energies}, the partition function becomes
 \begin{align*}
-Z = e^{-4\beta J} + e^{4\beta J} + 14\times e^{0} = 2\cosh(4 \beta J) + 14
+Z = 2e^{8\beta J} + 2e^{-8\beta J} + 12 e^0 = 4\cosh(8\beta J) + 12
 \end{align*}
-
+With the partition function, we can calculate the expectation value of the energy
+\begin{align*}
+<E> = \frac{1}{Z}\displaystyle \sum_i E_ie^{-\beta E_i}
+\end{align*}
+Summing over all states $i$, with the given energies in table \ref{table:All_energies}, we get
+\begin{align*}
+<E> &= \frac{1}{Z}\left( 2(8J)e^{-8\beta J} + 2(-8J)e^{8\beta J} + 12\times0\times e^0 \right)\\
+&= \frac{-32J \sinh(8\beta J)}{4\cosh(8\beta J) + 12}\\
+&= \frac{-8J\sinh(8\beta J)}{\cosh(8\beta J) + 3}
+\end{align*}
+The expectation of the energy squared is then
+\begin{align*}
+<E^2> &= \frac{1}{Z}\displaystyle \sum_i E_i^2 e^{-\beta E_i} \\
+&= \frac{1}{Z} \left(2(8J)^2 e^{-8\beta J} + 2(-8J)^2 e^{8\beta J} + 12 \times (0)^2 e^0 \right) \\
+&= \frac{4(8J)^2\cosh(8\beta J)}{4\cosh(8\beta J) + 12} \\
+&= \frac{64J^2\cosh(8\beta J)}{\cosh(8\beta J) + 3}
+\end{align*}
 \FloatBarrier
 \section*{Implementation}
 \section*{Results}
