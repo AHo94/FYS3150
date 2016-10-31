@@ -40,7 +40,6 @@ In fields like thermal dynamics, one will study the phenomena called a \emph{pha
 %In fields like thermal dynamics, one will study the phenomena called phase transitions. A phase transition is when matter changes it's form. An example of a phase transition is when water turns into ice, i.e, liquid transitions into solid matter. We will in this project study a very popular model, the Ising model, to simulate phase transitions.
 
 \section{Method} \label{section:methods}
-
 \subsection{Simple 2 $\times$ 2 lattice}
 We will first consider a 2$\times$2 lattice, find the analytical expression for partition function $Z$ and find the corresponding expectation value of energy $E$, mean magnetization $|M|$, specific heat $C_V$ and susceptibility $\xi$ as functions of temperature $T$. The boundaries for the lattice will be periodic. We will then compare the Ising model with the analytical expressions later.
 
@@ -139,38 +138,43 @@ Z = 2e^{8\beta J} + 2e^{-8\beta J} + 12 e^0 = 4\cosh(8\beta J) + 12
 \end{align*}
 With the partition function, we can calculate the expectation value of the energy
 \begin{align*}
-<E> = \frac{1}{Z}\displaystyle \sum_i E_ie^{-\beta E_i}
+\langle E\rangle = \frac{1}{Z}\displaystyle \sum_i E_ie^{-\beta E_i}
 \end{align*}
 Summing over all states $i$, with the given energies in table \ref{table:All_energies}, we get
 \begin{align*}
-<E> &= \frac{1}{Z}\left( 2(8J)e^{-8\beta J} + 2(-8J)e^{8\beta J} + 12\times0\times e^0 \right)\\
+\langle E \rangle &= \frac{1}{Z}\left( 2(8J)e^{-8\beta J} + 2(-8J)e^{8\beta J} + 12\times0\times e^0 \right)\\
 &= \frac{-32J \sinh(8\beta J)}{4\cosh(8\beta J) + 12}\\
 &= \frac{-8J\sinh(8\beta J)}{\cosh(8\beta J) + 3}
 \end{align*}
 The expectation of the energy squared is then
 \begin{align*}
-<E^2> &= \frac{1}{Z}\displaystyle \sum_i E_i^2 e^{-\beta E_i} \\
+\langle E^2\rangle &= \frac{1}{Z}\displaystyle \sum_i E_i^2 e^{-\beta E_i} \\
 &= \frac{1}{Z} \left(2(8J)^2 e^{-8\beta J} + 2(-8J)^2 e^{8\beta J} + 12 \times (0)^2 e^0 \right) \\
 &= \frac{4(8J)^2\cosh(8\beta J)}{4\cosh(8\beta J) + 12} \\
 &= \frac{64J^2\cosh(8\beta J)}{\cosh(8\beta J) + 3}
 \end{align*}
 The standard deviation of the energy then becomes
 \begin{align*}
-\sigma_E^2 &= <E^2> - <E>^2 \\
+\sigma_E^2 &= \langle E^2\rangle - \langle E \rangle^2 \\
 &=\frac{64J^2\cosh(8\beta J)}{\cosh(8\beta J) + 3} - \left( \frac{-8J\sinh(8\beta J)}{\cosh(8\beta J) + 3}\right)^2 \\
 &= \frac{64J^2}{\cosh(8\beta J) + 3}\left(\cosh(8\beta J) - \frac{\sinh^2(8\beta J)}{\cosh(8\beta J) + 3} \right) \\
 &= \frac{64J^2}{\cosh(8\beta J) + 3}\left(\frac{\cosh^2(8\beta J) + 3}{\cosh(8\beta J) + 3} - \frac{\sinh^2(8\beta J)}{\cosh(8\beta J) + 3} \right) \\
 &= \frac{64J^2}{\cosh(8\beta J) + 3}\left(\frac{4}{\cosh(8\beta J) + 3} \right)\\
 &= \frac{256J^2}{(\cosh(8\beta J) + 3)^2}
 \end{align*}
+Dividing by $k_B T$ gives us the specific heat $C_V$
+\begin{align*}
+C_V = \frac{1}{k_BT} \left( \langle E^2 \rangle
+- \langle E \rangle^2 \right) = \frac{256J^2}{k_B T(\cosh(8\beta J) + 3)^2}
+\end{align*}
 We can do similar calculations to obtain the mean magnetization (or the mean absolute value of the magnetic moment), which then gives us
 \begin{align*}
-<M> &= \frac{1}{Z} \displaystyle \sum_i M_i e^{-\beta E_i} = \frac{e^{4\beta J} - e^{4\beta J}}{\cosh(8\beta J) + 3} = 0 \\
-<M^2> &= \frac{1}{Z}\displaystyle \sum_i M_i^2e^{-\beta E_i} = \frac{32(e^{8\beta J} + 1)}{\cosh(8\beta J) + 3}
+\langle M\rangle &= \frac{1}{Z} \displaystyle \sum_i M_i e^{-\beta E_i} = \frac{e^{4\beta J} - e^{4\beta J}}{\cosh(8\beta J) + 3} = 0 \\
+\langle M^2\rangle &= \frac{1}{Z}\displaystyle \sum_i M_i^2e^{-\beta E_i} = \frac{32(e^{8\beta J} + 1)}{\cosh(8\beta J) + 3}
 \end{align*}
 Which we can use to calculate the susceptibility $\chi$
 \begin{align*}
-\chi = <M^2> - <M>^2 = \frac{32(e^{8\beta J} + 1)}{\cosh(8\beta J) + 3}
+\chi = \frac{1}{k_B T} \left(\langle M^2 \rangle - \langle M \rangle^2\right) = \frac{1}{k_B T} \frac{32(e^{8\beta J} + 1)}{\cosh(8\beta J) + 3}
 \end{align*} 
 We will now proceed with developing the Ising model, and test the model with the analytical expression that we derived above.
 \FloatBarrier
