@@ -150,6 +150,20 @@ The expectation of the energy squared is then
 &= \frac{4(8J)^2\cosh(8\beta J)}{4\cosh(8\beta J) + 12} \\
 &= \frac{64J^2\cosh(8\beta J)}{\cosh(8\beta J) + 3}
 \end{align*}
+The standard deviation of the energy then becomes
+\begin{align*}
+\sigma_E^2 &= <E^2> - <E>^2 \\
+&=\frac{64J^2\cosh(8\beta J)}{\cosh(8\beta J) + 3} - \left( \frac{-8J\sinh(8\beta J)}{\cosh(8\beta J) + 3}\right)^2 \\
+&= \frac{64J^2}{\cosh(8\beta J) + 3}\left(\cosh(8\beta J) - \frac{\sinh^2(8\beta J)}{\cosh(8\beta J) + 3} \right) \\
+&= \frac{64J^2}{\cosh(8\beta J) + 3}\left(\frac{\cosh^2(8\beta J) + 3}{\cosh(8\beta J) + 3} - \frac{\sinh^2(8\beta J)}{\cosh(8\beta J) + 3} \right) \\
+&= \frac{64J^2}{\cosh(8\beta J) + 3}\left(\frac{4}{\cosh(8\beta J) + 3} \right)\\
+&= \frac{256J^2}{(\cosh(8\beta J) + 3)^2}
+\end{align*}
+We can do similar calculations to obtain the mean magnetization (or the mean absolute value of the magnetic moment), which then gives us
+\begin{align*}
+<M> = \frac{1}{Z} \displaystyle \sum_i M_i e^{-\beta E_i} = \frac{e^{4\beta J} - e^{4\beta J}}{\cosh(8\beta J) + 3} = 0 \\
+<M^2> = 
+\end{align*}
 \FloatBarrier
 \section*{Implementation}
 \section*{Results}
