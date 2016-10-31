@@ -309,20 +309,20 @@ We will now test the Euler and Verlet method, presented earlier, to solve the Ea
 Figure \ref{fig:balle} shows the Euler method with $\Delta t = 10^{-4}$ and figure \ref{fig:balle1} also shows the Euler method, but for $\Delta t = 10^{-3}$. As we can see, the stability is a lot better for smaller time steps. However, it appears that Earth is going further and further away from the Sun. The Euler method is not very good at calculating circular orbits, which is why the results are not exactly what we want. Euler method calculates the tangent on the current point and it does not take into account the curvature of the points. \\
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{Earth_Sun_Euler_method.pdf}
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Euler_method.pdf}
 \caption{Euler method using $\Delta t = 10^{-4}$}
 \label{fig:balle}
 \end{figure}
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{Earth_Sun_Euler_method_larger_dt.pdf}
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Euler_method_larger_dt.pdf}
 \caption{Euler method using $\Delta t = 10^{-3}$.}
 \label{fig:balle1}
 \end{figure}
 Let us now look at the Verlet method. Figure \ref{fig:balle2} shows the Verlet method using $\Delta t = 10^{-4}$. From this figure, we already see that the Verlet method gives a much better result compared to the ones using the Euler method. Increasing the step length to $\Delta t = 10^{-3}$ would give identical results, so for the Earth-Sun system, Verlet method is very stable up to $\Delta t = 10^{-3}$. A plot for the Verlet method with $\Delta t = 10^{-3}$ can be found in the appendix in figure \ref{fig:balle3}. \\
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{Earth_Sun_Verlet_method.pdf}
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Verlet_method.pdf}
 \caption{Verlet method using $\Delta t = 10^{-4}$}
 \label{fig:balle2}
 \end{figure}
@@ -361,7 +361,7 @@ It is now quite easy to implement the escape velocity. In the C++ program, we ha
 Figure \ref{fig:EscapeVel} shows a plot of a the planet with mass $M_{earth}$ and how the orbit is if the initial velocity is equal to the escape velocity. As we can see, starting with the escape velocity allows the planet to break free from it's intended orbit and leave the system. The orbit of Earth, with circular orbit used previously, is also plotted as a comparison. \\
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{Escape_velocity.pdf}
+\includegraphics[width=\linewidth]{Plots/Escape_velocity.pdf}
 \caption{Plot shows a planet with the mass of Earth with and without escape velocity.}
 \label{fig:EscapeVel}
 \end{figure}
@@ -371,13 +371,13 @@ Figure \ref{fig:EscapeVel} shows a plot of a the planet with mass $M_{earth}$ an
 From now on, all the initial conditions, i.e positions and velocities of both the Sun and Earth will be obtained from NASA. The date of the data is 2016.10.05. We already know that Earth's orbit will change, from the theory we previously introduced, when we add Jupiter to the system. Figure \ref{fig:EJS_2D_Orbit} shows the orbit of the Earth and Jupiter, as well as the Sun. The orbits themselves does not look particularly odd in any way, but it is hard to see how Jupiter affects the orbit of the Earth. Instead, we only plot the orbit of the Earth and the Sun (still taking Jupiter into account during the calculations) which can be found in figure \ref{fig:EJS_Earth_and_sun}. \\
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{Earth_Sun_Jupiter.pdf}
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Jupiter.pdf}
 \caption{Orbits of the Earth, Jupiter and the Sun.}
 \label{fig:EJS_2D_Orbit}
 \end{figure}
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{ESJ_EarthandSun.pdf}
+\includegraphics[width=\linewidth]{Plots/ESJ_EarthandSun.pdf}
 \caption{Plot of the Earth and the Sun in the Earth-Sun-Jupiter system.}
 \label{fig:EJS_Earth_and_sun}
 \end{figure}
@@ -386,7 +386,7 @@ The Verlet method for this system is still quite stable, given that $\Delta t = 
 Increasing the mass of Jupiter will change the orbits of Earth, the Sun, as well as Jupiter itself even more. Figure \ref{ESJ_10MJ} shows the system when we increase the mass of Jupiter by a factor of 10. We can already see that Earth's orbit has changed a little bit, but the effect of a 10 times more massive Jupiter is not very significant to the whole system. Both planets, even after 20 years, are still in orbit around the Sun. \\
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{Earth_Sun_Jupiter_10MJ.pdf}
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Jupiter_10MJ.pdf}
 \caption{Earth-Sun-Jupiter system for $10M_J$.}
 \label{ESJ_10MJ}
 \end{figure}
@@ -395,7 +395,7 @@ The center of mass (CM) also starts to move because of the increased mass of Jup
 3D Plots of this system with unchanged Jupiter mass and $1000$ times the Jupiter mass can be found in the appendix in figure \ref{fig:Appendix_3D_ESJ} and \ref{fig:Appendix_1000MJ} respectively. \\
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{Earth_Sun_Jupiter_1000MJ.pdf}
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Jupiter_1000MJ.pdf}
 \caption{Earth-Sun-Jupiter system for $1000M_J$.}
 \label{fig:ESJ_1000MJ}
 \end{figure}
@@ -408,7 +408,7 @@ M_{\odot}v_{\odot} + \displaystyle \sum_i M_i v_i = 0
 \end{align}
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{All_planets_3D_plot.pdf}
+\includegraphics[width=\linewidth]{Plots/All_planets_3D_plot.pdf}
 \caption{Plot of all planets in 3D. Note: the scatter plot (spheres) of the planet does not scale with it's real size.}
 \label{fig:All_planets_3D}
 \end{figure}
@@ -416,7 +416,7 @@ Because of the orbit sizes of the outer planets (i.e Jupiter, Saturn, Uranus, Ne
 However, plotting 250 years worth of orbits of the first four planets are quite redundant so we have decided to reduce the number of time steps, $\Delta t$. This is to, again, mainly to reduce the number of simulated years, but it will also increase the stability of the Verlet method. The orbits of the first four planets under these settings can be found in figure \ref{fig:First4_planets_3D}. One thing to note is that the outer planets will no longer have full orbits, like in figure \ref{fig:All_planets_3D}. However, the effect from the gravitational pull of these planets are still present, which is the most important part. \\
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{First_planets_3D_plot.pdf}
+\includegraphics[width=\linewidth]{Plots/First_planets_3D_plot.pdf}
 \caption{3D plot of the first four planets orbit. Note: the scatter plot (spheres) of the planet does not scale with it's real size.}
 \label{fig:First4_planets_3D}
 \end{figure}
@@ -451,31 +451,31 @@ With the general relativistic correction we were also able to reproduce the obse
 \section{Appendix}
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{Earth_Sun_Verlet_method_larger_dt.pdf}
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Verlet_method_larger_dt.pdf}
 \caption{Verlet method using $\Delta t = 10^{-3}$}
 \label{fig:balle3}
 \end{figure}
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{Earth_Sun_Euler_Cromer_method.pdf}
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Euler_Cromer_method.pdf}
 \caption{Earth-Sun system using Euler Cromer method}
 \label{fig:Appendix_EulerCromer}
 \end{figure}
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{Earth_Sun_Jupiter_largerdt.pdf}
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Jupiter_largerdt.pdf}
 \caption{Earth-Sun-Jupiter system for $\Delta t = 10^{-3}$. The result is identical to the system with $\Delta t = 10^{-4}$.}
 \label{fig:ESJ_stability}
 \end{figure}
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{Earth_Sun_Jupiter_3D.pdf}
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Jupiter_3D.pdf}
 \caption{3D Plot of the Earth-Sun-Jupiter system.}
 \label{fig:Appendix_3D_ESJ}
 \end{figure}
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{Earth_Sun_Jupiter_1000MJ_3D.pdf}
+\includegraphics[width=\linewidth]{Plots/Earth_Sun_Jupiter_1000MJ_3D.pdf}
 \caption{3D plot for Earth-Sun-Jupiter system with the mass of Jupiter as $1000M_{Jupiter}$}
 \label{fig:Appendix_1000MJ}
 \end{figure}
