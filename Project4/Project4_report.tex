@@ -8,6 +8,7 @@
 \usepackage{float}
 \usepackage[utf8]{inputenc}
 \usepackage{xcolor}
+\usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{placeins}
 
@@ -30,14 +31,17 @@ moredelim=**[is][\color{blue}]{@}{@}
 }
 \begin{document}
 \maketitle
-\section*{Introduction}
+
+\tableofcontents
+\newpage
+\section{Introduction} \label{section:intro}
 In fields like thermal dynamics, one will study the phenomena called a \emph{phase transition}. Not only do we study it, but we experience this phenomena on a day-by-day basis. An example of a phase transition is when water turns to steam when we boil the water. More general, a phase transition is when matter changes it's form, either from gas to liquid, or liquid to solid (and vice versa). We will in this project use a very popular model, the Ising model, to simulate phase transitions.
 
 %In fields like thermal dynamics, one will study the phenomena called phase transitions. A phase transition is when matter changes it's form. An example of a phase transition is when water turns into ice, i.e, liquid transitions into solid matter. We will in this project study a very popular model, the Ising model, to simulate phase transitions.
 
-\section*{Method}
+\section{Method} \label{section:methods}
 
-\subsection*{Simple 2 $\times$ 2 lattice}
+\subsection{Simple 2 $\times$ 2 lattice}
 We will first consider a 2$\times$2 lattice, find the analytical expression for partition function $Z$ and find the corresponding expectation value of energy $E$, mean magnetization $|M|$, specific heat $C_V$ and susceptibility $\xi$ as functions of temperature $T$. The boundaries for the lattice will be periodic. We will then compare the Ising model with the analytical expressions later.
 
 For this system, we will assume that every spin has two directions, i.e. our states can be either be in spin up state or spin down state (shorthand notation as $\uparrow$ or $\downarrow$ respectively).
@@ -161,12 +165,25 @@ The standard deviation of the energy then becomes
 \end{align*}
 We can do similar calculations to obtain the mean magnetization (or the mean absolute value of the magnetic moment), which then gives us
 \begin{align*}
-<M> = \frac{1}{Z} \displaystyle \sum_i M_i e^{-\beta E_i} = \frac{e^{4\beta J} - e^{4\beta J}}{\cosh(8\beta J) + 3} = 0 \\
-<M^2> = 
+<M> &= \frac{1}{Z} \displaystyle \sum_i M_i e^{-\beta E_i} = \frac{e^{4\beta J} - e^{4\beta J}}{\cosh(8\beta J) + 3} = 0 \\
+<M^2> &= \frac{1}{Z}\displaystyle \sum_i M_i^2e^{-\beta E_i} = \frac{32(e^{8\beta J} + 1)}{\cosh(8\beta J) + 3}
 \end{align*}
+Which we can use to calculate the susceptibility $\chi$
+\begin{align*}
+\chi = <M^2> - <M>^2 = \frac{32(e^{8\beta J} + 1)}{\cosh(8\beta J) + 3}
+\end{align*} 
+We will now proceed with developing the Ising model, and test the model with the analytical expression that we derived above.
 \FloatBarrier
-\section*{Implementation}
-\section*{Results}
-\section*{Conclusion}
-\section*{Reference}
+\subsection{The Ising model}
+
+\section{Implementation} \label{section:implement}
+
+\section{Results} \label{section:result}
+
+\section{Conclusion} \label{section:conclusion}
+
+\FloatBarrier
+\begin{thebibliography}{1}
+    \bibitem{cpyhsics} M. Hjorth-Jensen, \emph{Computational Physics}, 2015, 551 pages
+\end{thebibliography}
 \end{document}
