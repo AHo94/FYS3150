@@ -9,7 +9,7 @@ void initialize_system(int N, int lattice, double **spins, double *energies, dou
     std::random_device rd; // obtain a random number from hardware
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);
-    std::uniform_int_distribution<> distr(-1,1); // define the range
+    std::uniform_int_distribution<> distr(0,1); // define the range
     for (int i=0; i<N; i++){
         for (int j=0; j<lattice; j++){
             if (distr(generator) == 0){
@@ -36,44 +36,51 @@ int main()
     double beta = 1/T;
     int lattice = 4;
     int N = pow(2, lattice);
+    /*
     energies = new double[N];
     magnetization = new double[N];
     spins = new double*[N];
     for (int i=0; i<N; i++){
         spins[i] = new double[lattice];
     }
+    */
 
-    initialize_system(N, lattice, spins, energies, magnetization);
+    //initialize_system(N, lattice, spins, energies, magnetization);
     double Z, E_mean, E_mean2, M_mean, M_mean2, C_v, chi, totC_v, totChi;
     double totE, totM;
 
     // Analytical expressions
-    double AC_v = 256.0/(T*pow(cosh(8)+3, 2));
+    double AC_v = 256.0/(T*pow((cosh(8)+3), 2));
     double Achi = 32.0*(exp(8) + 1)/(T*(cosh(8) + 3));
 
-    for (int j=0; j<1000; j++){
-    for (int i=0; i<N; i++){
-        Z += exp(-beta*energies[i]);
-    }
-    for (int i=0; i<N; i++){
-        E_mean += (1.0/Z)*(energies[i]*exp(-beta*energies[i]));
-        E_mean2 += (1.0/Z)*(energies[i]*energies[i]*exp(-beta*energies[i]));
-        M_mean += (1.0/Z)*(magnetization[i]*exp(-beta*energies[i]));
-        M_mean2 += (1.0/Z)*(magnetization[i]*magnetization[i]*exp(-beta*energies[i]));
-    }
+    for (int j=0; j<5000; j++){
+        energies = new double[N];
+        magnetization = new double[N];
+        spins = new double*[N];
+        for (int i=0; i<N; i++){
+            spins[i] = new double[lattice];
+        }
+        initialize_system(N, lattice, spins, energies, magnetization);
+        for (int i=0; i<N; i++){
+            Z += exp(-beta*energies[i]);
+        }
+        for (int i=0; i<N; i++){
+            E_mean += (1.0/Z)*(energies[i]*exp(-beta*energies[i]));
+            E_mean2 += (1.0/Z)*(pow(energies[i],2)*exp(-beta*energies[i]));
+            M_mean += (1.0/Z)*(magnetization[i]*exp(-beta*energies[i]));
+            M_mean2 += (1.0/Z)*(pow(magnetization[i], 2)*exp(-beta*energies[i]));
+        }
 
-    C_v = (E_mean2 - pow(E_mean, 2))/T;
-    chi = (M_mean2 - pow(M_mean, 2))/T;
-
-    totC_v += C_v;
-    totChi += chi;
-    if (fabs(totC_v/j - AC_v) < 1e-3 && fabs(totChi/j - Achi) < 1e-3){
-        j = 999;
-        cout << "AYY WORKED" << endl;
+        C_v = (E_mean2 - pow(E_mean, 2))/T;
+        chi = (M_mean2 - pow(M_mean, 2))/T;
+        totC_v += C_v;
+        totChi += chi;
+        if (fabs(totC_v/j - AC_v) < 1e-3 && fabs(totChi/j - Achi) < 1e-3){
+             cout << "AYY WORKED" << endl;
+        }
     }
-    }
-    cout << "Numerical C_v = " << totC_v/100.0 << ", Analytical C_v = " << AC_v << endl;
-    cout << "Numerical chi = " << totChi/100.0 << ", Analytical chi = " << Achi << endl;
+    cout << "Numerical C_v = " << totC_v/5000.0 << ", Analytical C_v = " << AC_v << endl;
+    cout << "Numerical chi = " << totChi/5000.0 << ", Analytical chi = " << Achi << endl;
 
     /*
     for (int i=0; i<N; i++){
