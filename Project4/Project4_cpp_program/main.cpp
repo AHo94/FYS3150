@@ -1,15 +1,76 @@
 #include <iostream>
-#include <chrono>
+#include <chrono>   // Used to seed random generator based on the time
 #include <random>
 #include <cmath>
 
 using namespace std;
 
-void initialize_system(int N, int lattice, double **spins, double *energies, double *magnetization){
+void Metropolis(int L, int lattice, double *spins, double &E_b, double E_t, double &magnetization){
+    // A function that uses the Metropolis method
     std::random_device rd; // obtain a random number from hardware
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
+    std::default_random_engine generator(seed);
+    std::uniform_int_distribution<> distr(0,3); // define the range
+
+    int im = lattice-1;
+    for (int i=0; i<lattice-1; i++){
+        E_b += spins[i]*spins[im];
+        im = i;
+    }
+    for (int i=0; i<lattice; i++){
+        magnetization += spins[i];
+    }
+    int spin_pos = distr(generator);
+    spins[spin_pos] *= -1;
+    for (int i=0; i<lattice-1; i++){
+        E_t += spins[i]*spins[im];
+        im = i;
+    }
+}
+
+void generate_spins(int lattice, double *spins){
+    std::random_device rd; // obtain a random number from hardware
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
     std::default_random_engine generator(seed);
     std::uniform_int_distribution<> distr(0,1); // define the range
+    for (int i=0; i<lattice; i++){
+        int spin = distr(generator);
+        if (spin == 0){
+            spins[i] = -1;
+        }
+        else{
+            spins[i] = spin;
+        }
+    }
+}
+
+void initialize_system(int L, int lattice, double *spins, double energies, double magnetization){
+    // Initializes the system, by setting spin states and calculates the energies and magnetizations.
+    std::random_device rd; // obtain a random number from hardware
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
+    std::default_random_engine generator(seed);
+    std::uniform_int_distribution<> distr(0,1); // define the range
+    for (int i=0; i<lattice; i++){
+        int spin = distr(generator);
+        if (spin == 0){
+            spins[i] = -1;
+        }
+        else{
+            spins[i] = spin;
+        }
+    }
+    int im = lattice-1;
+    for (int i=0; i<lattice-1; i++){
+        energies += spins[i]*spins[im];
+        im = i;
+    }
+    for (int i=0; i<lattice; i++){
+        magnetization += spins[i];
+    }
+
+
+
+    /*
     for (int i=0; i<N; i++){
         for (int j=0; j<lattice; j++){
             if (distr(generator) == 0){
@@ -20,47 +81,43 @@ void initialize_system(int N, int lattice, double **spins, double *energies, dou
             }
         }
     }
-
     for (int i=0; i<N; i++){
         energies[i] = -2*(spins[i][0]*spins[i][1] + spins[i][0]*spins[i][2]
                 + spins[i][1]*spins[i][3] + spins[i][2]*spins[i][3]);
         magnetization[i] = (spins[i][0] + spins[i][1] + spins[i][2] + spins[i][3]);
     }
-
+    */
 }
 
 int main()
 {
-    double **spins, *energies, *magnetization;
+    double *spins, energy_b, energy_t, magnetization;
     double T = 1.0;     // Temperature = 1.0 kT/J
     double beta = 1/T;
     int lattice = 4;
-    int N = pow(2, lattice);
-    /*
-    energies = new double[N];
-    magnetization = new double[N];
-    spins = new double*[N];
-    for (int i=0; i<N; i++){
-        spins[i] = new double[lattice];
-    }
-    */
+    int L = pow(2, lattice);
+    spins = new double[lattice];
+
 
     //initialize_system(N, lattice, spins, energies, magnetization);
     double Z, E_mean, E_mean2, M_mean, M_mean2, C_v, chi, totC_v, totChi;
-    double totE, totM;
-
+    generate_spins(lattice, spins);
+    for (int i=0; i<50; i++){
+        Metropolis(L, lattice, spins, energy_b, energy_t, magnetization);
+        delta_E = old_energy - energy;
+    }
     // Analytical expressions
-    double AC_v = 256.0/(T*pow((cosh(8)+3), 2));
+    double AC_v = 64.0*(4+cosh(8))/(T*pow((cosh(8)+3), 2));
     double Achi = 32.0*(exp(8) + 1)/(T*(cosh(8) + 3));
-
-    for (int j=0; j<5000; j++){
+    /*
+    for (int j=0; j<1000; j++){
         energies = new double[N];
         magnetization = new double[N];
         spins = new double*[N];
         for (int i=0; i<N; i++){
             spins[i] = new double[lattice];
         }
-        initialize_system(N, lattice, spins, energies, magnetization);
+        initialize_system(L, lattice, spins, energies, magnetization);
         for (int i=0; i<N; i++){
             Z += exp(-beta*energies[i]);
         }
@@ -79,9 +136,9 @@ int main()
              cout << "AYY WORKED" << endl;
         }
     }
-    cout << "Numerical C_v = " << totC_v/5000.0 << ", Analytical C_v = " << AC_v << endl;
-    cout << "Numerical chi = " << totChi/5000.0 << ", Analytical chi = " << Achi << endl;
-
+    cout << "Numerical C_v = " << totC_v/1000.0 << ", Analytical C_v = " << AC_v << endl;
+    cout << "Numerical chi = " << totChi/1000.0 << ", Analytical chi = " << Achi << endl;
+    */
     /*
     for (int i=0; i<N; i++){
         for (int j=0; j<lattice; j++){
