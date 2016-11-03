@@ -5,27 +5,19 @@
 
 using namespace std;
 
-void Metropolis(int L, int lattice, double *spins, double &E_b, double E_t, double &magnetization){
+inline int periodic(int i, int limit, int add){
+    // Funcion that ensures periodic boundary conditions
+    return (i+limit+add) % (limit);
+}
+
+void Metropolis(int L, int lattice, double *spins, double &E_mean, double &M_mean, double &E_mean2, double &M_mean2){
     // A function that uses the Metropolis method
     std::random_device rd; // obtain a random number from hardware
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
     std::default_random_engine generator(seed);
-    std::uniform_int_distribution<> distr(0,3); // define the range
+    std::uniform_int_distribution<int> distr(0,3); // define the range
+    std::normal_distribution<double> norm_distr(0.0,1.0);
 
-    int im = lattice-1;
-    for (int i=0; i<lattice-1; i++){
-        E_b += spins[i]*spins[im];
-        im = i;
-    }
-    for (int i=0; i<lattice; i++){
-        magnetization += spins[i];
-    }
-    int spin_pos = distr(generator);
-    spins[spin_pos] *= -1;
-    for (int i=0; i<lattice-1; i++){
-        E_t += spins[i]*spins[im];
-        im = i;
-    }
 }
 
 void generate_spins(int lattice, double *spins){
@@ -44,51 +36,25 @@ void generate_spins(int lattice, double *spins){
     }
 }
 
-void initialize_system(int L, int lattice, double *spins, double energies, double magnetization){
+void initialize_system(int L, double **spins, double &energy, double &magnetic_moment){
     // Initializes the system, by setting spin states and calculates the energies and magnetizations.
     std::random_device rd; // obtain a random number from hardware
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
     std::default_random_engine generator(seed);
     std::uniform_int_distribution<> distr(0,1); // define the range
-    for (int i=0; i<lattice; i++){
-        int spin = distr(generator);
-        if (spin == 0){
-            spins[i] = -1;
-        }
-        else{
-            spins[i] = spin;
+    for (int x=0; x < L; x++){
+        for (int y=0; y<L; y++){
+            spins[x][y] = 1.0;
+            magnetic_moment +=  spins[x][y];
         }
     }
-    int im = lattice-1;
-    for (int i=0; i<lattice-1; i++){
-        energies += spins[i]*spins[im];
-        im = i;
-    }
-    for (int i=0; i<lattice; i++){
-        magnetization += spins[i];
-    }
-
-
-
-    /*
-    for (int i=0; i<N; i++){
-        for (int j=0; j<lattice; j++){
-            if (distr(generator) == 0){
-                spins[i][j] = -1;
-            }
-            else{
-                spins[i][j] = 1;
-            }
+    for (int x=0; x < L; x++){
+        for (int y=0; y<L; y++){
+            energy -= spins[x][y]*(spins[periodic(x,L,-1)][y] + spins[x][periodic(y,L,-1)]);
         }
     }
-    for (int i=0; i<N; i++){
-        energies[i] = -2*(spins[i][0]*spins[i][1] + spins[i][0]*spins[i][2]
-                + spins[i][1]*spins[i][3] + spins[i][2]*spins[i][3]);
-        magnetization[i] = (spins[i][0] + spins[i][1] + spins[i][2] + spins[i][3]);
-    }
-    */
+
 }
-
 int main()
 {
     double *spins, energy_b, energy_t, magnetization;
@@ -102,13 +68,11 @@ int main()
     //initialize_system(N, lattice, spins, energies, magnetization);
     double Z, E_mean, E_mean2, M_mean, M_mean2, C_v, chi, totC_v, totChi;
     generate_spins(lattice, spins);
-    for (int i=0; i<50; i++){
-        Metropolis(L, lattice, spins, energy_b, energy_t, magnetization);
-        delta_E = old_energy - energy;
-    }
+    Metropolis(L, lattice, spins, E_mean, E_mean2, M_mean, M_mean2);
     // Analytical expressions
     double AC_v = 64.0*(4+cosh(8))/(T*pow((cosh(8)+3), 2));
     double Achi = 32.0*(exp(8) + 1)/(T*(cosh(8) + 3));
+    Z =
     /*
     for (int j=0; j<1000; j++){
         energies = new double[N];
