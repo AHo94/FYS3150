@@ -2,6 +2,8 @@
 #include <chrono>   // Used to seed random generator based on the time
 #include <random>
 #include <cmath>
+#include <fstream>
+#include <string>
 //#include <armadillo>
 
 using namespace std;
@@ -117,6 +119,9 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
     Expectation_values[4] += fabs(Mag_moment);
 }
 
+void write_file(int L, int MC_cycles, double Temperature, double *Expectation_values){
+
+}
 
 int main()
 {
@@ -136,48 +141,6 @@ int main()
     double AC_v = 64.0*(4+cosh(8))/(T*pow((cosh(8)+3), 2));
     double Achi = 32.0*(exp(8) + 1)/(T*(cosh(8) + 3));
     double norm = 1.0/(MC_cycles);
-    /*
-    for (int j=0; j<1000; j++){
-        energies = new double[N];
-        magnetization = new double[N];
-        spins = new double*[N];
-        for (int i=0; i<N; i++){
-            spins[i] = new double[lattice];
-        }
-        initialize_system(L, lattice, spins, energies, magnetization);
-        for (int i=0; i<N; i++){
-            Z += exp(-beta*energies[i]);
-        }
-        for (int i=0; i<N; i++){
-            E_mean += (1.0/Z)*(energies[i]*exp(-beta*energies[i]));
-            E_mean2 += (1.0/Z)*(pow(energies[i],2)*exp(-beta*energies[i]));
-            M_mean += (1.0/Z)*(magnetization[i]*exp(-beta*energies[i]));
-            M_mean2 += (1.0/Z)*(pow(magnetization[i], 2)*exp(-beta*energies[i]));
-        }
 
-        C_v = (E_mean2 - pow(E_mean, 2))/T;
-        chi = (M_mean2 - pow(M_mean, 2))/T;
-        totC_v += C_v;
-        totChi += chi;
-        if (fabs(totC_v/j - AC_v) < 1e-3 && fabs(totChi/j - Achi) < 1e-3){
-             cout << "AYY WORKED" << endl;
-        }
-    }
-    cout << "Numerical C_v = " << totC_v/1000.0 << ", Analytical C_v = " << AC_v << endl;
-    cout << "Numerical chi = " << totChi/1000.0 << ", Analytical chi = " << Achi << endl;
-    */
-    /*
-    for (int i=0; i<N; i++){
-        for (int j=0; j<lattice; j++){
-            cout << spins[i][j];
-        }
-        cout << "\n";
-    }
-    */
-    /*
-    for (int i=0; i<N; i++){
-        cout << energies[i] << " ";
-    }
-    */
     return 0;
 }
