@@ -18,10 +18,16 @@ void initialize_system(int L, double **spins, double &energy, double &magnetic_m
     std::random_device rd; // obtain a random number from hardware
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
     std::default_random_engine generator(seed);
-    std::uniform_int_distribution<> distr(0,1); // define the range
+    std::uniform_int_distribution<int> distr(0,1); // define the range
     for (int x=0; x < L; x++){
         for (int y=0; y<L; y++){
-            spins[x][y] = 1.0;
+            int spin = distr(generator);
+            if (spin == 0){
+                spins[x][y] = -1;
+            }
+            else{
+                spins[x][y] = 1;
+            }
             magnetic_moment +=  spins[x][y];
         }
     }
@@ -120,7 +126,15 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
 }
 
 void write_file(int L, int MC_cycles, double Temperature, double *Expectation_values){
+    double norm = 1.0/MC_cycles;
+    double E_expectation = Expectation_values[0]*norm;
+    double E2_expectation = Expectation_values[1]*norm;
+    double M_expectation = Expectation_values[2]*norm;
+    double M2_expectation = Expectation_values[3]*norm;
+    double Mabs_expectation = Expectation_values[4]*norm;
 
+    double E_variance = (E2_expectation - E_expectation*E_expectation)/L/L;
+    double M_variance = (M2_expectation - M_expectation*M_expectation)/L/L;
 }
 
 int main()
@@ -134,13 +148,18 @@ int main()
         Spin_matrix[i] = new double[L];
     }
 
-    int MC_cycles = 100000;
+    int MC_cycles = 1000000;
     Metropolis_method(L, MC_cycles, T, Expectation_values);
     //initialize_system(N, lattice, spins, energies, magnetization);
     // Analytical expressions
     double AC_v = 64.0*(4+cosh(8))/(T*pow((cosh(8)+3), 2));
     double Achi = 32.0*(exp(8) + 1)/(T*(cosh(8) + 3));
     double norm = 1.0/(MC_cycles);
+    double C_v = (Expectation_values[1] - Expectation_values[0]*Expectation_values[0])/L/L/T/T;
+    double Chi = (Expectation_values[4] - Expectation_values[2]*Expectation_values[2])/L/L/T/T;
 
+    cout << "Analytic C_v = " << AC_v << " Numerical C_v = " << C_v << endl;
+
+    cout << "Analytic Chi = " << Achi << " Numerical Chi = " << Chi << endl;
     return 0;
 }
