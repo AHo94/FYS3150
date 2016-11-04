@@ -38,7 +38,7 @@ void initialize_system(int L, double **spins, double &energy, double &magnetic_m
     }
 }
 
-double Calculate_E(double **Spin_matrix, int L){
+double Calculate_E(double **Spin_matrix){
     double Energy = 0;
     Energy = 2*(Spin_matrix[1][1]*Spin_matrix[1][2]
             + Spin_matrix[1][1]*Spin_matrix[2][1]
@@ -81,38 +81,29 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
             for (int j=0; j<L; j++){
                 int ix = distr(generator)*L;
                 int iy = distr(generator)*L;
-                double E_b =2*Spin_matrix[ix][iy]*(
-                            Spin_matrix[ix][periodic(iy, L, -1)]+
-                            Spin_matrix[periodic(ix, L, -1)][iy] +
-                            Spin_matrix[ix][periodic(iy, L, 1)]+
-                            Spin_matrix[periodic(ix, L, 1)][iy]);
-
+                double E_b = Calculate_E(Spin_matrix);
                 // Flip a random spin
                 Spin_matrix[ix][iy] *= -1.0;
                 // Calculate new energy after spin flip
-                double E_t = 2*Spin_matrix[ix][iy]*(
-                            Spin_matrix[ix][periodic(iy, L, -1)]+
-                            Spin_matrix[periodic(ix, L, -1)][iy] +
-                            Spin_matrix[ix][periodic(iy, L, 1)]+
-                            Spin_matrix[periodic(ix, L, 1)][iy]);
+                double E_t = Calculate_E(Spin_matrix);
                 // Calculate energy difference
                 double dE = E_t - E_b;
                 if (dE <= 0){
                     // Accept new state, use the energy for this state
                     Energy += E_t;
-                    Mag_moment += 2*Spin_matrix[ix][iy];
+                    Mag_moment += Calculate_M(Spin_matrix, L);
                 }
                 else if(dE > 0){
                     if (distr(generator) <= exp(-dE/Temperature)){
                         // Accept new state, use new energy
                         Energy += E_t;
-                        Mag_moment += 2*Spin_matrix[ix][iy];
+                        Mag_moment += Calculate_M(Spin_matrix, L);
                         }
                     else{
                         // Do not accept new state. Flip back spin and use old energy
                         Spin_matrix[ix][iy] *= -1.0;
                         Energy += E_b;
-                        Mag_moment +=2*Spin_matrix[ix][iy];
+                        Mag_moment += Calculate_M(Spin_matrix, L);
                     }
                 }
             }
