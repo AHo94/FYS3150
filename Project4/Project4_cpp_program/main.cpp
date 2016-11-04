@@ -78,21 +78,21 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
                 double dE = E_t - E_b;
                 if (dE <= 0){
                     Energy += E_t;
-                    Mag_moment += (Spin_matrix[0][0] + Spin_matrix[0][1] +
-                            Spin_matrix[1][0] + Spin_matrix[1][1]);
+                    Mag_moment += 2*Spin_matrix[ix][iy];//(Spin_matrix[0][0] + Spin_matrix[0][1] +
+                            //Spin_matrix[1][0] + Spin_matrix[1][1]);
                 }
                 else if(dE > 0){
-                        if (distr(generator) <= exp(-dE/Temperature)){
+                    if (distr(generator) <= exp(-dE/Temperature)){
                         Energy += E_t;
-                        Mag_moment += (Spin_matrix[0][0] + Spin_matrix[0][1] +
-                                Spin_matrix[1][0] + Spin_matrix[1][1]);
+                        Mag_moment += 2*Spin_matrix[ix][iy];//(Spin_matrix[0][0] + Spin_matrix[0][1] +
+                                //Spin_matrix[1][0] + Spin_matrix[1][1]);
                         }
 
                     else{
                         Spin_matrix[ix][iy] *= -1.0;
                         Energy += E_b;
-                        Mag_moment += (Spin_matrix[0][0] + Spin_matrix[0][1] +
-                                Spin_matrix[1][0] + Spin_matrix[1][1]);
+                        Mag_moment +=2*Spin_matrix[ix][iy];// (Spin_matrix[0][0] + Spin_matrix[0][1] +
+                                //Spin_matrix[1][0] + Spin_matrix[1][1]);
                     }
                 }
             }
