@@ -4,6 +4,7 @@
 #include <cmath>
 #include <fstream>
 #include <string>
+#include <iomanip>
 //#include <armadillo>
 
 using namespace std;
@@ -13,7 +14,7 @@ inline int periodic(int i, int limit, int add){
     return (i+limit+add) % (limit);
 }
 
-void initialize_system(int L, double **spins, double &energy, double &magnetic_moment){
+void initialize_system(int L, double **spins){
     // Initializes the system, by setting spin states and calculates the energies and magnetizations.
     std::random_device rd; // obtain a random number from hardware
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
@@ -23,27 +24,31 @@ void initialize_system(int L, double **spins, double &energy, double &magnetic_m
         for (int y=0; y<L; y++){
             int spin = distr(generator);
             if (spin == 0){
-                spins[x][y] = -1;
+                spins[x][y] = -1.0;
             }
             else{
-                spins[x][y] = 1;
+                spins[x][y] = 1.0;
             }
-            magnetic_moment +=  spins[x][y];
-        }
-    }
-    for (int x=0; x < L; x++){
-        for (int y=0; y<L; y++){
-            energy -= spins[x][y]*(spins[periodic(x,L,-1)][y] + spins[x][periodic(y,L,-1)]);
         }
     }
 }
 
-double Calculate_E(double **Spin_matrix){
+double Calculate_E(double **Spin_matrix, int L){
     double Energy = 0;
-    Energy = 2*(Spin_matrix[1][1]*Spin_matrix[1][2]
-            + Spin_matrix[1][1]*Spin_matrix[2][1]
-            + Spin_matrix[2][2]*Spin_matrix[1][2]
-            + Spin_matrix[2][2]*Spin_matrix[2][1]);
+    /*
+    for (int i=0; i<L; i++){
+        for (int j=0; j<L; j++){
+            Energy -= Spin_matrix[i][j]*(Spin_matrix[periodic(i, L, -1)][j] +
+                                         Spin_matrix[i][periodic(j, L, -1)]);
+        }
+    }
+    */
+
+    Energy = 2*(Spin_matrix[0][0]*Spin_matrix[0][1]
+            + Spin_matrix[0][0]*Spin_matrix[1][0]
+            + Spin_matrix[1][1]*Spin_matrix[0][1]
+            + Spin_matrix[1][1]*Spin_matrix[1][0]);
+
     return Energy;
 }
 
@@ -71,44 +76,47 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
     for (int i=0; i<L; i++){
         Spin_matrix[i] = new double[L];
     }
-    double Energy=0;
-    double Mag_moment=0;
-    initialize_system(L, Spin_matrix, Energy, Mag_moment);
+    double EnergySum=0;
+    double MSum=0;
+    double EnergySquaredSum=0;
+    double MSquaredSum=0;
+    initialize_system(L, Spin_matrix);
 
+    double currentEnergy = Calculate_E(Spin_matrix, L);
+    double currentM = Calculate_M(Spin_matrix, L);
 
     for (int cycle=1; cycle<=MC_cycles; cycle++){
+        // Prøv å flipp L^2 spins før måling av energi igjen
         for (int i=0; i<L; i++){
             for (int j=0; j<L; j++){
                 int ix = distr(generator)*L;
                 int iy = distr(generator)*L;
-                double E_b = Calculate_E(Spin_matrix);
-                // Flip a random spin
-                Spin_matrix[ix][iy] *= -1.0;
-                // Calculate new energy after spin flip
-                double E_t = Calculate_E(Spin_matrix);
-                // Calculate energy difference
-                double dE = E_t - E_b;
+                Spin_matrix[ix][iy] *= -1.0;    // Flip a random spin
+                double E_t = Calculate_E(Spin_matrix, L);   // Calculate new energy after spin flip
+                double dE = E_t - currentEnergy;    // Calculate energy difference
                 if (dE <= 0){
                     // Accept new state, use the energy for this state
-                    Energy += E_t;
-                    Mag_moment += Calculate_M(Spin_matrix, L);
-                }
-                else if(dE > 0){
+                    currentEnergy = E_t;
+                    currentM = Calculate_M(Spin_matrix, L);
+                } else {
                     if (distr(generator) <= exp(-dE/Temperature)){
                         // Accept new state, use new energy
-                        Energy += E_t;
-                        Mag_moment += Calculate_M(Spin_matrix, L);
-                        }
-                    else{
+                        currentEnergy = E_t;
+                        currentM = Calculate_M(Spin_matrix, L);
+                    } else {
                         // Do not accept new state. Flip back spin and use old energy
                         Spin_matrix[ix][iy] *= -1.0;
-                        Energy += E_b;
-                        Mag_moment += Calculate_M(Spin_matrix, L);
                     }
                 }
             }
         }
+
+        EnergySum += currentEnergy;
+        EnergySquaredSum += currentEnergy*currentEnergy;
+        MSum += currentM;
+        MSquaredSum += currentM*currentM;
     }
+
     /*
     for (int cycle=1; cycle<MC_cycles; cycle++){
         for (int i=0; i<L; i++){
@@ -129,47 +137,71 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
         }
     }
     */
-    Expectation_values[0] += Energy;
-    Expectation_values[1] += Energy*Energy;
-    Expectation_values[2] += Mag_moment;
-    Expectation_values[3] += Mag_moment*Mag_moment;
-    Expectation_values[4] += fabs(Mag_moment);
+    Expectation_values[0] += EnergySum/MC_cycles;
+    Expectation_values[1] += EnergySquaredSum/MC_cycles;
+    Expectation_values[2] += MSum/MC_cycles;
+    Expectation_values[3] += MSquaredSum/MC_cycles;
+    Expectation_values[4] += fabs(MSum)/MC_cycles;
 }
 
 void write_file(int L, int MC_cycles, double Temperature, double *Expectation_values){
-    double norm = 1.0/MC_cycles;
-    double E_expectation = Expectation_values[0]*norm;
-    double E2_expectation = Expectation_values[1]*norm;
-    double M_expectation = Expectation_values[2]*norm;
-    double M2_expectation = Expectation_values[3]*norm;
-    double Mabs_expectation = Expectation_values[4]*norm;
+    double E_expectation = Expectation_values[0];
+    double E2_expectation = Expectation_values[1];
+    double M_expectation = Expectation_values[2];
+    double M2_expectation = Expectation_values[3];
+    double Mabs_expectation = Expectation_values[4];
 
     double E_variance = (E2_expectation - E_expectation*E_expectation)/L/L;
     double M_variance = (M2_expectation - M_expectation*M_expectation)/L/L;
+    double C_v = E_variance/Temperature/Temperature;
+    double chi = M_variance/Temperature/Temperature;
+    ofile << setw(15) << setprecision(8) << Temperature;
+    ofile << setw(15) << setprecision(8) << E_expectation/L/L;
+    ofile << setw(15) << setprecision(8) << C_v;
+    ofile << setw(15) << setprecision(8) << Mabs_expectation/L/L;
+    ofile << setw(15) << setprecision(8) << chi;
+
+
+
 }
 
 int main()
 {
     double *Expectation_values;
-    double T = 1.0;     // Temperature = 1.0 kT/J
-    int L = 2;  // Number of spins
     Expectation_values = new double[5];
+    double T_init = 1.0;     // Temperature = 1.0 kT/J
+    int L = 2;  // Number of spins
 
-    int MC_cycles = 1000000;
-    Metropolis_method(L, MC_cycles, T, Expectation_values);
+    int MC_cycles = 500000;
+    Metropolis_method(L, MC_cycles, T_init, Expectation_values);
     // Analytical expressions
-    double AC_v = 64.0*(4+cosh(8))/(T*pow((cosh(8)+3), 2));
-    double Achi = 32.0*(exp(8) + 1)/(T*(cosh(8) + 3));
+    double AC_v = 64.0*(4+cosh(8.0/T_init))/(T_init*pow((cosh(8.0/T_init)+3), 2));
+    double Achi = 8*(exp(8.0/T_init) + cosh(8.0/T_init) + 3.0/2.0)/(T_init*pow((cosh(8.0/T_init)+3), 2));
     double norm = 1.0/(MC_cycles);
-    cout << "<E> = " << Expectation_values[0]/MC_cycles << endl;
-    cout << "<E^2> = " << Expectation_values[1]/MC_cycles << endl;
-    cout << "<M> = " << Expectation_values[2]/MC_cycles << endl;
-    cout << "<M^2> = " << Expectation_values[3]/MC_cycles << endl;
-    cout << "|<M>| = " << Expectation_values[4]/MC_cycles << endl;
-    double C_v = (Expectation_values[1] - Expectation_values[0]*Expectation_values[0])/L/L/T/T;
-    double Chi = (Expectation_values[4] - Expectation_values[2]*Expectation_values[2])/L/L/T/T;
+    /*
+    cout << "<E> = " << Expectation_values[0] << endl;
+    cout << "<E^2> = " << Expectation_values[1] << endl;
+    cout << "<M> = " << Expectation_values[2] << endl;
+    cout << "<M^2> = " << Expectation_values[3] << endl;
+    cout << "|<M>| = " << Expectation_values[4] << endl;
+    */
+    double C_v = (Expectation_values[1] - Expectation_values[0]*Expectation_values[0])/L/L/T_init;
+    double Chi = (Expectation_values[3] - Expectation_values[4]*Expectation_values[4])/L/L/T_init;
+    cout << "Number of Monte Carlo cycles = " << MC_cycles << endl;
+    cout << "Analytic C_v = " << AC_v << ", Numerical C_v = " << C_v << endl;
+    cout << "Analytic Chi = " << Achi << ", Numerical Chi = " << Chi << endl;
 
-    cout << "Analytic C_v = " << AC_v << " Numerical C_v = " << C_v/MC_cycles << endl;
-    cout << "Analytic Chi = " << Achi << " Numerical Chi = " << Chi/MC_cycles << endl;
+    // 4c) Let now L = 20
+    L = 20;
+    string fileout = "4c.txt";
+    ofile.open(fileout);
+    double T_final = 2.4;
+    Expectation_values = new double[5];
+    for (Temperature = T_init; Temperature<=T_final; Temperature=T_init+1.4){
+        MC_cycles = 500000;
+        Metropolis_method(L, MC_cycles, Temperature, Expectation_values);
+        write_file(L, MC_cycles, Temperature, Expectation_values);
+    }
+
     return 0;
 }
