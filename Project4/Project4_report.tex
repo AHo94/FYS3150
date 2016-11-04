@@ -31,23 +31,65 @@ moredelim=**[is][\color{blue}]{@}{@}
 }
 \begin{document}
 \maketitle
+\begin{abstract}
 
+\end{abstract}
+\newpage
 \tableofcontents
 \newpage
 \section{Introduction} \label{section:intro}
-In fields like thermal dynamics, one will study the phenomena called a \emph{phase transition}. Not only do we study it, but we experience this phenomena on a day-by-day basis. An example of a phase transition is when water turns to steam when we boil the water. More general, a phase transition is when matter changes it's form, either from gas to liquid, or liquid to solid (and vice versa).
-
-We will in this project use a very popular model, the Ising model, to look at the statistical properties of phase transitions analytically. After that, we will use the Metropolis algorithm to see how well it works with the analytical solution and how our system will be for many spins per dimension.
+In fields like thermal dynamics, one will study the phenomena called a \emph{phase transition}. Not only do we study it, but we experience this phenomena on a day-by-day basis. An example of a phase transition is when water turns to steam when we boil the water. More general, a phase transition is when matter changes it's form, either from gas to liquid, or liquid to solid (and vice versa).\\\\
+We will in this project use a very popular model, the Ising model, to look at the statistical properties of phase transitions analytically. After that, we will use the Metropolis algorithm to see how well it works with the analytical solution and how our system will be for many spins per dimension.\\\\
+All relevant files can be found in this GitHub page:\\\\
+\url{https://github.com/AHo94/FYS3150_Projects/tree/master/Project4}
 
 %In fields like thermal dynamics, one will study the phenomena called phase transitions. A phase transition is when matter changes it's form. An example of a phase transition is when water turns into ice, i.e, liquid transitions into solid matter. We will in this project study a very popular model, the Ising model, to simulate phase transitions.
 
 \section{Method} \label{section:methods}
+\subsection{The Ising model}
+The Ising model is a mathematical model for magnetic systems in statistical mechanics. We will in this project consider phase transitions at finite temperatures. The energy, for a specific microstate $i$, is expressed as
+\begin{align}
+E_i = -J \displaystyle \sum^N_{< kl >}s_ks_l - \mathcal{B}\sum^N_k s_k
+\label{eq:Energy_eq}
+\end{align}
+With the spins $s_k$ which can take values $s_k = \pm 1$. $N$ is the total number of spins in the system and $J$ is a coupling constant, which we will assume to be $J>0$. The symbol $< kl >$ indicates that we only sum over the nearest neighbouring spin. That is, we only the spin $s_k$ with the closest spin $s_l$. $\mathcal{B}$ is an external magnetic field that is interacting with the magnetic moment between neighbouring spins. For simplicity of this project, we will set $\mathcal{B} = 0$.\\\\
+We also have the magnetization (or magnetic moment) defined as
+\begin{align}
+\mathcal{M} = \displaystyle \sum^N_{j=1} s_j
+\label{eq:Magnetization}
+\end{align}
+What we are interested in is the expectation values of the energy $\langle E \rangle$ and the magnetization $\langle \mathcal{M} \rangle$. In order to do that, we will need a probability distribution
+\begin{align}
+P_i(\beta) = \frac{e^{-\beta E_i}}{Z}
+\label{eq:Probability_dist}
+\end{align}
+where $\beta = 1/k_bT$, the inverse temperature with $k_b$ as the Boltzmann constant. The partition function $Z$ is given as
+\begin{align}
+Z = \displaystyle \sum_{i=1}^M e^{-\beta E_i}
+\label{eq:Partition_func}
+\end{align}
+which sums over all possible microstates $M$. With these, we can calculate the expectation value of an arbitrary variable $x$
+\begin{align*}
+\langle x \rangle = \frac{1}{Z}\sum_i x_i e^{-\beta E_i} \\
+\langle x^2 \rangle = \frac{1}{Z}\sum_i x_i^2 e^{-\beta E_i}
+\end{align*} 
+The variance for this variable is then
+\begin{align*}
+\sigma_x^2 = \langle x^2 \rangle - \langle x \rangle^2
+\end{align*}
+We can now use these properties to calculate the heat capacity $C_v$ and susceptibility $\chi$, which are given as
+\begin{align*}
+C_v &= \frac{\sigma_E^2}{k_BT} \\
+\chi &= \frac{\sigma_M^2}{k_BT}
+\end{align*}
+\subsection{Metropolis algorithm}
+
 \subsection{Simple 2 $\times$ 2 lattice}
 We will first consider a 2$\times$2 lattice, find the analytical expression for partition function $Z$ and find the corresponding expectation value of energy $E$, mean magnetization $|M|$, specific heat $C_V$ and susceptibility $\xi$ as functions of temperature $T$. The boundaries for the lattice will be periodic. We will then compare the Ising model with the analytical expressions later.
 
 For this system, we will assume that every spin has two directions, i.e. our states can be either be in spin up state or spin down state (shorthand notation as $\uparrow$ or $\downarrow$ respectively).
 
-The energy of the Ising model, without an external magnetic field, is given by
+The energy of the Ising model, without an external magnetic field $\mathcal{B}$, is given by
 \begin{align*}
 E_i = \displaystyle -J \sum_{<kl>}^Ns_k s_l
 \end{align*} 
@@ -55,9 +97,7 @@ Where $J > 0$ is a coupling constant and $N$ is the total number of spins. The s
 \begin{align*}
 M_i = \displaystyle \sum_{<k>}^N s_k
 \end{align*}
-
 Since we have a $2\times2=4$ lattice, and we have two spin directions, then the number of microstate (or configuration) is $2^4 = 16$. What this means is that our we can have 16 different energies, as well as 16 different magnetic moment, for each respective microstate. Table \ref{table:All_microstates} shows all the possible microstates.
-
 
 \begin{table}
 \begin{center}
@@ -96,7 +136,7 @@ Similarly for the magnetic moment we get when we sum over all microstates
 M_i = \displaystyle \sum_{s_1 = \pm1} \sum_{s_2 = \pm1} \sum_{s_3 = \pm1} \sum_{s_4 = \pm1} (s_1 + s_2 + s_3 + s_4)
 \label{eq:Magnetic_moment}
 \end{align}
-Let us now determine both the energies and magnetic moments for all microstates. Using table \ref{table:All_microstates}, we can determine equation (\ref{eq:Energy}) and (\ref{eq:Magnetic_moment}) to their respective microstate. Table \ref{table:All_energies} and \ref{table:All_magnetic_moment} shows the energies and momenta (using the same combinations in table \ref{table:All_microstates}) respectively.
+Let us now determine both the energies and magnetic moments for all microstates. Using table \ref{table:All_microstates}, we can determine equation (\ref{eq:Energy}) and (\ref{eq:Magnetic_moment}) to their respective microstate. Table \ref{table:All_energies} and \ref{table:All_magnetic_moment} shows the energies and magnetic momenta (using the same combinations in table \ref{table:All_microstates}) respectively.
 
 \begin{table}
 \begin{center}
@@ -130,11 +170,7 @@ Let us now determine both the energies and magnetic moments for all microstates.
 \end{center}
 \end{table}
 
-Now that we have the energies of each microstate, we can find an analytical expression for the partition function $Z$. It is defined as
-\begin{align*}
-Z = \displaystyle \sum_i e^{-\beta E_i}
-\end{align*}
-It sums over all microstates $i$ and $\beta = \frac{1}{k_bT}$, with $k_b$ as the Boltzmann constant and $T$ as the temperature. Using the energies given in table \ref{table:All_energies}, the partition function becomes
+Now that we have the energies of each microstate, we can find an analytical expression for the partition function $Z$ given in \ref{eq:Partition_func}. Using the energies given in table \ref{table:All_energies}, the partition function becomes
 \begin{align*}
 Z = 2e^{8\beta J} + 2e^{-8\beta J} + 12 e^0 = 4\cosh(8\beta J) + 12
 \end{align*}
@@ -178,9 +214,8 @@ Which we can use to calculate the susceptibility $\chi$
 \begin{align*}
 \chi = \frac{1}{k_B T} \left(\langle M^2 \rangle - \langle M \rangle^2\right) = \frac{1}{k_B T} \frac{32(e^{8\beta J} + 1)}{\cosh(8\beta J) + 3}
 \end{align*} 
-We will now proceed with developing the Ising model, and test the model with the analytical expression that we derived above.
+We will now proceed with developing the Ising model numerically, using the Metropolis algorithm, and test the model with the analytical expression that we derived above.
 \FloatBarrier
-\subsection{The Ising model}
 
 \section{Implementation} \label{section:implement}
 
