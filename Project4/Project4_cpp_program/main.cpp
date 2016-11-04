@@ -38,7 +38,24 @@ void initialize_system(int L, double **spins, double &energy, double &magnetic_m
     }
 }
 
+double Calculate_E(double **Spin_matrix, int L){
+    double Energy = 0;
+    Energy = 2*(Spin_matrix[1][1]*Spin_matrix[1][2]
+            + Spin_matrix[1][1]*Spin_matrix[2][1]
+            + Spin_matrix[2][2]*Spin_matrix[1][2]
+            + Spin_matrix[2][2]*Spin_matrix[2][1]);
+    return Energy;
+}
 
+double Calculate_M(double **Spin_matrix, int L){
+    double Magnetic_moment = 0;
+    for (int i=0; i<L; i++){
+        for (int j=0; j<L; j++){
+            Magnetic_moment += Spin_matrix[i][j];
+        }
+    }
+    return Magnetic_moment;
+}
 
 void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expectation_values){
     // A function that uses the Metropolis method
@@ -147,17 +164,21 @@ int main()
     int L = 2;  // Number of spins
     Expectation_values = new double[5];
 
-
     int MC_cycles = 1000000;
     Metropolis_method(L, MC_cycles, T, Expectation_values);
     // Analytical expressions
     double AC_v = 64.0*(4+cosh(8))/(T*pow((cosh(8)+3), 2));
     double Achi = 32.0*(exp(8) + 1)/(T*(cosh(8) + 3));
     double norm = 1.0/(MC_cycles);
+    cout << "<E> = " << Expectation_values[0]/MC_cycles << endl;
+    cout << "<E^2> = " << Expectation_values[1]/MC_cycles << endl;
+    cout << "<M> = " << Expectation_values[2]/MC_cycles << endl;
+    cout << "<M^2> = " << Expectation_values[3]/MC_cycles << endl;
+    cout << "|<M>| = " << Expectation_values[4]/MC_cycles << endl;
     double C_v = (Expectation_values[1] - Expectation_values[0]*Expectation_values[0])/L/L/T/T;
     double Chi = (Expectation_values[4] - Expectation_values[2]*Expectation_values[2])/L/L/T/T;
 
-    cout << "Analytic C_v = " << AC_v << " Numerical C_v = " << C_v << endl;
-    cout << "Analytic Chi = " << Achi << " Numerical Chi = " << Chi << endl;
+    cout << "Analytic C_v = " << AC_v << " Numerical C_v = " << C_v/MC_cycles << endl;
+    cout << "Analytic Chi = " << Achi << " Numerical Chi = " << Chi/MC_cycles << endl;
     return 0;
 }
