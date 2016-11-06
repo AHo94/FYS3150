@@ -54,20 +54,20 @@ void initialize_system(int L, double **Spin_matrix, double &energy, double &MagM
 
 double Calculate_E(double **Spin_matrix, int L){
     double Energy = 0;
-    /*
+
     for (int i=0; i<L; i++){
         for (int j=0; j<L; j++){
             Energy -= Spin_matrix[i][j]*(Spin_matrix[periodic(i, L, -1)][j] +
                                          Spin_matrix[i][periodic(j, L, -1)]);
         }
     }
-    */
 
+    /*
     Energy = 2*(Spin_matrix[0][0]*Spin_matrix[0][1]
             + Spin_matrix[0][0]*Spin_matrix[1][0]
             + Spin_matrix[1][1]*Spin_matrix[0][1]
             + Spin_matrix[1][1]*Spin_matrix[1][0]);
-
+    */
     return Energy;
 }
 
@@ -214,16 +214,16 @@ void write_file(int L, int MC_cycles, double Temperature, double *Expectation_va
     double M2_expectation = Expectation_values[3];
     double Mabs_expectation = Expectation_values[4];
 
-    double E_variance = (E2_expectation - E_expectation*E_expectation)/L/L;
-    double M_variance = (M2_expectation - Mabs_expectation*Mabs_expectation)/L/L;
+    double E_variance = (E2_expectation/MC_cycles - E_expectation/MC_cycles*E_expectation/MC_cycles)/L/L;
+    double M_variance = (M2_expectation/MC_cycles - Mabs_expectation/MC_cycles*Mabs_expectation/MC_cycles)/L/L;
     double C_v = E_variance/Temperature/Temperature;
     double chi = M_variance/Temperature/Temperature;
     ofile << setw(15) << L;
     ofile << setw(15) << MC_cycles;
     ofile << setw(15) << setprecision(5) << Temperature;
-    ofile << setw(15) << setprecision(5) << E_expectation/L/L;
+    ofile << setw(15) << setprecision(5) << E_expectation/MC_cycles/L/L;
     ofile << setw(15) << setprecision(5) << C_v;
-    ofile << setw(15) << setprecision(5) << Mabs_expectation/L/L;
+    ofile << setw(15) << setprecision(5) << Mabs_expectation/MC_cycles/L/L;
     ofile << setw(15) << setprecision(5) << chi;
     ofile << "\n";
 
@@ -240,16 +240,17 @@ int main()
     int MC_cycles = 1000000;
     Metropolis_method(L, MC_cycles, T_init, Expectation_values);
     // Analytical expressions
-    double AC_v = 64.0*(4+cosh(8.0/T_init))/(T_init*pow((cosh(8.0/T_init)+3), 2));
+
+    double AC_v = 64.0*(1+3*cosh(8.0/T_init))/(T_init*pow((cosh(8.0/T_init)+3), 2));
     double Achi = 8*(exp(8.0/T_init) + cosh(8.0/T_init) + 3.0/2.0)/(T_init*pow((cosh(8.0/T_init)+3), 2));
     double norm = 1.0/(MC_cycles);
-
+    /*
     cout << "<E> = " << Expectation_values[0]/MC_cycles << endl;
     cout << "<E^2> = " << Expectation_values[1]/MC_cycles << endl;
     cout << "<M> = " << Expectation_values[2]/MC_cycles << endl;
     cout << "<M^2> = " << Expectation_values[3]/MC_cycles << endl;
     cout << "|<M>| = " << Expectation_values[4]/MC_cycles << endl;
-
+    */
     double C_v = (Expectation_values[1]/MC_cycles -
             Expectation_values[0]*Expectation_values[0]/MC_cycles/MC_cycles)/L/L/T_init;
     double Chi = (Expectation_values[3]/MC_cycles -
@@ -259,7 +260,6 @@ int main()
     cout << "Analytic Chi = " << Achi << ", Numerical Chi = " << Chi << endl;
 
     // 4c) Let now L = 20
-    return 0;
     L = 20;
     string fileout = "4c.txt";
     ofile.open(fileout);
