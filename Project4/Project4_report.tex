@@ -83,7 +83,25 @@ C_v &= \frac{\sigma_E^2}{k_BT} \\
 \chi &= \frac{\sigma_M^2}{k_BT}
 \end{align*}
 \subsection{Metropolis algorithm}
+In this project, we will use the Monte Carlo algorithm known as the Metropolis algorithm to solve our 2 dimensional lattice numerically. 
 
+The algorithm is as following. For each Monte Carlo cycle we do:
+\begin{itemize}
+\item \textbf{1)} We start with an arbitrary microstate for the given lattice. We use that microstate to calculate the energy $E_b$
+\item \textbf{2)} Choose a random spin in the microstate and flip it (e.g, from $\uparrow$ to $\downarrow$). Now we use that state to calculate the energy $E_t$.
+\item \textbf{3)} Calculate the energy difference $\Delta E = E_t - E_b$. 
+\item \textbf{4)} If $\Delta E <= 0$, we accept the new spin configuration and use the energy $E_t$. What this means is that the energy has been lowered and we are in a lower state.
+\item \textbf{5)} If $ \Delta E > 0$, pick a random number $r$ that is given from a uniform distributor in the range $r \in [0,1]$. Now we have to consider these two cases
+\item \textbf{5a)} If $r <= e^{-\beta \Delta E}$, we accept the new spin configuration and use the energy $E_t$.
+\item \textbf{5b)} If $ r > e^{-\beta \Delta E}$, we reject this new configuration and flip the chosen spin back to it's original state and use the energy $E_b$.
+\item \textbf{6)} Once that is done, we use the given microstate (depending on the cases given above) to calculate the magnetic moment $M_i$.
+\item \textbf{7)} Finally, we add the calculated energy and magnetic moment to $E_{sum}$ and $M_{sum}$ respectively. These will the one sample of the Monte Carlo cycle.
+\end{itemize}
+We repeat this process $N_{mc}$ times (with $N_{mc}$ as the number of Monte Carlo cycles) and multiple samplings which will be summed into $E_{sum}$ and $M_{sum}$. Once that is done, we get the mean energies as
+\begin{align*}
+\langle E \rangle = \frac{1}{N_{mc}}E_{sum} = \frac{1}{N_{mc}}\displaystyle \sum_i E_i
+\end{align*}
+With $E_i$ is energy sample of the $i$'th Monte Carlo cycle. Similar expressions are used for the magnetic moment and their squares.
 \subsection{Simple 2 $\times$ 2 lattice}
 We will first consider a 2$\times$2 lattice, find the analytical expression for partition function $Z$ and find the corresponding expectation value of energy $E$, mean magnetization $|M|$, specific heat $C_V$ and susceptibility $\xi$ as functions of temperature $T$. The boundaries for the lattice will be periodic. We will then compare the Ising model with the analytical expressions later.
 
@@ -197,13 +215,13 @@ The standard deviation of the energy then becomes
 &=\frac{64J^2\cosh(8\beta J)}{\cosh(8\beta J) + 3} - \left( \frac{-8J\sinh(8\beta J)}{\cosh(8\beta J) + 3}\right)^2 \\
 &= \frac{64J^2}{\cosh(8\beta J) + 3}\left(\cosh(8\beta J) - \frac{\sinh^2(8\beta J)}{\cosh(8\beta J) + 3} \right) \\
 &= \frac{64J^2}{\cosh(8\beta J) + 3}\left(\frac{\cosh^2(8\beta J) + 3\cosh(8\beta J)}{\cosh(8\beta J) + 3} - \frac{\sinh^2(8\beta J)}{\cosh(8\beta J) + 3} \right) \\
-&= \frac{64J^2}{\cosh(8\beta J) + 3}\left(\frac{4 + 3\cosh(8\beta J)}{\cosh(8\beta J) + 3} \right)\\
+&= \frac{64J^2}{\cosh(8\beta J) + 3}\left(\frac{1 + 3\cosh(8\beta J)}{\cosh(8\beta J) + 3} \right)\\
 &= \frac{64J^2}{(\cosh(8\beta J) + 3)^2}(4+\cosh(8\beta J))
 \end{align*}
 Dividing by $k_B T$ gives us the specific heat $C_V$
 \begin{align*}
 C_V = \frac{1}{k_BT} \left( \langle E^2 \rangle
-- \langle E \rangle^2 \right) = \frac{64J^2}{k_B T} \frac{(4+\cosh(8\beta J))}{(\cosh(8\beta J) + 3)^2}
+- \langle E \rangle^2 \right) = \frac{64J^2}{k_B T} \frac{(1+3\cosh(8\beta J))}{(\cosh(8\beta J) + 3)^2}
 \end{align*}
 We can do similar calculations to obtain the mean magnetization (or the mean absolute value of the magnetic moment), which then gives us
 \begin{align*}
