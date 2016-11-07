@@ -209,22 +209,25 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
 }
 
 void write_file(int L, int MC_cycles, double Temperature, double *Expectation_values){
-    double E_expectation = Expectation_values[0];
-    double E2_expectation = Expectation_values[1];
-    double M_expectation = Expectation_values[2];
-    double M2_expectation = Expectation_values[3];
-    double Mabs_expectation = Expectation_values[4];
+    /* Function that writes data to the output file.
+     * All expectation values are normalized with respect to the number of Monte Carlo cycles.
+    */
+    double E_expectation = Expectation_values[0]/MC_cycles;
+    double E2_expectation = Expectation_values[1]/MC_cycles;
+    double M_expectation = Expectation_values[2]/MC_cycles;
+    double M2_expectation = Expectation_values[3]/MC_cycles;
+    double Mabs_expectation = Expectation_values[4]/MC_cycles;
 
-    double E_variance = (E2_expectation/MC_cycles - E_expectation/MC_cycles*E_expectation/MC_cycles)/L/L;
-    double M_variance = (M2_expectation/MC_cycles - Mabs_expectation/MC_cycles*Mabs_expectation/MC_cycles)/L/L;
+    double E_variance = (E2_expectation - E_expectation*E_expectation)/L/L;
+    double M_variance = (M2_expectation - Mabs_expectation*Mabs_expectation)/L/L;
     double C_v = E_variance/Temperature/Temperature;
     double chi = M_variance/Temperature/Temperature;
     ofile << setw(15) << L;
     ofile << setw(15) << MC_cycles;
     ofile << setw(15) << setprecision(5) << Temperature;
-    ofile << setw(15) << setprecision(5) << E_expectation/MC_cycles/L/L;
+    ofile << setw(15) << setprecision(5) << E_expectation/L/L;
     ofile << setw(15) << setprecision(5) << C_v;
-    ofile << setw(15) << setprecision(5) << Mabs_expectation/MC_cycles/L/L;
+    ofile << setw(15) << setprecision(5) << Mabs_expectation/L/L;
     ofile << setw(15) << setprecision(5) << chi;
     ofile << "\n";
 
@@ -261,23 +264,23 @@ int main()
     cout << "Analytic Chi = " << Achi << ", Numerical Chi = " << Chi << endl;
 
     // 4c) Let now L = 20
-    L = 20;
+    L = 2;
     string fileout = "4c.txt";
     ofile.open(fileout);
     // Writes info on each value at the top of the output file
     ofile << setw(15) << "# Spins" << setw(15) << "MC cycles" << setw(15) << "Temperature" << setw(15) << "<E>"
-             << setw(15) << "C_v" << setw(15) << "<|M|>" << setw(15) << "Chi";
+          << setw(15) << "C_v" << setw(15) << "<|M|>" << setw(15) << "Chi" << "\n";
     double T_final = 2.4;
     for (double Temperature = T_init; Temperature <= T_final; Temperature += 1.4){
         cout << "Running for temperature: " << Temperature << endl;
-            for (MC_cycles = 100; MC_cycles <= 10000; MC_cycles *= 10){
+            for (MC_cycles = 100; MC_cycles <= 1000000; MC_cycles *= 10){
             start = clock();
             cout << "Using MC_cycles = " << MC_cycles << endl;
             Expectation_values = new double[5];
             Metropolis_method(L, MC_cycles, Temperature, Expectation_values);
             write_file(L, MC_cycles, Temperature, Expectation_values);
             finish = clock();
-            cout << "Time elapsed for T = " << Temperature << ": " <<
+            cout << "Time elapsed for MC_cycles = " << MC_cycles << ":  " <<
                     ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
         }
     }
