@@ -18,22 +18,6 @@ inline int periodic(int i, int limit, int add){
 
 void initialize_system(int L, double **Spin_matrix){
     // Initializes the system, by setting spin states and calculates the energies and magnetizations.
-    /*
-    for (int i=0; i<L; i++){
-        for (int j=0; j<L; j++){
-            Spin_matrix[i][j] = 1.0;
-            MagMoment += Spin_matrix[i][j];
-        }
-    }
-    for (int i=0; i<L; i++){
-        for (int j=0; j<L; j++){
-            energy -= Spin_matrix[i][j]*
-                    (Spin_matrix[periodic(i, L, -1)][j] +
-                    Spin_matrix[i][periodic(j, L, -1)]);
-        }
-    }
-    */
-
     std::random_device rd; // obtain a random number from hardware
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
     std::default_random_engine generator(seed);
@@ -60,13 +44,6 @@ double Calculate_E(double **Spin_matrix, int L){
                                          Spin_matrix[i][periodic(j, L, -1)]);
         }
     }
-
-    /*
-    Energy = 2*(Spin_matrix[0][0]*Spin_matrix[0][1]
-            + Spin_matrix[0][0]*Spin_matrix[1][0]
-            + Spin_matrix[1][1]*Spin_matrix[0][1]
-            + Spin_matrix[1][1]*Spin_matrix[1][0]);
-    */
     return Energy;
 }
 
@@ -80,58 +57,10 @@ double Calculate_M(double **Spin_matrix, int L){
     return Magnetic_moment;
 }
 
-void Metropolis_method2(int L, int MC_cycles, double Temperature, double *Expectation_values){
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
-    std::default_random_engine generator(seed);
-    std::uniform_real_distribution<double> distr(0.0, 1.0);
-
-    double **Spin_matrix;
-    Spin_matrix = new double*[L];
-    for (int i=0; i<L; i++){
-        Spin_matrix[i] = new double[L];
-    }
-    double Energy = 0;
-    double MagneticMoment = 0;
-    initialize_system(L, Spin_matrix);
-    double *EnergyDiff;
-    EnergyDiff = new double[17];
-    for (int de=-8; de<=8; de+=4){
-        EnergyDiff[de+8] = exp(-de/Temperature);
-    }
-    for (int cycles=1; cycles<=MC_cycles; cycles++){
-        for (int i=0; i<L; i++){
-            for (int j=0; j<L; j++){
-                int ix = (int) (distr(generator)*L);
-                int iy = (int) (distr(generator)*L);
-                int deltaE = 2*Spin_matrix[ix][iy]*
-                        (Spin_matrix[ix][periodic(iy, L, -1)] +
-                        Spin_matrix[periodic(ix, L, -1)][iy] +
-                        Spin_matrix[ix][periodic(iy, L, 1)] +
-                        Spin_matrix[periodic(ix, L, 1)][iy]);
-                if (distr(generator) <= EnergyDiff[deltaE+8]){
-                    Spin_matrix[ix][iy] *= -1.0;
-                    MagneticMoment += (double) 2*Spin_matrix[ix][iy];
-                    Energy += (double) deltaE;
-                }
-            }
-        }
-
-        Expectation_values[0] += Energy;
-        Expectation_values[1] += Energy*Energy;
-        Expectation_values[2] += MagneticMoment;
-        Expectation_values[3] += MagneticMoment*MagneticMoment;
-        Expectation_values[4] += fabs(MagneticMoment);
-    }
-}
-
 void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expectation_values){
     // A function that uses the Metropolis method
-    //std::random_device rd;
-    //std::mt19937_64 generator(rd());
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
     std::default_random_engine generator(seed);
-    //std::uniform_int_distribution<int> distr(0,3); // define the range
-    //std::normal_distribution<double> distr(0.0,1.0);
     std::uniform_real_distribution<double> distr(0.0, 1.0);
     double **Spin_matrix;
     Spin_matrix = new double*[L];
@@ -180,27 +109,6 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
         fabsMSum += fabs(currentM);
         MSquaredSum += currentM*currentM;
     }
-
-    /*
-    for (int cycle=1; cycle<MC_cycles; cycle++){
-        for (int i=0; i<L; i++){
-            for (int j=0; j<L; j++){
-                int ix = (distr(generator)*L);
-                int iy = (distr(generator)*L);
-                int dE = 2*Spin_matrix[ix][iy]*(
-                        Spin_matrix[ix][periodic(iy, L, -1)]+
-                        Spin_matrix[periodic(ix, L, -1)][iy] +
-                        Spin_matrix[ix][periodic(iy, L, 1)]+
-                        Spin_matrix[periodic(ix, L, 1)][iy]);
-                if (distr(generator) <= exp(-dE/Temperature)){
-                    Spin_matrix[ix][iy] *= -1.0;
-                    Mag_moment += 2*Spin_matrix[ix][iy];
-                    Energy += dE;
-                }
-            }
-        }
-    }
-    */
     Expectation_values[0] += EnergySum;
     Expectation_values[1] += EnergySquaredSum;
     Expectation_values[2] += MSum;
@@ -248,13 +156,7 @@ int main()
     double AC_v = 64.0*(1+3*cosh(8.0/T_init))/(T_init*pow((cosh(8.0/T_init)+3), 2));
     double Achi = 8*(exp(8.0/T_init) + cosh(8.0/T_init) + 3.0/2.0)/(T_init*pow((cosh(8.0/T_init)+3), 2));
     double norm = 1.0/(MC_cycles);
-    /*
-    cout << "<E> = " << Expectation_values[0]/MC_cycles << endl;
-    cout << "<E^2> = " << Expectation_values[1]/MC_cycles << endl;
-    cout << "<M> = " << Expectation_values[2]/MC_cycles << endl;
-    cout << "<M^2> = " << Expectation_values[3]/MC_cycles << endl;
-    cout << "|<M>| = " << Expectation_values[4]/MC_cycles << endl;
-    */
+
     double C_v = (Expectation_values[1]/MC_cycles -
             Expectation_values[0]*Expectation_values[0]/MC_cycles/MC_cycles)/T_init;
     double Chi = (Expectation_values[3]/MC_cycles -
