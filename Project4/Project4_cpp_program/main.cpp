@@ -115,14 +115,27 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
                 Spin_matrix[ix][iy] *= -1.0;    // Flip a random spin
                 double E_t = Calculate_E(Spin_matrix, L);   // Calculate new energy after spin flip
                 double dE = E_t - currentEnergy;    // Calculate energy difference
+                /*
+                int dE =  2*Spin_matrix[ix][iy]*
+                      (Spin_matrix[ix][periodic(iy,L,-1)]+
+                       Spin_matrix[periodic(ix,L,-1)][iy] +
+                       Spin_matrix[ix][periodic(iy,L,1)] +
+                       Spin_matrix[periodic(ix,L,1)][iy]);
+                if (distr(generator) <= exp(-dE/Temperature)){
+                    Spin_matrix[ix][iy] *= -1.0;
+                    currentM += 2*Spin_matrix[ix][iy];//Calculate_M(Spin_matrix, L);
+                    currentEnergy += dE;
+                }
+                */
+
                 if (dE <= 0){
                     // Accept new state, use the energy for this state
-                    currentEnergy = E_t;
+                    currentEnergy = dE;
                     currentM = Calculate_M(Spin_matrix, L);
                 } else {
                     if (distr(generator) <= exp(-dE/Temperature)){
                         // Accept new state, use new energy
-                        currentEnergy = E_t;
+                        currentEnergy = dE;
                         currentM = Calculate_M(Spin_matrix, L);
                     } else {
                         // Do not accept new state. Flip back spin and use old energy
@@ -170,11 +183,11 @@ void write_file(int L, int MC_cycles, double Temperature, double *Expectation_va
     ofile << "\n";
 }
 
-void Run_simulation(int L, double Temperature){
+void Run_simulation(int L, double Temperature, int MC_max){
     clock_t start, finish;
     double *Expectation_values;
     cout << "Running for temperature: " << Temperature << endl;
-    for (int MC_cycles = 100; MC_cycles <= 10000; MC_cycles *= 10){
+    for (int MC_cycles = 100; MC_cycles <= MC_max; MC_cycles *= 10){
         start = clock();
         cout << "Using MC_cycles = " << MC_cycles << endl;
         Expectation_values = new double[5];
@@ -194,8 +207,8 @@ int main()
     double T_init = 1.0;     // Temperature = 1.0 kT/J
     int L = 2;  // Number of spins
 
-    int MC_cycles = 10000;
-    Metropolis_method(L, MC_cycles, T_init, Expectation_values, 1);
+    int MC_cycles = 1000000;
+    Metropolis_method(L, MC_cycles, T_init, Expectation_values);
     // Analytical expressions
 
     double AC_v = 64.0*(1+3*cosh(8.0/T_init))/(T_init*pow((cosh(8.0/T_init)+3), 2));
@@ -203,9 +216,9 @@ int main()
     double norm = 1.0/(MC_cycles);
 
     double C_v = (Expectation_values[1]/MC_cycles -
-            Expectation_values[0]*Expectation_values[0]/MC_cycles/MC_cycles)/L/L/T_init/T_init;
+            Expectation_values[0]*Expectation_values[0]/MC_cycles/MC_cycles)/T_init/T_init;
     double Chi = (Expectation_values[3]/MC_cycles -
-            Expectation_values[4]*Expectation_values[4]/MC_cycles/MC_cycles)/L/L/T_init/T_init;
+            Expectation_values[4]*Expectation_values[4]/MC_cycles/MC_cycles)/T_init/T_init;
     cout << "Number of Monte Carlo cycles = " << MC_cycles << endl;
     cout << "Analytic C_v = " << AC_v << ", Numerical C_v = " << C_v << endl;
     cout << "Analytic Chi = " << Achi << ", Numerical Chi = " << Chi << endl;
@@ -219,8 +232,9 @@ int main()
     ofile << setw(15) << "# Spins" << setw(15) << "MC cycles" << setw(15) << "Temperature" << setw(15) << "<E>"
           << setw(15) << "C_v" << setw(15) << "<|M|>" << setw(15) << "Chi" << "\n";
     double T_final = 2.4;
+    int MC_max = 100000;
     for (double Temperature = T_init; Temperature <= T_final; Temperature += 1.4){
-        Run_simulation(L, Temperature);
+        Run_simulation(L, Temperature, MC_max);
     }
     ofile.close();
     /*
