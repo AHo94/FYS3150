@@ -6,7 +6,6 @@
 #include <string>
 #include <iomanip>
 #include <time.h>
-//#include <armadillo>
 
 using namespace std;
 ofstream ofile; // Output file
@@ -130,12 +129,12 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
 
                 if (dE <= 0){
                     // Accept new state, use the energy for this state
-                    currentEnergy = dE;
+                    currentEnergy = Calculate_E(Spin_matrix, L);
                     currentM = Calculate_M(Spin_matrix, L);
                 } else {
                     if (distr(generator) <= exp(-dE/Temperature)){
                         // Accept new state, use new energy
-                        currentEnergy = dE;
+                        currentEnergy = Calculate_E(Spin_matrix, L);
                         currentM = Calculate_M(Spin_matrix, L);
                     } else {
                         // Do not accept new state. Flip back spin and use old energy
@@ -213,7 +212,6 @@ int main()
 
     double AC_v = 64.0*(1+3*cosh(8.0/T_init))/(T_init*pow((cosh(8.0/T_init)+3), 2));
     double Achi = 8*(exp(8.0/T_init) + cosh(8.0/T_init) + 3.0/2.0)/(T_init*pow((cosh(8.0/T_init)+3), 2));
-    double norm = 1.0/(MC_cycles);
 
     double C_v = (Expectation_values[1]/MC_cycles -
             Expectation_values[0]*Expectation_values[0]/MC_cycles/MC_cycles)/T_init/T_init;
@@ -222,6 +220,19 @@ int main()
     cout << "Number of Monte Carlo cycles = " << MC_cycles << endl;
     cout << "Analytic C_v = " << AC_v << ", Numerical C_v = " << C_v << endl;
     cout << "Analytic Chi = " << Achi << ", Numerical Chi = " << Chi << endl;
+    cout << "\n" << "Running multiple times, using MC_cycles = "<< MC_cycles << endl;
+    for (int i=0; i<=5; i++)
+    {
+        Expectation_values = new double[5];
+        Metropolis_method(L, MC_cycles, T_init, Expectation_values);
+        double C_v = (Expectation_values[1]/MC_cycles -
+                Expectation_values[0]*Expectation_values[0]/MC_cycles/MC_cycles)/T_init/T_init;
+        double Chi = (Expectation_values[3]/MC_cycles -
+                Expectation_values[4]*Expectation_values[4]/MC_cycles/MC_cycles)/T_init/T_init;
+        cout << "Analytic C_v = " << AC_v << ", Numerical C_v = " << C_v << endl;
+        cout << "Analytic Chi = " << Achi << ", Numerical Chi = " << Chi << endl;
+        cout << " " << endl;
+    }
 
     // 4c) Let now L = 20
     cout << "\n";
