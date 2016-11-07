@@ -12,22 +12,27 @@ class Plotter():
 		i = 0
 		data = []
 		for line in filename:
-			data_set = line.split()
-			data.append(data_set)
+			if i != 0:
+				data_set = line.split()
+				data.append(data_set)
+			i += 1
 		filename.close()
 
 		N = len(data)
-		self.L = data[0][0]
-		self.MC_cycles = data[0][1]
-		self.T = np.zeros(N)
-		self.C_v = np.zeros(N)
-		self.Chi = np.zeros(N)
-		self.MC_range = np.linspace(0,MC_cycles, MC_cycles)
-		for i in range(0,N):
-			self.T[i] = data[i][2]
-			self.C_v = data[i][4]
-			self.Chi = data[i][6]
-
+		N_half = int(N/2.0)
+		self.L = int(data[0][0])
+		self.MC_cycles = np.zeros(N_half)
+		self.Mean_E_T1 = np.zeros(N_half)
+		self.Mean_E_T24 = np.zeros(N_half)
+		for i in range(0,N_half):
+			self.MC_cycles[i] = float(data[i][1])
+			self.Mean_E_T1[i] = float(data[i][4])
+			self.Mean_E_T24[i] = float(data[i+N_half][4])
 
 	def plot_state(self):
 		self.read_data("4c.txt")
+		plt.plot(np.log(self.MC_cycles), self.Mean_E_T1)
+		plt.show()
+
+solver = Plotter(False)
+solver.plot_state()
