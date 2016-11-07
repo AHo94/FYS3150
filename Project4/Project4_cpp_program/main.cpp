@@ -168,7 +168,22 @@ void write_file(int L, int MC_cycles, double Temperature, double *Expectation_va
     ofile << setw(15) << setprecision(5) << Mabs_expectation/L/L;
     ofile << setw(15) << setprecision(5) << chi;
     ofile << "\n";
+}
 
+void Run_simulation(int L, double Temperature){
+    clock_t start, finish;
+    double *Expectation_values;
+    cout << "Running for temperature: " << Temperature << endl;
+    for (int MC_cycles = 100; MC_cycles <= 10000; MC_cycles *= 10){
+        start = clock();
+        cout << "Using MC_cycles = " << MC_cycles << endl;
+        Expectation_values = new double[5];
+        Metropolis_method(L, MC_cycles, Temperature, Expectation_values, 1);
+        write_file(L, MC_cycles, Temperature, Expectation_values);
+        finish = clock();
+        cout << "Time elapsed for MC_cycles = " << MC_cycles << ":  " <<
+                ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
+    }
 }
 
 int main()
@@ -205,6 +220,11 @@ int main()
           << setw(15) << "C_v" << setw(15) << "<|M|>" << setw(15) << "Chi" << "\n";
     double T_final = 2.4;
     for (double Temperature = T_init; Temperature <= T_final; Temperature += 1.4){
+        Run_simulation(L, Temperature);
+    }
+    ofile.close();
+    /*
+    for (double Temperature = T_init; Temperature <= T_final; Temperature += 1.4){
         cout << "Running for temperature: " << Temperature << endl;
             for (MC_cycles = 100; MC_cycles <= 100000; MC_cycles *= 10){
             start = clock();
@@ -218,5 +238,6 @@ int main()
         }
     }
     ofile.close();
+    */
     return 0;
 }
