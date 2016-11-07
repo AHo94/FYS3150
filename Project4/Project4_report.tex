@@ -103,7 +103,7 @@ We repeat this process $N_{mc}$ times (with $N_{mc}$ as the number of Monte Carl
 \end{align*}
 With $E_i$ is energy sample of the $i$'th Monte Carlo cycle. Similar expressions are used for the magnetic moment and their squares.
 \subsection{Simple 2 $\times$ 2 lattice}
-We will first consider a 2$\times$2 lattice, find the analytical expression for partition function $Z$ and find the corresponding expectation value of energy $E$, mean magnetization $|M|$, specific heat $C_V$ and susceptibility $\xi$ as functions of temperature $T$. The boundaries for the lattice will be periodic. We will then compare the Ising model with the analytical expressions later.
+We will first consider a 2$\times$2 lattice, find the analytical expression for partition function $Z$ and find the corresponding expectation value of energy $E$, mean magnetization $|M|$, specific heat $C_V$ and susceptibility $\xi$ as functions of temperature $T$. We also consider periodic boundary condition for this lattice. Once we have the analytical expressions, we will compare them to the numerical values from the Metropolis algorithm.
 
 For this system, we will assume that every spin has two directions, i.e. our states can be either be in spin up state or spin down state (shorthand notation as $\uparrow$ or $\downarrow$ respectively).
 
@@ -219,27 +219,80 @@ The standard deviation of the energy then becomes
 &= \frac{64J^2}{(\cosh(8\beta J) + 3)^2}(4+\cosh(8\beta J))
 \end{align*}
 Dividing by $k_B T$ gives us the specific heat $C_V$
-\begin{align*}
+\begin{align}
 C_V = \frac{1}{k_BT} \left( \langle E^2 \rangle
 - \langle E \rangle^2 \right) = \frac{64J^2}{k_B T} \frac{(1+3\cosh(8\beta J))}{(\cosh(8\beta J) + 3)^2}
-\end{align*}
+\label{eq:heat_capacity}
+\end{align}
 We can do similar calculations to obtain the mean magnetization (or the mean absolute value of the magnetic moment), which then gives us
 \begin{align*}
 \langle |M|\rangle &= \frac{1}{Z} \displaystyle \sum_i |M_i| e^{-\beta E_i} = \frac{2(e^{8\beta J} + 2)}{\cosh(8\beta J) + 3} \\
 \langle M^2\rangle &= \frac{1}{Z}\displaystyle \sum_i M_i^2e^{-\beta E_i} = \frac{8(e^{8\beta J} + 1)}{\cosh(8\beta J) + 3}
 \end{align*}
 Which we can use to calculate the susceptibility $\chi$
-\begin{align*}
+\begin{align}
 \chi = \frac{1}{k_B T} \left(\langle M^2 \rangle - \langle |M| \rangle^2\right) = \frac{8}{k_B T} \frac{(e^{8\beta J}+ \cosh(8\beta J) + \frac{3}{2}))}{(\cosh(8\beta J) + 3)^2}
-\end{align*} 
+\label{eq:suceptibility}
+\end{align} 
 We will now proceed with developing the Ising model numerically, using the Metropolis algorithm, and test the model with the analytical expression that we derived above.
 \FloatBarrier
 
 \section{Implementation} \label{section:implement}
 All programming are done in C++ and data will be saved in a text file. The plotting part will be done in Python.
-\section{Results} \label{section:result}
-\subsection*{Comparing with analytical solution}
 
+\section{Results} \label{section:result}
+\subsection*{Comparing with the analytical solution}
+We will now compare the numerical values for $C_v$ and $\chi$ with their respective analytical values given in equation \ref{eq:heat_capacity} and \ref{eq:suceptibility}. For this case, we will use the temperature $T = 1.0$ in units of $kT/J$. Running this in C++, with $10^6$ Monte Carlo cycles we obtain the following output (Note that the numerical values has not been divided by the number of spins):
+
+\begin{lstlisting}
+@Number of Monte Carlo cycles = 1000000
+Analytic C_v = 0.128329, Numerical C_v = 0.128445
+Analytic Chi = 0.016043, Numerical Chi = 0.0162828@
+\end{lstlisting}
+As we can see, the values are almost identical. The numerical values may change a little bit when we run this multiple times, but still remains fairly close to the analytical values. An example of this can be found in the output below
+\begin{lstlisting}
+@Running multiple times, using MC_cycles = 1000000
+Analytic C_v = 0.128329, Numerical C_v = 0.123027
+Analytic Chi = 0.016043, Numerical Chi = 0.0156212
+ 
+Analytic C_v = 0.128329, Numerical C_v = 0.127936
+Analytic Chi = 0.016043, Numerical Chi = 0.0154724
+ 
+Analytic C_v = 0.128329, Numerical C_v = 0.130357
+Analytic Chi = 0.016043, Numerical Chi = 0.0164741
+ 
+Analytic C_v = 0.128329, Numerical C_v = 0.125385
+Analytic Chi = 0.016043, Numerical Chi = 0.0152174
+ 
+Analytic C_v = 0.128329, Numerical C_v = 0.126915
+Analytic Chi = 0.016043, Numerical Chi = 0.0156962
+ 
+Analytic C_v = 0.128329, Numerical C_v = 0.124365
+Analytic Chi = 0.016043, Numerical Chi = 0.0159204@
+\end{lstlisting}
+Using $10^5$ Monte Carlo cycles can also give a good numerical result, but it is not as consistent compared to $10^6$ Monte Carlo cycles. What that means is that the difference between the analytical and numerical values (for both $C_v$ and $\chi$) may be larger for a lower number of Monte Carlo cycles. The output below shows an example with $N_{mc} = 10^5$. Notice how, for example, the numerical values of $C_v$ can be as low as $0.112442$ and as high as $0.160237$.
+\begin{lstlisting}
+@Running multiple times, using MC_cycles = 100000
+Analytic C_v = 0.128329, Numerical C_v = 0.125194
+Analytic Chi = 0.016043, Numerical Chi = 0.0163315
+ 
+Analytic C_v = 0.128329, Numerical C_v = 0.112442
+Analytic Chi = 0.016043, Numerical Chi = 0.0130196
+ 
+Analytic C_v = 0.128329, Numerical C_v = 0.123282
+Analytic Chi = 0.016043, Numerical Chi = 0.0152538
+ 
+Analytic C_v = 0.128329, Numerical C_v = 0.137304
+Analytic Chi = 0.016043, Numerical Chi = 0.0180454
+ 
+Analytic C_v = 0.128329, Numerical C_v = 0.125832
+Analytic Chi = 0.016043, Numerical Chi = 0.0161317
+ 
+Analytic C_v = 0.128329, Numerical C_v = 0.160237
+Analytic Chi = 0.016043, Numerical Chi = 0.0194764@
+\end{lstlisting}
+
+\subsection*{Lattice with L = 20}
 \section{Conclusion} \label{section:conclusion}
 
 \FloatBarrier
