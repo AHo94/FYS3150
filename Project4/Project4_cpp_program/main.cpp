@@ -3,12 +3,12 @@
 #include <random>
 #include <cmath>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <iomanip>
 #include <time.h>
 
 using namespace std;
-ofstream ofile; // Output file
 
 inline int periodic(int i, int limit, int add){
     // Funcion that ensures periodic boundary conditions
@@ -89,7 +89,8 @@ double Calculate_M(double **Spin_matrix, int L){
     return Magnetic_moment;
 }
 
-void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expectation_values, int random_state = 0){
+void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expectation_values, int &accepted_flip,
+                       double *Mean_Energies, double *Mean_Mag_moments, int random_state = 0){
     // A function that uses the Metropolis method
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
     std::default_random_engine generator(seed);
@@ -108,7 +109,7 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
 
     double currentEnergy = Calculate_E(Spin_matrix, L);
     double currentM = Calculate_M(Spin_matrix, L);
-    for (int cycle=1; cycle<=MC_cycles; cycle++){
+    for (int cycle=0; cycle<MC_cycles; cycle++){
         for (int i=0; i<L; i++){
             for (int j=0; j<L; j++){
                 int ix = distr(generator)*L;
@@ -133,11 +134,13 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
                     // Accept new state, use the energy for this state
                     currentEnergy = Calculate_E(Spin_matrix, L);
                     currentM = Calculate_M(Spin_matrix, L);
+                    accepted_flip += 1;
                 } else {
                     if (distr(generator) <= exp(-dE/Temperature)){
                         // Accept new state, use new energy
                         currentEnergy = Calculate_E(Spin_matrix, L);
                         currentM = Calculate_M(Spin_matrix, L);
+                        accepted_flip += 1;
                     } else {
                         // Do not accept new state. Flip back spin and use old energy
                         Spin_matrix[ix][iy] *= -1.0;
@@ -151,6 +154,9 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
         MSum += currentM;
         fabsMSum += fabs(currentM);
         MSquaredSum += currentM*currentM;
+
+        Mean_Energies[cycle] = currentEnergy;
+        Mean_Mag_moments[cycle] = fabs(currentM);
     }
     Expectation_values[0] = EnergySum;
     Expectation_values[1] = EnergySquaredSum;
@@ -159,11 +165,12 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
     Expectation_values[4] = fabsMSum;
 }
 
-void write_file(int L, int MC_cycles, double Temperature, double *Expectation_values){
+//void write_file(int L, int MC_cycles, double Temperature, double *Expectation_values){
     /* Function that writes data to the output file.
      * All expectation values are normalized with respect to the number of Monte Carlo cycles,
      * as well as the number of spins.
     */
+    /*
     double E_expectation = Expectation_values[0]/MC_cycles;
     double E2_expectation = Expectation_values[1]/MC_cycles;
     double M_expectation = Expectation_values[2]/MC_cycles;
@@ -183,8 +190,9 @@ void write_file(int L, int MC_cycles, double Temperature, double *Expectation_va
     ofile << setw(15) << setprecision(5) << Mabs_expectation/L/L;
     ofile << setw(15) << setprecision(5) << chi;
     ofile << "\n";
-}
-
+    */
+//}
+/*
 void Run_simulation(int L, double Temperature, int MC_max){
     clock_t start, finish;
     double *Expectation_values;
@@ -193,34 +201,69 @@ void Run_simulation(int L, double Temperature, int MC_max){
         start = clock();
         cout << "Using MC_cycles = " << MC_cycles << endl;
         Expectation_values = new double[5];
-        Metropolis_method(L, MC_cycles, Temperature, Expectation_values, 1);
+        //Metropolis_method(L, MC_cycles, Temperature, Expectation_values, 1);
         write_file(L, MC_cycles, Temperature, Expectation_values);
         finish = clock();
         cout << "Time elapsed for MC_cycles = " << MC_cycles << ":  " <<
                 ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
     }
 }
+*/
 void set_initial_text(){
     /* Function that sets up an initial text for the output file.
      * Makes it easier to read off in the text file.
     */
+    /*
     ofile << setw(15) << "# Spins" << setw(15) << "MC cycles" << setw(15) << "Temperature" << setw(15) << "<E>"
           << setw(15) << "C_v" << setw(15) << "<|M|>" << setw(15) << "Chi" << "\n";
+    */
+}
+
+void write_file(int L, int T, int MC_cycles, int accepted_flip, double *Mean_energies, double *Mean_mag_moments,
+                string filename_E, string filename_M){
+    cout << "Saving data to file" << endl;
+    ofstream ofileE, ofileM; // Output file
+    ofileE.open(filename_E);
+    ofileE << "<E>" << setw(15) << "MC Cycles" << setw(15);
+    ofileE << "# Spins" << setw(15) << "Temperature" << setw(15) << "Accepted flips" << "\n";
+    ofileE << setw(15) << MC_cycles << setw(15) << L << setw(15) << T << setw(15) << accepted_flip << "\n";
+
+    ofileM.open(filename_M);
+    ofileM << "<|M|>" << setw(15) << "MC Cycles" << setw(15);
+    ofileM << "# Spins" << setw(15) << "Temperature" << "\n";
+    ofileM << setw(15) << MC_cycles << setw(15) << L << setw(15) << T << "\n";
+    int counter = 100;
+    for (int i=0; i<MC_cycles; i++){
+        if (counter == 100){
+            ofileE << Mean_energies[i] << "\n";
+            ofileM << Mean_mag_moments[i] << "\n";
+            counter = 0;
+        }
+        counter += 1;
+    }
+
+    ofileE.close();
+    ofileM.close();
 }
 
 int main()
 {
+    clock_t start, finish;
     double *Expectation_values;
     Expectation_values = new double[5];
     double T_init = 1.0;     // Temperature = 1.0 kT/J
     int L = 2;  // Number of spins
+    int accepted_flip = 0;
 
     // Analytical expressions
     double AC_v = 64.0*(1+3*cosh(8.0/T_init))/(T_init*pow((cosh(8.0/T_init)+3), 2));
     double Achi = 8*(exp(8.0/T_init) + cosh(8.0/T_init) + 3.0/2.0)/(T_init*pow((cosh(8.0/T_init)+3), 2));
 
-    int MC_cycles = 10000;
-    Metropolis_method(L, MC_cycles, T_init, Expectation_values);
+    int MC_cycles = 1000;
+    double *Mean_energies, *Mean_mag_moments;
+    Mean_energies = new double[MC_cycles];
+    Mean_mag_moments = new double [MC_cycles];
+    Metropolis_method(L, MC_cycles, T_init, Expectation_values, accepted_flip, Mean_energies, Mean_mag_moments);
     double C_v = (Expectation_values[1]/MC_cycles -
             Expectation_values[0]*Expectation_values[0]/MC_cycles/MC_cycles)/T_init/T_init;
     double Chi = (Expectation_values[3]/MC_cycles -
@@ -233,7 +276,7 @@ int main()
     {
         // Runs this example multiple times to showcase the stability of the algorithm
         Expectation_values = new double[5];
-        Metropolis_method(L, MC_cycles, T_init, Expectation_values);
+        Metropolis_method(L, MC_cycles, T_init, Expectation_values, accepted_flip, Mean_energies, Mean_mag_moments);
         double C_v = (Expectation_values[1]/MC_cycles -
                 Expectation_values[0]*Expectation_values[0]/MC_cycles/MC_cycles)/T_init/T_init;
         double Chi = (Expectation_values[3]/MC_cycles -
@@ -244,17 +287,49 @@ int main()
     }
 
     // 4c) Let now L = 20
-    cout << "\n";
     L = 20;
+    cout << "Running L = 20. NOTE: This may take a while" << endl;
+    MC_cycles = 100000;
+    double T_final = 2.4;
+    string filename_E = "Mean_E_T";
+    string filename_M = "Mean_M_T";
+    for (double Temperature = T_init; Temperature <= T_final; Temperature += 1.4){
+        cout << "Running for T = " << Temperature << endl;
+        start = clock();
+        accepted_flip = 0;
+        Expectation_values = new double[5];
+        Mean_energies = new double[MC_cycles];
+        Mean_mag_moments = new double [MC_cycles];
+        Metropolis_method(L, MC_cycles, Temperature, Expectation_values, accepted_flip, Mean_energies, Mean_mag_moments);
+        finish = clock();
+        cout << "Time elapsed for MC_cycles = " << MC_cycles << ":  " <<
+                ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
+
+        string fileout_E = filename_E;
+        string fileout_M = filename_M;
+        stringstream stream;
+        stream << fixed << setprecision(2) << Temperature;
+        string argument = stream.str();
+        fileout_E.append(argument);
+        fileout_E.append(".txt");
+        fileout_M.append(argument);
+        fileout_M.append(".txt");
+        write_file(L, Temperature, MC_cycles, accepted_flip, Mean_energies, Mean_mag_moments, fileout_E, fileout_M);
+    }
+
+    /*
     string fileout = "4c.txt";
     ofile.open(fileout);
     set_initial_text();
     double T_final = 2.4;
     int MC_max = 10000;
+
     for (double Temperature = T_init; Temperature <= T_final; Temperature += 1.4){
         Run_simulation(L, Temperature, MC_max);
     }
     ofile.close();
+    */
+
     /*
     for (double Temperature = T_init; Temperature <= T_final; Temperature += 1.4){
         cout << "Running for temperature: " << Temperature << endl;
