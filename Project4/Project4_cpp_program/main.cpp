@@ -67,6 +67,7 @@ void initialize_system(int L, double **Spin_matrix, int random_state = 0){
 }
 
 double Calculate_E(double **Spin_matrix, int L){
+    // Calculates the energy
     double Energy = 0;
     for (int i=0; i<L; i++){
         for (int j=0; j<L; j++){
@@ -78,6 +79,7 @@ double Calculate_E(double **Spin_matrix, int L){
 }
 
 double Calculate_M(double **Spin_matrix, int L){
+    // Calculates the magnetic moment
     double Magnetic_moment = 0;
     for (int i=0; i<L; i++){
         for (int j=0; j<L; j++){
@@ -143,7 +145,7 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
                 }
             }
         }
-
+        // Sums up the samplings
         EnergySum += currentEnergy;
         EnergySquaredSum += currentEnergy*currentEnergy;
         MSum += currentM;
@@ -159,7 +161,8 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
 
 void write_file(int L, int MC_cycles, double Temperature, double *Expectation_values){
     /* Function that writes data to the output file.
-     * All expectation values are normalized with respect to the number of Monte Carlo cycles.
+     * All expectation values are normalized with respect to the number of Monte Carlo cycles,
+     * as well as the number of spins.
     */
     double E_expectation = Expectation_values[0]/MC_cycles;
     double E2_expectation = Expectation_values[1]/MC_cycles;
@@ -197,22 +200,27 @@ void Run_simulation(int L, double Temperature, int MC_max){
                 ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
     }
 }
+void set_initial_text(){
+    /* Function that sets up an initial text for the output file.
+     * Makes it easier to read off in the text file.
+    */
+    ofile << setw(15) << "# Spins" << setw(15) << "MC cycles" << setw(15) << "Temperature" << setw(15) << "<E>"
+          << setw(15) << "C_v" << setw(15) << "<|M|>" << setw(15) << "Chi" << "\n";
+}
 
 int main()
 {
-    clock_t start, finish;
     double *Expectation_values;
     Expectation_values = new double[5];
     double T_init = 1.0;     // Temperature = 1.0 kT/J
     int L = 2;  // Number of spins
 
-    int MC_cycles = 1000000;
-    Metropolis_method(L, MC_cycles, T_init, Expectation_values);
     // Analytical expressions
-
     double AC_v = 64.0*(1+3*cosh(8.0/T_init))/(T_init*pow((cosh(8.0/T_init)+3), 2));
     double Achi = 8*(exp(8.0/T_init) + cosh(8.0/T_init) + 3.0/2.0)/(T_init*pow((cosh(8.0/T_init)+3), 2));
 
+    int MC_cycles = 1000000;
+    Metropolis_method(L, MC_cycles, T_init, Expectation_values);
     double C_v = (Expectation_values[1]/MC_cycles -
             Expectation_values[0]*Expectation_values[0]/MC_cycles/MC_cycles)/T_init/T_init;
     double Chi = (Expectation_values[3]/MC_cycles -
@@ -223,6 +231,7 @@ int main()
     cout << "\n" << "Running multiple times, using MC_cycles = "<< MC_cycles << endl;
     for (int i=0; i<=5; i++)
     {
+        // Runs this example multiple times to showcase the stability of the algorithm
         Expectation_values = new double[5];
         Metropolis_method(L, MC_cycles, T_init, Expectation_values);
         double C_v = (Expectation_values[1]/MC_cycles -
@@ -239,9 +248,7 @@ int main()
     L = 20;
     string fileout = "4c.txt";
     ofile.open(fileout);
-    // Writes info on each value at the top of the output file
-    ofile << setw(15) << "# Spins" << setw(15) << "MC cycles" << setw(15) << "Temperature" << setw(15) << "<E>"
-          << setw(15) << "C_v" << setw(15) << "<|M|>" << setw(15) << "Chi" << "\n";
+    set_initial_text();
     double T_final = 2.4;
     int MC_max = 100000;
     for (double Temperature = T_init; Temperature <= T_final; Temperature += 1.4){
