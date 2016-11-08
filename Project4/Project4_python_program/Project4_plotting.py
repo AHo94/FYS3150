@@ -21,17 +21,27 @@ class Plotter():
 		N = len(data)
 		N_half = int(N/2.0)
 		self.L = int(data[0][0])
+		self.T = np.array([float(data[0][2]), float(data[-1][2])])
 		self.MC_cycles = np.zeros(N_half)
-		self.Mean_E_T1 = np.zeros(N_half)
-		self.Mean_E_T24 = np.zeros(N_half)
+		self.E_mean_T1 = np.zeros(N_half)
+		self.E_mean_T24 = np.zeros(N_half)
+		self.M_mean_T1 = np.zeros(N_half)
+		self.M_mean_T24 = np.zeros(N_half)
+
 		for i in range(0,N_half):
 			self.MC_cycles[i] = float(data[i][1])
-			self.Mean_E_T1[i] = float(data[i][4])
-			self.Mean_E_T24[i] = float(data[i+N_half][4])
-
+			self.E_mean_T1[i] = float(data[i][4])
+			self.E_mean_T24[i] = float(data[i+N_half][4])
+			self.M_mean_T1[i] = float(data[i][6])
+			self.M_mean_T24[i] = float(data[i+N_half][6])
+			
 	def plot_state(self):
 		self.read_data("4c.txt")
-		plt.plot(np.log(self.MC_cycles), self.Mean_E_T1)
+		plt.plot(np.log(self.MC_cycles), self.E_mean_T1, 'b-')
+		plt.hold("on")
+		plt.plot(np.log(self.MC_cycles), self.M_mean_T1, 'r-')
+		plt.xlabel('$log(N_{MC})$')
+		plt.ylabel(r'$\langle  E\rangle$')
 		plt.show()
 
 solver = Plotter(False)
