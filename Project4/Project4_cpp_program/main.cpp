@@ -189,7 +189,7 @@ void Run_simulation(int L, double Temperature, int MC_max){
     clock_t start, finish;
     double *Expectation_values;
     cout << "Running for temperature: " << Temperature << endl;
-    for (int MC_cycles = 100; MC_cycles <= MC_max; MC_cycles *= 10){
+    for (int MC_cycles = 100; MC_cycles <= MC_max; MC_cycles *= 2){
         start = clock();
         cout << "Using MC_cycles = " << MC_cycles << endl;
         Expectation_values = new double[5];
@@ -219,7 +219,7 @@ int main()
     double AC_v = 64.0*(1+3*cosh(8.0/T_init))/(T_init*pow((cosh(8.0/T_init)+3), 2));
     double Achi = 8*(exp(8.0/T_init) + cosh(8.0/T_init) + 3.0/2.0)/(T_init*pow((cosh(8.0/T_init)+3), 2));
 
-    int MC_cycles = 1000000;
+    int MC_cycles = 10000;
     Metropolis_method(L, MC_cycles, T_init, Expectation_values);
     double C_v = (Expectation_values[1]/MC_cycles -
             Expectation_values[0]*Expectation_values[0]/MC_cycles/MC_cycles)/T_init/T_init;
@@ -250,7 +250,7 @@ int main()
     ofile.open(fileout);
     set_initial_text();
     double T_final = 2.4;
-    int MC_max = 100000;
+    int MC_max = 10000;
     for (double Temperature = T_init; Temperature <= T_final; Temperature += 1.4){
         Run_simulation(L, Temperature, MC_max);
     }
