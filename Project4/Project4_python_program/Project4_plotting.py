@@ -83,5 +83,5 @@ class Plotter():
 		plt.show()
 
 solver = Plotter(False)
-#solver.plot_state()
-solver.plot_probability()
+solver.plot_state()
+#solver.plot_probability()
