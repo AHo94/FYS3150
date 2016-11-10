@@ -375,7 +375,7 @@ int main(int nargs, char*args[])
         // 4c) Let now L = 20
         L = 20;
         cout << "Running L = 20. NOTE: This may take a while" << endl;
-        MC_cycles = 1000000;
+        MC_cycles = 100000;
         double T_final = 2.4;
         string filename_E = "Mean_E_T";
         string filename_M = "Mean_M_T";
@@ -402,25 +402,30 @@ int main(int nargs, char*args[])
             fileout_M.append(".txt");
             write_file(L, Temperature, MC_cycles, accepted_config, Energies_array, Mag_moments_array,
                    Expectation_values, fileout_E, fileout_M);
-
         }
     }
+    else{
+        // If there are arguments in the input line, then run for the last two tasks
+        L = atoi(args[1]);
+        double Temperature = (double) atof(args[2]);
+        MC_cycles = atoi(args[3]);
+        string filename = "4e_data_L";
+        stringstream stream;
+        stream << fixed << setprecision(0) << L;
+        string argument = stream.str();
+        filename.append(argument);
+        filename.append(".txt");
 
-    // If there are arguments in the input line, then run for the last two tasks
-    L = atoi(args[1]);
-    double Temperature = (double) atof(args[2]);
-    MC_cycles = atoi(args[3]);
-    string filename = "4e_data_L";
-    stringstream stream;
-    stream << fixed << setprecision(0) << L;
-    string argument = stream.str();
-    filename.append(argument);
-    filename.append(".txt");
-    cout << filename << endl;
-    ofile_global.open(filename);
+        Expectation_values = new double[5];
+        Energies_array = new double[MC_cycles];
+        Mag_moments_array = new double [MC_cycles];
+        accepted_config = new double[MC_cycles];
 
-    ofile_global.close();
-
+        ofile_global.open(filename);
+        Metropolis_method2(L, MC_cycles, Temperature, Expectation_values, accepted_config,
+                       Energies_array, Mag_moments_array);
+        ofile_global.close();
+    }
 
     /*
     int counter = 100;
