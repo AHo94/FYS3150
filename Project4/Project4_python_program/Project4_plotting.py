@@ -146,7 +146,8 @@ class Plotter():
 		plt.ylabel('Number of times energy is calculated')
 		plt.legend(['T = 1.0','T = 2.4'])
 		if self.savefile == True:
-			fig1.savefig('../Plots/Probability_distribution.pdf')
+			fig1.savefig('../Plots/Probability_distribution_T1.pdf')
+			fig2.savefig('../Plots/Probability_distribution_T2.pdf')
 		else:
 			plt.show()
 
