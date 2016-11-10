@@ -10,11 +10,11 @@ MAKEFILE      = Makefile
 
 ####### Compiler, tools and options
 
-CC            = mpicc
-CXX           = mpicxx
+CC            = gcc
+CXX           = g++
 DEFINES       = -DQT_QML_DEBUG
 CFLAGS        = -pipe -g -Wall -W -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -DMPICH_IGNORE_CXX_SEEK -g -std=gnu++11 -Wall -W -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -fPIC $(DEFINES)
 INCPATH       = -I../Project4_cpp_program -I. -I/usr/lib64/openmpi -I/uio/hume/student-u70/aleh/Qt/5.7/gcc_64/mkspecs/linux-g++
 QMAKE         = /uio/hume/student-u70/aleh/Qt/5.7/gcc_64/bin/qmake
 DEL_FILE      = rm -f
@@ -34,7 +34,7 @@ TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = Project4_cpp_program1.0.0
 DISTDIR = /uio/hume/student-u70/aleh/H2016/FYS3150/FYS3150_Projects/Project4/build-Project4_cpp_program-Desktop_Qt_5_7_0_GCC_64bit-Debug/.tmp/Project4_cpp_program1.0.0
-LINK          = mpicxx
+LINK          = g++
 LFLAGS        = 
 LIBS          = $(SUBLIBS)  
 AR            = ar cqs
