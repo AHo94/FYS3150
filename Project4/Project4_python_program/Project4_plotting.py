@@ -152,10 +152,5 @@ class Plotter():
 			plt.show()
 
 solver = Plotter(False)
-<<<<<<< HEAD
 solver.plot_state()
 #solver.plot_probability()
-=======
-#solver.plot_state()
-solver.plot_probability()
->>>>>>> 13130b19efe38fccdc398a7ac43be5445d4806ce
