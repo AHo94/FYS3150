@@ -39,10 +39,10 @@ class Plotter():
 			self.M_expectation_1 = np.zeros(N)
 			self.E_counter_1 = np.zeros(N)
 
-			for i in range(0, N):
-				self.E_expectation_1[i] = float(data_E[i+1][0])
-				self.M_expectation_1[i] = float(data_M[i+1][0])
-				self.E_counter_1[i] = float(data_E[i+1][1])
+			for j in range(0, N):
+				self.E_expectation_1[j] = float(data_E[j+1][0])
+				self.M_expectation_1[j] = float(data_M[j+1][0])
+				self.E_counter_1[j] = float(data_E[j+1][1])
 		
 		elif Temp_check == 2:
 			self.T2 = float(data_E[0][2])
@@ -50,10 +50,10 @@ class Plotter():
 			self.M_expectation_2 = np.zeros(N)
 			self.E_counter_2 = np.zeros(N)
 
-			for i in range(0, N):
-				self.E_expectation_2[i] = float(data_E[i+1][0])
-				self.M_expectation_2[i] = float(data_M[i+1][0])
-				self.E_counter_2[i] = float(data_E[i+1][1])
+			for j in range(0, N):
+				self.E_expectation_2[j] = float(data_E[j+1][0])
+				self.M_expectation_2[j] = float(data_M[j+1][0])
+				self.E_counter_2[j] = float(data_E[j+1][1])
 		else:
 			raise ValueError('Temp_check not set properly')
 
@@ -84,10 +84,35 @@ class Plotter():
 		self.E_values_T24 = np.zeros(N)
 		self.E_variance_T1 = float(data_E1[0][3])
 		self.E_variance_T24 = float(data_E2[0][3])
-		for i in range(0, N):
-			self.E_values_T1[i] = float(data_E1[i+1][0])
-			self.E_values_T24[i] = float(data_E2[i+1][0])
-		
+		for j in range(0, N):
+			self.E_values_T1[j] = float(data_E1[j+1][0])
+			self.E_values_T24[j] = float(data_E2[j+1][0])
+
+	def read_data_parallellization(self, filename_open):
+		filename = open(os.path.join(file_directory, filename_open), 'r')
+		i = 0
+		data = []
+		for line in filename:
+			if i != 0:
+				data_set = line.split()
+				data.append(data_set)
+			i += 1
+		filename.close()
+		N = len(data)-1
+		self.L = int(data[0][2])
+		self.MC_cycles = int(data[0][0])
+		self.T = np.zeros(N)
+		self.E_expectation = np.zeros(N)
+		self.M_abs_expectation = np.zeros(N)
+		self.C_v = np.zeros(N)
+		self.Chi = np.zeros(N)
+
+		for j in range(0,N):
+			self.T[j] = float(data[j][1])
+			self.E_expectation[j] = float(data[j][3])
+			self.M_abs_expectation[j] = float(data[j][4])
+			self.C_v[j] = float(data[j][5])
+			self.Chi[j] = float(data[j][6])
 
 	def plot_state(self):
 		""" Function that plots all plots in task 4c """
@@ -199,6 +224,7 @@ class Plotter():
 		print 'Computed variance = ', self.E_variance_T24, ', for T = 2.4'
 		print 'Numpy variance = ', np.var(self.E_values_T1), ',for T = 1.0'
 		print 'Numpy variance = ', np.var(self.E_values_T24), ',for T = 2.4'
+		
 		if self.savefile == True:
 			fig1.savefig('../Plots/Probability_distribution_T1.pdf')
 			fig2.savefig('../Plots/Probability_distribution_T2.pdf')
@@ -292,7 +318,42 @@ class Plotter():
 		else:
 			plt.show()
 
+	def plot_parallellization(self):
+		self.read_data_parallellization("4e_data_L20.txt")
+		fig1 = plt.figure()
+		plt.plot(self.T, self.E_expectation)
+		plt.xlabel('Temperature - $T$')
+		plt.ylabel('$<E>$')
+		plt.title('Plot of energy as a function of $T$, $N_{mc}$ = %.g' %(self.MC_cycles))
+		# Plots for Mean magnetization
+		fig2 = plt.figure()
+		plt.plot(self.T, self.M_abs_expectation)
+		plt.xlabel('Temperature - $T$')
+		plt.ylabel('$<|M|>$')
+		plt.title('Plot of mean magnetization as a function of $T$, $N_{mc}$ = %.g' %(self.MC_cycles))
+		# Plots for Heat capacity
+		fig3 = plt.figure()
+		plt.plot(self.T, self.C_v)
+		plt.xlabel('Temperature - $T$')
+		plt.ylabel('Heat capacity - $C_v$')
+		plt.title('Plot of heat capacity as a function of $T$, $N_{mc}$ = %.g' %(self.MC_cycles))
+		# Plots for suceptibility		
+		fig4 = plt.figure()
+		plt.plot(self.T, self.Chi)
+		plt.xlabel('Temperature - $T$')
+		plt.ylabel(r'Suceptibility $\chi$')
+		plt.title('Plot of suceptibility as a function of $T$, $N_{mc}$ = %.g' %(self.MC_cycles))
+
+		if self.savefile == True:
+			fig1.savefig('../Plots/Energy_parallellization.pdf')
+			fig2.savefig('../Plots/Magnetization_parallellization.pdf')
+			fig3.savefig('../Plots/Heat_capacity_parallellization.pdf')
+			fig4.savefig('../Plots/Suceptibility_parallellization.pdf')
+		else:
+			plt.show()
+
 solver = Plotter(False)
 #solver.plot_state()
-solver.plot_probability()
+#solver.plot_probability()
 #solver.TESTPLOT()
+solver.plot_parallellization()
