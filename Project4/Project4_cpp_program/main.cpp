@@ -241,7 +241,16 @@ void write_file_parallellization(int L, double T, int MC_cycles, double *Total_e
     ofile_global << setw(15) << M_abs_expect;
     ofile_global << setw(15) << C_v;
     ofile_global << setw(15) << Chi << endl;;
+}
 
+void initialize_output_file(){
+    // Sets up a text at the top of the outputfile, which indicates the values of each column.
+    ofile_global << setw(15) << "T";
+    ofile_global << setw(15) << "L";
+    ofile_global << setw(15) << "<E>";
+    ofile_global << setw(15) << "<|M|>";
+    ofile_global << setw(15) << "C_v";
+    ofile_global << setw(15) << "chi" << endl;
 }
 
 int main(int nargs, char*args[])
@@ -385,6 +394,7 @@ int main(int nargs, char*args[])
         MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
         if (my_rank == 0){
             ofile_global.open(filename);
+            initialize_output_file();
             // IF TO APPEND:  std::ios_base::app
         }
 
