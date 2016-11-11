@@ -7,6 +7,7 @@
 #include <string>
 #include <iomanip>
 #include <time.h>
+//#include <mpi.h>
 
 using namespace std;
 ofstream ofile_global;
@@ -320,6 +321,11 @@ void write_parallellization(int L, double T, int MC_cycles, double *Expectation_
     double Chi = M_variance/T;
     ofile_global << setw(15) << T;
     ofile_global << setw(15) << L;
+    ofile_global << setw(15) << E_expect;
+    ofile_global << setw(15) << M_abs_expect;
+    ofile_global << setw(15) << C_v;
+    ofile_global << setw(15) << Chi << endl;;
+
 }
 
 int main(int nargs, char*args[])
@@ -375,10 +381,12 @@ int main(int nargs, char*args[])
         // 4c) Let now L = 20
         L = 20;
         cout << "Running L = 20. NOTE: This may take a while" << endl;
-        MC_cycles = 100000;
+        MC_cycles = 1000000;
         double T_final = 2.4;
         string filename_E = "Mean_E_T";
         string filename_M = "Mean_M_T";
+        // Runs for an arbritary state.
+        cout << "Doing calculations with abritary intial state" << endl;
         for (double Temperature = T_init; Temperature <= T_final; Temperature += 1.4){
             cout << "Running for T = " << Temperature << endl;
             start = clock();
@@ -403,9 +411,39 @@ int main(int nargs, char*args[])
             write_file(L, Temperature, MC_cycles, accepted_config, Energies_array, Mag_moments_array,
                    Expectation_values, fileout_E, fileout_M);
         }
+
+
+        string filename_E_allup = "Mean_E_AllUpState_T";
+        string filename_M_allup = "Mean_M_AllUpState_T";
+        // Running for an initial state where all spins point up
+        cout << "Doing calculations with initial state with all spins up" << endl;
+        for (double Temperature = T_init; Temperature <= T_final; Temperature += 1.4){
+            cout << "Running for T = " << Temperature << endl;
+            start = clock();
+            Expectation_values = new double[5];
+            Energies_array = new double[MC_cycles];
+            Mag_moments_array = new double [MC_cycles];
+            Metropolis_method2(L, MC_cycles, Temperature, Expectation_values,
+                               accepted_config, Energies_array, Mag_moments_array, 1);
+            finish = clock();
+            cout << "Time elapsed for MC_cycles = " << MC_cycles << ":  " <<
+                ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
+
+            string fileout_E = filename_E_allup;
+            string fileout_M = filename_M_allup;
+            stringstream stream;
+            stream << fixed << setprecision(2) << Temperature;
+            string argument = stream.str();
+            fileout_E.append(argument);
+            fileout_E.append(".txt");
+            fileout_M.append(argument);
+            fileout_M.append(".txt");
+            write_file(L, Temperature, MC_cycles, accepted_config, Energies_array, Mag_moments_array,
+                   Expectation_values, fileout_E, fileout_M);
+        }
     }
     else{
-        // If there are arguments in the input line, then run for the last two tasks
+        // If there are arguments in the input line, then run for the last two tasks. Do parallelization
         L = atoi(args[1]);
         double Temperature = (double) atof(args[2]);
         MC_cycles = atoi(args[3]);
@@ -416,15 +454,27 @@ int main(int nargs, char*args[])
         filename.append(argument);
         filename.append(".txt");
 
+        int numprocs, my_rank;
+        //   MPI initializations
+        /*
+        MPI_Init (&nargs, &args);
+        MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
+        MPI_Comm_rank (MPI_COMM_WORLD, &my_rank);
+        cout << "Hello world, I have  rank " << my_rank << " out of " << numprocs << endl;
+        */
+
         Expectation_values = new double[5];
         Energies_array = new double[MC_cycles];
         Mag_moments_array = new double [MC_cycles];
         accepted_config = new double[MC_cycles];
 
-        ofile_global.open(filename);
+        ofile_global.open(filename, std::ios_base::app);
         Metropolis_method2(L, MC_cycles, Temperature, Expectation_values, accepted_config,
                        Energies_array, Mag_moments_array);
+        write_parallellization(L, Temperature, MC_cycles, Expectation_values);
         ofile_global.close();
+        //  End MPI
+        // MPI_Finalize ();
     }
 
     /*
