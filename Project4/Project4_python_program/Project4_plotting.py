@@ -91,7 +91,7 @@ class Plotter():
 	def plot_state(self):
 		""" Function that plots all plots in task 4c """
 		# Plots the expecation values for T = 1
-		self.read_data_4c("Mean_E_T1.00.txt", "Mean_M_T1.00.txt", 1)
+		self.read_data_4c("E_expect_T1.00.txt", "M_expect_T1.00.txt", 1)
 		fig1 = plt.figure()
 		plt.plot(self.MC_cycles, self.E_expectation_1, 'b-')
 		plt.xlabel('$log(N_{MC})$')
@@ -106,7 +106,7 @@ class Plotter():
 							 %(self.T1, self.MC_max))
 
 		# Plots the expecation values for T = 2.4
-		self.read_data_4c("Mean_E_T2.40.txt", "Mean_M_T2.40.txt", 2)
+		self.read_data_4c("E_expect_T2.40.txt", "M_expect_T2.40.txt", 2)
 		fig3 = plt.figure()
 		plt.plot(self.MC_cycles, self.E_expectation_2, 'b-')
 		plt.xlabel('$log(N_{MC})$')
@@ -121,7 +121,7 @@ class Plotter():
 							 %(self.T2, self.MC_max))
 
 		# Plots the expecation values for T = 1, now with all states pointing up
-		self.read_data_4c("Mean_E_AllUpState_T1.00.txt", "Mean_M_AllUpState_T1.00.txt", 1)
+		self.read_data_4c("E_expect_AllUpState_T1.00.txt", "M_expect_AllUpState_T1.00.txt", 1)
 		fig5 = plt.figure()
 		plt.plot(self.MC_cycles, self.E_expectation_1, 'b-')
 		plt.xlabel('$log(N_{MC})$')
@@ -136,7 +136,7 @@ class Plotter():
 							 %(self.T1, self.MC_max))
 
 		# Plots the expecation values for T = 2.4, now with all states pointing up
-		self.read_data_4c("Mean_E_AllUpState_T2.40.txt", "Mean_M_AllUpState_T2.40.txt", 2)
+		self.read_data_4c("E_expect_AllUpState_T2.40.txt", "M_expect_AllUpState_T2.40.txt", 2)
 		fig7 = plt.figure()
 		plt.plot(self.MC_cycles, self.E_expectation_2, 'b-')
 		plt.xlabel('$log(N_{MC})$')
@@ -185,7 +185,7 @@ class Plotter():
 		
 	def plot_probability(self):
 		""" Function that plots the probability distribution """
-		self.read_data_4d("Mean_E_T1.00.txt", "Mean_E_T2.40.txt")
+		self.read_data_4d("E_expect_T1.00.txt", "E_expect_T2.40.txt")
 		fig1 = plt.figure()
 		plt.hist(self.E_values_T1, bins=100)
 		plt.hold("on")
@@ -193,6 +193,9 @@ class Plotter():
 		plt.xlabel('Energies')
 		plt.ylabel('Number of times energy is calculated')
 		plt.legend(['T = 1.0','T = 2.4'])
+
+		print np.var(self.E_values_T1)
+		print np.var(self.E_values_T24)
 		if self.savefile == True:
 			fig1.savefig('../Plots/Probability_distribution_T1.pdf')
 			fig2.savefig('../Plots/Probability_distribution_T2.pdf')
@@ -201,7 +204,7 @@ class Plotter():
 
 	def TESTPLOT(self):
 # Plots the expecation values for T = 1
-		self.read_data_4c("Mean_E_T1.00.txt", "Mean_M_T1.00.txt", 1)
+		self.read_data_4c("E_expect_T1.00.txt", "M_expect_T1.00.txt", 1)
 		fig1 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.E_expectation_1, 'b-')
 		plt.xlabel('$log(N_{MC})$')
@@ -216,7 +219,7 @@ class Plotter():
 							 %(self.T1, self.MC_max))
 
 		# Plots the expecation values for T = 2.4
-		self.read_data_4c("Mean_E_T2.40.txt", "Mean_M_T2.40.txt", 2)
+		self.read_data_4c("E_expect_T2.40.txt", "M_expect_T2.40.txt", 2)
 		fig3 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.E_expectation_2, 'b-')
 		plt.xlabel('$log(N_{MC})$')
@@ -231,7 +234,7 @@ class Plotter():
 							 %(self.T2, self.MC_max))
 
 		# Plots the expecation values for T = 1, now with all states pointing up
-		self.read_data_4c("Mean_E_AllUpState_T1.00.txt", "Mean_M_AllUpState_T1.00.txt", 1)
+		self.read_data_4c("E_expect_AllUpState_T1.00.txt", "M_expect_AllUpState_T1.00.txt", 1)
 		fig5 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.E_expectation_1, 'b-')
 		plt.xlabel('$log(N_{MC})$')
@@ -246,7 +249,7 @@ class Plotter():
 							 %(self.T1, self.MC_max))
 
 		# Plots the expecation values for T = 2.4, now with all states pointing up
-		self.read_data_4c("Mean_E_AllUpState_T2.40.txt", "Mean_M_AllUpState_T2.40.txt", 2)
+		self.read_data_4c("E_expect_AllUpState_T2.40.txt", "M_expect_AllUpState_T2.40.txt", 2)
 		fig3 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.E_expectation_2, 'b-')
 		plt.xlabel('$log(N_{MC})$')
@@ -288,5 +291,5 @@ class Plotter():
 
 solver = Plotter(False)
 #solver.plot_state()
-#solver.plot_probability()
-solver.TESTPLOT()
+solver.plot_probability()
+#solver.TESTPLOT()
