@@ -236,10 +236,10 @@ void write_file_parallellization(int L, double T, int MC_cycles, double *Total_e
     ofile_global << setw(15) << MC_cycles;
     ofile_global << setw(15) << T;
     ofile_global << setw(15) << L;
-    ofile_global << setw(15) << E_expect;
-    ofile_global << setw(15) << M_abs_expect;
-    ofile_global << setw(15) << C_v;
-    ofile_global << setw(15) << Chi << endl;;
+    ofile_global << setw(15) << E_expect/L/L;
+    ofile_global << setw(15) << M_abs_expect/L/L;
+    ofile_global << setw(15) << C_v/L/L;
+    ofile_global << setw(15) << Chi/L/L << endl;;
 }
 
 void initialize_output_file(){
