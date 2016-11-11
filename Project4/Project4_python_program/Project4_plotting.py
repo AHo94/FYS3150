@@ -82,7 +82,8 @@ class Plotter():
 		N = len(data_E1)-1
 		self.E_values_T1 = np.zeros(N)
 		self.E_values_T24 = np.zeros(N)
-
+		self.E_variance_T1 = float(data_E1[0][3])
+		self.E_variance_T24 = float(data_E2[0][3])
 		for i in range(0, N):
 			self.E_values_T1[i] = float(data_E1[i+1][0])
 			self.E_values_T24[i] = float(data_E2[i+1][0])
@@ -193,9 +194,11 @@ class Plotter():
 		plt.xlabel('Energies')
 		plt.ylabel('Number of times energy is calculated')
 		plt.legend(['T = 1.0','T = 2.4'])
-
-		print np.var(self.E_values_T1)
-		print np.var(self.E_values_T24)
+		
+		print 'Computed variance = ', self.E_variance_T1, ', for T = 1.0'
+		print 'Computed variance = ', self.E_variance_T24, ', for T = 2.4'
+		print 'Numpy variance = ', np.var(self.E_values_T1), ',for T = 1.0'
+		print 'Numpy variance = ', np.var(self.E_values_T24), ',for T = 2.4'
 		if self.savefile == True:
 			fig1.savefig('../Plots/Probability_distribution_T1.pdf')
 			fig2.savefig('../Plots/Probability_distribution_T2.pdf')
@@ -203,7 +206,7 @@ class Plotter():
 			plt.show()
 
 	def TESTPLOT(self):
-# Plots the expecation values for T = 1
+		# Plots the expecation values for T = 1
 		self.read_data_4c("E_expect_T1.00.txt", "M_expect_T1.00.txt", 1)
 		fig1 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.E_expectation_1, 'b-')
