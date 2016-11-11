@@ -9,6 +9,7 @@ class Plotter():
 		self.savefile = savefile	# If True, saves the plots to a file
 
 	def read_data_4c(self, filename_E, filename_M, Temp_check):
+		""" Reads data, specific for task 4c """
 		filename = open(os.path.join(file_directory, filename_E), 'r')
 		i = 0
 		data_E = []
@@ -29,9 +30,9 @@ class Plotter():
 			i += 1
 		filename.close()
 		N = len(data_E)-1
-		MC_max = int(float(data_E[0][0]))
+		self.MC_max = int(float(data_E[0][0]))
 		self.L = float(data_E[0][1])
-		self.MC_cycles = np.linspace(1, MC_max, N)
+		self.MC_cycles = np.linspace(1, self.MC_max, N)
 		if Temp_check == 1:
 			self.T1 = float(data_E[0][2])
 			self.E_expectation_1 = np.zeros(N)
@@ -58,6 +59,7 @@ class Plotter():
 
 	
 	def read_data_4d(self, filename_E1, filename_E2):
+		""" Reads data, specific for 4d """
 		filename = open(os.path.join(file_directory, filename_E1), 'r')
 		i = 0
 		data_E1 = []
@@ -87,44 +89,85 @@ class Plotter():
 		
 
 	def plot_state(self):
+		""" Function that plots all plots in task 4c """
 		# Plots the expecation values for T = 1
 		self.read_data_4c("Mean_E_T1.00.txt", "Mean_M_T1.00.txt", 1)
 		fig1 = plt.figure()
 		plt.plot(self.MC_cycles, self.E_expectation_1, 'b-')
 		plt.xlabel('$log(N_{MC})$')
 		plt.ylabel(r'$\langle  E \rangle$')
-		plt.title('Plot of the energies as a function of monte carlo cycles. T = %.2f' %(self.T1))
+		plt.title('Plot of the energies as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Abritary initial state' \
+							 %(self.T1, self.MC_max))
 		fig2 = plt.figure()
 		plt.plot(self.MC_cycles, self.M_expectation_1, 'r-')
 		plt.xlabel('$(N_{MC})$')
 		plt.ylabel(r'$\langle  |M| \rangle$')
-		plt.title('Plot of magnetization as a function of monte carlo cycles. T = %.2f' %(self.T1))
+		plt.title('Plot of magnetization as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Abritary initial state' \
+							 %(self.T1, self.MC_max))
+
 		# Plots the expecation values for T = 2.4
 		self.read_data_4c("Mean_E_T2.40.txt", "Mean_M_T2.40.txt", 2)
 		fig3 = plt.figure()
 		plt.plot(self.MC_cycles, self.E_expectation_2, 'b-')
 		plt.xlabel('$log(N_{MC})$')
 		plt.ylabel(r'$\langle  E \rangle$')
-		plt.title('Plot of the energies as a function of monte carlo cycles. T = %.2f' %(self.T2))
+		plt.title('Plot of the energies as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Abritary initial state' \
+							 %(self.T2, self.MC_max))
 		fig4 = plt.figure()
 		plt.plot(self.MC_cycles, self.M_expectation_2, 'r-')
 		plt.xlabel('$(N_{MC})$')
 		plt.ylabel(r'$\langle  |M| \rangle$')
-		plt.title('Plot of magnetization as a function of monte carlo cycles. T = %.2f' %(self.T2))
+		plt.title('Plot of magnetization as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Abritary initial state' \
+							 %(self.T2, self.MC_max))
+
+		# Plots the expecation values for T = 1, now with all states pointing up
+		self.read_data_4c("Mean_E_AllUpState_T1.00.txt", "Mean_M_AllUpState_T1.00.txt", 1)
+		fig1 = plt.figure()
+		plt.plot(self.MC_cycles, self.E_expectation_1, 'b-')
+		plt.xlabel('$log(N_{MC})$')
+		plt.ylabel(r'$\langle  E \rangle$')
+		plt.title('Plot of the energies as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Initial state, all spins up' \
+							 %(self.T1, self.MC_max))
+		fig2 = plt.figure()
+		plt.plot(self.MC_cycles, self.M_expectation_1, 'r-')
+		plt.xlabel('$(N_{MC})$')
+		plt.ylabel(r'$\langle  |M| \rangle$')
+		plt.title('Plot of magnetization as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Initial state, all spins up'\
+							 %(self.T1, self.MC_max))
+
+		# Plots the expecation values for T = 2.4, now with all states pointing up
+		self.read_data_4c("Mean_E_AllUpState_T2.40.txt", "Mean_M_AllUpState_T2.40.txt", 2)
+		fig3 = plt.figure()
+		plt.plot(self.MC_cycles, self.E_expectation_2, 'b-')
+		plt.xlabel('$log(N_{MC})$')
+		plt.ylabel(r'$\langle  E \rangle$')
+		plt.title('Plot of the energies as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Initial state, all spins up'\
+							 %(self.T2, self.MC_max))
+		fig4 = plt.figure()
+		plt.plot(self.MC_cycles, self.M_expectation_2, 'r-')
+		plt.xlabel('$(N_{MC})$')
+		plt.ylabel(r'$\langle  |M| \rangle$')
+		plt.title('Plot of magnetization as a function of MC Cycles. T = %.2f, $N_{mc}$ = %.g. \n Initial state, all spins up'\
+							 %(self.T2, self.MC_max))
+
+
+
 		# Plots the accepted configurations as a function of MC cycles
 		fig5 = plt.figure()
 		plt.semilogy(self.MC_cycles, self.E_counter_1, 'b-')
 		plt.hold("on")
 		plt.semilogy(self.MC_cycles, self.E_counter_2, 'r-')
-		plt.title('Number of accepted spin flips as a function of Monte Carlo cycles')
+		plt.title('Number of accepted configurations as a function of Monte Carlo cycles')
 		plt.xlabel('$N_{MC}$')
 		plt.ylabel('Accepted spin flips')
 		plt.legend(['T=1.0','T=2.40'])
+
 		# Plots accepted configurations as a function of temperature
 		fig6 = plt.figure()
 		plt.semilogy(np.array([self.T1, self.T2]), np.array([self.E_counter_1[-1], self.E_counter_2[-1]]))
 		plt.xlabel('Temperature - T')
-		plt.ylabel('Accepted spin flips')
+		plt.ylabel('Accepted spin flips - Logscale')
+		plt.title('Number of accepted spin configurations as a function of temperature')
 		if self.savefile == True:
 			fig1.savefig('../Plots/Energy_stability_T1.pdf')
 			fig2.savefig('../Plots/Magnetization_stability_T1.pdf')
@@ -137,6 +180,7 @@ class Plotter():
 	
 		
 	def plot_probability(self):
+		""" Function that plots the probability distribution """
 		self.read_data_4d("Mean_E_T1.00.txt", "Mean_E_T2.40.txt")
 		fig1 = plt.figure()
 		plt.hist(self.E_values_T1, bins=100)
