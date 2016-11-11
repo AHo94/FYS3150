@@ -70,7 +70,7 @@ void initialize_system(int L, double **Spin_matrix, int random_state = 0){
 
 
 
-void Metropolis_method2(int L, int MC_cycles, double Temperature, double *Expectation_values, double *accepted_config,
+void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expectation_values, double *accepted_config,
                        double *Energies_array, double *Mag_moments_array, int random_state = 0){
     // A function that uses the Metropolis method
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
@@ -207,7 +207,7 @@ int main(int nargs, char*args[])
         accepted_config = new double[MC_cycles];
 
         start = clock();
-        Metropolis_method2(L, MC_cycles, T_init, Expectation_values, accepted_config, Energies_array, Mag_moments_array);
+        Metropolis_method(L, MC_cycles, T_init, Expectation_values, accepted_config, Energies_array, Mag_moments_array);
         double C_v = (Expectation_values[1]/MC_cycles -
             Expectation_values[0]*Expectation_values[0]/MC_cycles/MC_cycles)/T_init/T_init;
         double Chi = (Expectation_values[3]/MC_cycles -
@@ -251,7 +251,7 @@ int main(int nargs, char*args[])
             Expectation_values = new double[5];
             Energies_array = new double[MC_cycles];
             Mag_moments_array = new double [MC_cycles];
-            Metropolis_method2(L, MC_cycles, Temperature, Expectation_values,
+            Metropolis_method(L, MC_cycles, Temperature, Expectation_values,
                                accepted_config, Energies_array, Mag_moments_array);
             finish = clock();
             cout << "Time elapsed for MC_cycles = " << MC_cycles << ":  " <<
@@ -281,7 +281,7 @@ int main(int nargs, char*args[])
             Expectation_values = new double[5];
             Energies_array = new double[MC_cycles];
             Mag_moments_array = new double [MC_cycles];
-            Metropolis_method2(L, MC_cycles, Temperature, Expectation_values,
+            Metropolis_method(L, MC_cycles, Temperature, Expectation_values,
                                accepted_config, Energies_array, Mag_moments_array, 1);
             finish = clock();
             cout << "Time elapsed for MC_cycles = " << MC_cycles << ":  " <<
@@ -327,63 +327,13 @@ int main(int nargs, char*args[])
         accepted_config = new double[MC_cycles];
 
         ofile_global.open(filename, std::ios_base::app);
-        Metropolis_method2(L, MC_cycles, Temperature, Expectation_values, accepted_config,
+        Metropolis_method(L, MC_cycles, Temperature, Expectation_values, accepted_config,
                        Energies_array, Mag_moments_array);
         write_parallellization(L, Temperature, MC_cycles, Expectation_values);
         ofile_global.close();
         //  End MPI
         // MPI_Finalize ();
     }
-
-    /*
-    int counter = 100;
-    for (double Temperature = T_init; Temperature <= T_final; Temperature += 1.4){
-        cout << "Running for T = " << Temperature << endl;
-        start = clock();
-        Expectation_values = new double[5];
-        Energies_array = new double[MC_cycles];
-        Mag_moments_array = new double [MC_cycles];
-        Metropolis_method2(L, MC_cycles, Temperature, Expectation_values, accepted_config, Energies_array, Mag_moments_array);
-        finish = clock();
-        cout << "Time elapsed for MC_cycles = " << MC_cycles << ":  " <<
-                ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
-
-    }
-    */
-    // 4d
-
-
-    /*
-    string fileout = "4c.txt";
-    ofile.open(fileout);
-    set_initial_text();
-    double T_final = 2.4;
-    int MC_max = 10000;
-
-    for (double Temperature = T_init; Temperature <= T_final; Temperature += 1.4){
-        Run_simulation(L, Temperature, MC_max);
-    }
-    ofile.close();
-    */
-
-    /*
-    for (double Temperature = T_init; Temperature <= T_final; Temperature += 1.4){
-        cout << "Running for temperature: " << Temperature << endl;
-            for (MC_cycles = 100; MC_cycles <= 100000; MC_cycles *= 10){
-            start = clock();
-            cout << "Using MC_cycles = " << MC_cycles << endl;
-            Expectation_values = new double[5];
-            Metropolis_method(L, MC_cycles, Temperature, Expectation_values, 1);
-            write_file(L, MC_cycles, Temperature, Expectation_values);
-            finish = clock();
-            cout << "Time elapsed for MC_cycles = " << MC_cycles << ":  " <<
-                    ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
-        }
-    }
-    ofile.close();
-    */
-
-    // 4e)
 
     return 0;
 }
