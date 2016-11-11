@@ -69,6 +69,7 @@ void initialize_system(int L, double **Spin_matrix, int random_state = 0){
 }
 
 double Calculate_E(double **Spin_matrix, int L){
+    // Calculates the initial energy of the system
     double CurrentE = 0;
     for (int i=0; i<L; i++){
          for (int j=0; j<L; j++){
@@ -80,6 +81,7 @@ double Calculate_E(double **Spin_matrix, int L){
 }
 
 double Calculate_M(double **Spin_matrix, int L){
+    // Calculates the initial magnetization of the system
     double CurrentM = 0;
     for (int i=0; i<L; i++){
         for (int j=0; j<L; j++){
@@ -147,17 +149,19 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
     Expectation_values[4] = fabsMSum;
 }
 
-void Metropolis_parallelization(int L, double Temperature, double *Expectation_values, int random_state = 0){
+void Metropolis_parallelization(int L, double Temperature, double **Spin_matrix, double *Expectation_values){
     // Function that solves the Metropolis method specifically for the parallellization part.
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
     std::default_random_engine generator(seed);
     std::uniform_real_distribution<double> distr(0.0, 1.0);
+    /*
     double **Spin_matrix;
     Spin_matrix = new double*[L];
     for (int i=0; i<L; i++){
         Spin_matrix[i] = new double[L];
     }
-    initialize_system(L, Spin_matrix, random_state);
+    */
+    initialize_system(L, Spin_matrix, 0);
     double currentEnergy = Calculate_E(Spin_matrix, L);
     double currentM = Calculate_M(Spin_matrix, L);
 
@@ -187,6 +191,7 @@ void Metropolis_parallelization(int L, double Temperature, double *Expectation_v
 
 void write_file(int L, double T, int MC_cycles, double *accepted_flip, double *Mean_energies, double *Mean_mag_moments,
                 double *Expectation_values, string filename_E, string filename_M){
+    // Writes data to output file.
     cout << "Saving data to file" << endl;
     double norm = 1.0/MC_cycles;
     double Variance_E = Expectation_values[1]*norm - Expectation_values[0]*norm*Expectation_values[0]*norm;
@@ -212,7 +217,6 @@ void write_file(int L, double T, int MC_cycles, double *accepted_flip, double *M
         }
         counter += 1;
     }
-
     ofileE.close();
     ofileM.close();
 }
@@ -225,6 +229,7 @@ void write_file_4d(int L, double T, int MC_cycles, double *Expectation_values, s
 }
 
 void write_file_parallellization(int L, double T, int MC_cycles, double *Total_expectation_values){
+    // Writes out data to the output file. Function made specific for the parallellization part.
     double norm = 1.0/MC_cycles;
     double E_expect = Total_expectation_values[0]*norm;
     double E_expect_2 = Total_expectation_values[1]*norm;
@@ -235,6 +240,7 @@ void write_file_parallellization(int L, double T, int MC_cycles, double *Total_e
     double M_variance = M_expect_2 - M_abs_expect*M_abs_expect;
     double C_v = E_variance/T;
     double Chi = M_variance/T;
+    ofile_global << setw(15) << MC_cycles;
     ofile_global << setw(15) << T;
     ofile_global << setw(15) << L;
     ofile_global << setw(15) << E_expect;
@@ -245,6 +251,7 @@ void write_file_parallellization(int L, double T, int MC_cycles, double *Total_e
 
 void initialize_output_file(){
     // Sets up a text at the top of the outputfile, which indicates the values of each column.
+    ofile_global << setw(15) << "MC Cycles";
     ofile_global << setw(15) << "T";
     ofile_global << setw(15) << "L";
     ofile_global << setw(15) << "<E>";
@@ -385,10 +392,17 @@ int main(int nargs, char*args[])
         filename.append(".txt");
 
         // New empty arrays
-        double *Total_expectation_values;
+        double **Spin_matrix , *Total_expectation_values;
+        Expectation_values = new double[5];
+        Total_expectation_values = new double[5];
+        Spin_matrix = new double*[L];
+        for (int i=0; i<L; i++){
+            Spin_matrix[i] = new double[L];
+        }
+
         int numprocs, my_rank;
         //  Initialize MPI
-        cout << "Wait for MPI" << endl;
+        cout << "Waiting for MPI to initialize..." << endl;
         MPI_Init(&nargs, &args);
         MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
         MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
@@ -421,8 +435,8 @@ int main(int nargs, char*args[])
         double Time_start, Time_end, Time_total;
         Time_start = MPI_Wtime();
         for (double temperature = T_init; temperature <= T_final; temperature += Temp_step){
-            Expectation_values = new double[5];
-            Total_expectation_values = new double[5];
+            //Expectation_values = new double[5];
+            //Total_expectation_values = new double[5];
             for (int k=0; k<5; k++){
                 Expectation_values[k] = 0;
                 Total_expectation_values[k] = 0;
@@ -436,7 +450,7 @@ int main(int nargs, char*args[])
             }
 
             for (int cycles = loop_begin; cycles <= loop_end; cycles ++)
-                Metropolis_parallelization(L, temperature, Expectation_values);
+                Metropolis_parallelization(L, temperature, Spin_matrix, Expectation_values);
 
             for (int i = 0; i<5; i++){
                 // Merges all values from the different nodes
