@@ -68,7 +68,26 @@ void initialize_system(int L, double **Spin_matrix, int random_state = 0){
     }
 }
 
+double Calculate_E(double **Spin_matrix, int L){
+    double CurrentE = 0;
+    for (int i=0; i<L; i++){
+         for (int j=0; j<L; j++){
+             CurrentE -= Spin_matrix[i][j]*(Spin_matrix[periodic(i, L, -1)][j] +
+                                       Spin_matrix[i][periodic(j, L, -1)]);
+        }
+    }
+    return CurrentE;
+}
 
+double Calculate_M(double **Spin_matrix, int L){
+    double CurrentM = 0;
+    for (int i=0; i<L; i++){
+        for (int j=0; j<L; j++){
+            CurrentM += Spin_matrix[i][j];
+        }
+    }
+    return CurrentM;
+}
 
 void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expectation_values, double *accepted_config,
                        double *Energies_array, double *Mag_moments_array, int random_state = 0){
@@ -87,6 +106,7 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
     double EnergySquaredSum=0;
     double MSquaredSum=0;
     double fabsMSum = 0;
+
     initialize_system(L, Spin_matrix, random_state);
 
     double currentEnergy = Calculate_E(Spin_matrix, L);
@@ -138,12 +158,12 @@ void write_file(int L, double T, int MC_cycles, double *accepted_flip, double *M
     ofileE.open(filename_E);
     ofileE << "<E>" << setw(15) << "MC Cycles" << setw(15);
     ofileE << "# Spins" << setw(15) << "Temperature" << setw(15) << "Variance_E" << "\n";
-    ofileE << setw(15) << MC_cycles << setw(15) << L << setw(15) << T << setw(15) << Variance_E/T << "\n";
+    ofileE << setw(15) << MC_cycles << setw(15) << L << setw(15) << T << setw(15) << Variance_E << "\n";
 
     ofileM.open(filename_M);
     ofileM << "<|M|>" << setw(15) << "MC Cycles" << setw(15);
     ofileM << "# Spins" << setw(15) << "Temperature" << setw(15) << "Variance_M" << "\n";
-    ofileM << setw(15) << MC_cycles << setw(15) << L << setw(15) << T << setw(15) << Variance_M/T <<"\n";
+    ofileM << setw(15) << MC_cycles << setw(15) << L << setw(15) << T << setw(15) << Variance_M <<"\n";
     int counter = 100;
     for (int i=0; i<MC_cycles; i++){
         if (counter == 100){
@@ -241,8 +261,8 @@ int main(int nargs, char*args[])
         cout << "Running L = 20. NOTE: This may take a while" << endl;
         MC_cycles = 1000000;
         double T_final = 2.4;
-        string filename_E = "Mean_E_T";
-        string filename_M = "Mean_M_T";
+        string filename_E = "E_expect_T";
+        string filename_M = "M_expect_T";
         // Runs for an arbritary state.
         cout << "Doing calculations with abritary intial state" << endl;
         for (double Temperature = T_init; Temperature <= T_final; Temperature += 1.4){
@@ -271,8 +291,8 @@ int main(int nargs, char*args[])
         }
 
 
-        string filename_E_allup = "Mean_E_AllUpState_T";
-        string filename_M_allup = "Mean_M_AllUpState_T";
+        string filename_E_allup = "E_expect_AllUpState_T";
+        string filename_M_allup = "M_expect_AllUpState_T";
         // Running for an initial state where all spins point up
         cout << "Doing calculations with initial state with all spins up" << endl;
         for (double Temperature = T_init; Temperature <= T_final; Temperature += 1.4){
@@ -334,6 +354,7 @@ int main(int nargs, char*args[])
         //  End MPI
         // MPI_Finalize ();
     }
+
 
     return 0;
 }
