@@ -154,13 +154,6 @@ void Metropolis_parallelization(int L, double Temperature, double **Spin_matrix,
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
     std::default_random_engine generator(seed);
     std::uniform_real_distribution<double> distr(0.0, 1.0);
-    /*
-    double **Spin_matrix;
-    Spin_matrix = new double*[L];
-    for (int i=0; i<L; i++){
-        Spin_matrix[i] = new double[L];
-    }
-    */
     initialize_system(L, Spin_matrix, 0);
     double currentEnergy = Calculate_E(Spin_matrix, L);
     double currentM = Calculate_M(Spin_matrix, L);
@@ -409,7 +402,6 @@ int main(int nargs, char*args[])
         if (my_rank == 0){
             ofile_global.open(filename);
             initialize_output_file();
-            // IF TO APPEND:  std::ios_base::app
         }
 
         // Determine number of intervals for the nodes
