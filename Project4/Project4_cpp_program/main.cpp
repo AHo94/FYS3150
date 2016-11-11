@@ -108,9 +108,9 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
     double fabsMSum = 0;
 
     initialize_system(L, Spin_matrix, random_state);
-
     double currentEnergy = Calculate_E(Spin_matrix, L);
     double currentM = Calculate_M(Spin_matrix, L);
+
     for (int cycle=0; cycle<MC_cycles; cycle++){
         for (int i=0; i<L; i++){
             for (int j=0; j<L; j++){
@@ -158,9 +158,9 @@ void Metropolis_parallelization(int L, double Temperature, double *Expectation_v
         Spin_matrix[i] = new double[L];
     }
     initialize_system(L, Spin_matrix, random_state);
-
     double currentEnergy = Calculate_E(Spin_matrix, L);
     double currentM = Calculate_M(Spin_matrix, L);
+
     for (int i=0; i<L; i++){
         for (int j=0; j<L; j++){
             int ix = distr(generator)*L;
@@ -377,9 +377,6 @@ int main(int nargs, char*args[])
 
         // New empty arrays
         double *Total_expectation_values;
-        Expectation_values = new double[5];
-        Total_expectation_values = new double[5];
-
         int numprocs, my_rank;
         //  Initialize MPI
         cout << "Wait for MPI" << endl;
@@ -414,6 +411,12 @@ int main(int nargs, char*args[])
         double Time_start, Time_end, Time_total;
         Time_start = MPI_Wtime();
         for (double temperature = T_init; temperature <= T_final; temperature += Temp_step){
+            Expectation_values = new double[5];
+            Total_expectation_values = new double[5];
+            for (int k=0; k<5; k++){
+                Expectation_values[k] = 0;
+                Total_expectation_values[k] = 0;
+            }
             if (fabs(temperature - 2.2) <= 1e-7){
                 // Changes temperature step length when T = 2.2. Interesting things happens between T = 2.2 and T = 2.3.
                 if (my_rank == 0){
