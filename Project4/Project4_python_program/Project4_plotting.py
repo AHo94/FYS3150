@@ -323,13 +323,13 @@ class Plotter():
 		fig1 = plt.figure()
 		plt.plot(self.T, self.E_expectation)
 		plt.xlabel('Temperature - $T$')
-		plt.ylabel('$<E>$')
+		plt.ylabel('Energy - $<E>$')
 		plt.title('Plot of energy as a function of $T$, $N_{mc}$ = %.g' %(self.MC_cycles))
 		# Plots for Mean magnetization
 		fig2 = plt.figure()
 		plt.plot(self.T, self.M_abs_expectation)
 		plt.xlabel('Temperature - $T$')
-		plt.ylabel('$<|M|>$')
+		plt.ylabel('Mean magnetization - $<|M|>$')
 		plt.title('Plot of mean magnetization as a function of $T$, $N_{mc}$ = %.g' %(self.MC_cycles))
 		# Plots for Heat capacity
 		fig3 = plt.figure()
@@ -341,7 +341,7 @@ class Plotter():
 		fig4 = plt.figure()
 		plt.plot(self.T, self.Chi)
 		plt.xlabel('Temperature - $T$')
-		plt.ylabel(r'Suceptibility $\chi$')
+		plt.ylabel(r'Suceptibility - $\chi$')
 		plt.title('Plot of suceptibility as a function of $T$, $N_{mc}$ = %.g' %(self.MC_cycles))
 
 		if self.savefile == True:
