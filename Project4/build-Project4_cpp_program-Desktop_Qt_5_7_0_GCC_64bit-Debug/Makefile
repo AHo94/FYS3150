@@ -10,11 +10,11 @@ MAKEFILE      = Makefile
 
 ####### Compiler, tools and options
 
-CC            = gcc
-CXX           = g++
+CC            = /usr/lib64/openmpi/bin/mpicc
+CXX           = /usr/lib64/openmpi/bin/mpic++
 DEFINES       = -DQT_QML_DEBUG
-CFLAGS        = -pipe -g -Wall -W -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -fPIC $(DEFINES)
+CFLAGS        = -pipe -I/usr/include/openmpi-x86_64 -pthread -m64 -g -Wall -W -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -I/usr/include/openmpi-x86_64 -pthread -m64 -DMPICH_IGNORE_CXX_SEEK -g -std=gnu++11 -Wall -W -fPIC $(DEFINES)
 INCPATH       = -I../Project4_cpp_program -I. -I/usr/lib64/openmpi -I/uio/hume/student-u70/aleh/Qt/5.7/gcc_64/mkspecs/linux-g++
 QMAKE         = /uio/hume/student-u70/aleh/Qt/5.7/gcc_64/bin/qmake
 DEL_FILE      = rm -f
@@ -34,8 +34,8 @@ TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = Project4_cpp_program1.0.0
 DISTDIR = /uio/hume/student-u70/aleh/H2016/FYS3150/FYS3150_Projects/Project4/build-Project4_cpp_program-Desktop_Qt_5_7_0_GCC_64bit-Debug/.tmp/Project4_cpp_program1.0.0
-LINK          = g++
-LFLAGS        = 
+LINK          = /usr/lib64/openmpi/bin/mpic++
+LFLAGS        = -pthread -m64 -Wl,-rpath -Wl,/usr/lib64/openmpi/lib -Wl,--enable-new-dtags -L/usr/lib64/openmpi/lib -lmpi_cxx -lmpi
 LIBS          = $(SUBLIBS)  
 AR            = ar cqs
 RANLIB        = 
