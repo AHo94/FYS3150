@@ -224,12 +224,12 @@ void write_file_4d(int L, double T, int MC_cycles, double *Expectation_values, s
     ofile_global << Expectation_values[0]*norm/L/L << setw(15) << variance;
 }
 
-void write_parallellization(int L, double T, int MC_cycles, double *Expectation_values){
+void write_file_parallellization(int L, double T, int MC_cycles, double *Total_expectation_values){
     double norm = 1.0/MC_cycles;
-    double E_expect = Expectation_values[0]*norm;
-    double E_expect_2 = Expectation_values[1]*norm;
-    double M_expect_2 = Expectation_values[2]*norm;
-    double M_abs_expect = Expectation_values[4]*norm;
+    double E_expect = Total_expectation_values[0]*norm;
+    double E_expect_2 = Total_expectation_values[1]*norm;
+    double M_expect_2 = Total_expectation_values[2]*norm;
+    double M_abs_expect = Total_expectation_values[4]*norm;
 
     double E_variance = E_expect_2 - E_expect*E_expect;
     double M_variance = M_expect_2 - M_abs_expect*M_abs_expect;
@@ -379,16 +379,13 @@ int main(int nargs, char*args[])
         double *Total_expectation_values;
         Expectation_values = new double[5];
         Total_expectation_values = new double[5];
-        Energies_array = new double[MC_cycles];
-        Mag_moments_array = new double [MC_cycles];
-        accepted_config = new double[MC_cycles];
 
         int numprocs, my_rank;
         //  Initialize MPI
         cout << "Wait for MPI" << endl;
-        MPI_Init (&nargs, &args);
-        MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
-        MPI_Comm_rank (MPI_COMM_WORLD, &my_rank);
+        MPI_Init(&nargs, &args);
+        MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+        MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
         if (my_rank == 0){
             ofile_global.open(filename);
             // IF TO APPEND:  std::ios_base::app
@@ -434,7 +431,7 @@ int main(int nargs, char*args[])
             }
             if(my_rank == 0){
                 // Write to output file
-                write_parallellization(L, temperature, MC_cycles, Total_expectation_values);
+                write_file_parallellization(L, temperature, MC_cycles, Total_expectation_values);
             }
         }
         ofile_global.close();
