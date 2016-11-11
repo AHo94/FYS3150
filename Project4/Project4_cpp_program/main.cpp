@@ -7,7 +7,7 @@
 #include <string>
 #include <iomanip>
 #include <time.h>
-//#include <mpi.h>
+#include <mpi.h>
 
 using namespace std;
 ofstream ofile_global;
@@ -147,6 +147,44 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
     Expectation_values[4] = fabsMSum;
 }
 
+void Metropolis_parallelization(int L, double Temperature, double *Expectation_values, int random_state = 0){
+    // Function that solves the Metropolis method specifically for the parallellization part.
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
+    std::default_random_engine generator(seed);
+    std::uniform_real_distribution<double> distr(0.0, 1.0);
+    double **Spin_matrix;
+    Spin_matrix = new double*[L];
+    for (int i=0; i<L; i++){
+        Spin_matrix[i] = new double[L];
+    }
+    initialize_system(L, Spin_matrix, random_state);
+
+    double currentEnergy = Calculate_E(Spin_matrix, L);
+    double currentM = Calculate_M(Spin_matrix, L);
+    for (int i=0; i<L; i++){
+        for (int j=0; j<L; j++){
+            int ix = distr(generator)*L;
+            int iy = distr(generator)*L;
+            int dE =  2*Spin_matrix[ix][iy]*
+                  (Spin_matrix[ix][periodic(iy,L,-1)]+
+                   Spin_matrix[periodic(ix,L,-1)][iy] +
+                   Spin_matrix[ix][periodic(iy,L,1)] +
+                   Spin_matrix[periodic(ix,L,1)][iy]);
+            if (distr(generator) <= exp(-dE/Temperature)){
+                Spin_matrix[ix][iy] *= -1.0;
+                currentM += 2*Spin_matrix[ix][iy];//Calculate_M(Spin_matrix, L);
+                currentEnergy += dE;
+            }
+        }
+    }
+    // Adds samplings
+    Expectation_values[0] += currentEnergy;
+    Expectation_values[1] += currentEnergy*currentEnergy;
+    Expectation_values[2] += currentM;
+    Expectation_values[3] += currentM*currentM;
+    Expectation_values[4] += fabs(currentM);
+}
+
 void write_file(int L, double T, int MC_cycles, double *accepted_flip, double *Mean_energies, double *Mean_mag_moments,
                 double *Expectation_values, string filename_E, string filename_M){
     cout << "Saving data to file" << endl;
@@ -191,7 +229,7 @@ void write_parallellization(int L, double T, int MC_cycles, double *Expectation_
     double E_expect = Expectation_values[0]*norm;
     double E_expect_2 = Expectation_values[1]*norm;
     double M_expect_2 = Expectation_values[2]*norm;
-    double M_abs_expect = Expectation_values[5]*norm;
+    double M_abs_expect = Expectation_values[4]*norm;
 
     double E_variance = E_expect_2 - E_expect*E_expect;
     double M_variance = M_expect_2 - M_abs_expect*M_abs_expect;
@@ -321,40 +359,101 @@ int main(int nargs, char*args[])
         }
     }
     else{
-        // If there are arguments in the input line, then run for the last two tasks. Do parallelization
+        // If there are arguments in the input line, then run for the last two tasks.
+        // Reads L and MC cycles from command line and sets up temperature limits.
         L = atoi(args[1]);
-        double Temperature = (double) atof(args[2]);
-        MC_cycles = atoi(args[3]);
-        string filename = "4e_data_L";
+        MC_cycles = atoi(args[2]);
+        double T_init = 2.0;
+        double T_final = 2.3;
+        double Temp_step = 0.02;
+
+        // Initialize filename to fit the number of spins L
+        string filename = "../build-Project4_cpp_program-Desktop_Qt_5_7_0_GCC_64bit-Debug/4e_data_L";
         stringstream stream;
         stream << fixed << setprecision(0) << L;
         string argument = stream.str();
         filename.append(argument);
         filename.append(".txt");
 
-        int numprocs, my_rank;
-        //   MPI initializations
-        /*
-        MPI_Init (&nargs, &args);
-        MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
-        MPI_Comm_rank (MPI_COMM_WORLD, &my_rank);
-        cout << "Hello world, I have  rank " << my_rank << " out of " << numprocs << endl;
-        */
-
+        // New empty arrays
+        double *Total_expectation_values;
         Expectation_values = new double[5];
+        Total_expectation_values = new double[5];
         Energies_array = new double[MC_cycles];
         Mag_moments_array = new double [MC_cycles];
         accepted_config = new double[MC_cycles];
 
-        ofile_global.open(filename, std::ios_base::app);
-        Metropolis_method(L, MC_cycles, Temperature, Expectation_values, accepted_config,
-                       Energies_array, Mag_moments_array);
-        write_parallellization(L, Temperature, MC_cycles, Expectation_values);
+        int numprocs, my_rank;
+        //  Initialize MPI
+        cout << "Wait for MPI" << endl;
+        MPI_Init (&nargs, &args);
+        MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
+        MPI_Comm_rank (MPI_COMM_WORLD, &my_rank);
+        if (my_rank == 0){
+            ofile_global.open(filename);
+            // IF TO APPEND:  std::ios_base::app
+        }
+
+        // Determine number of intervals for the nodes
+        int no_intervals = MC_cycles/numprocs;
+        int loop_begin = my_rank*no_intervals + 1;
+        int loop_end = (my_rank+1)*no_intervals;
+        if ((my_rank == numprocs - 1) && (loop_end < MC_cycles)){
+            loop_end = MC_cycles;
+        }
+
+        // Broadcast common variables to all nodes
+        MPI_Bcast(&L, 1, MPI_INT, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&T_init, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&T_final, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&Temp_step, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+        if (my_rank == 0){
+            cout << "Everything initialized, startig algorithm with:" << endl;
+            cout << "L = " << L << endl;
+            cout << "MC_cycles = "<< MC_cycles << endl;
+            cout << "This may take a while..." << endl;
+        }
+        double Time_start, Time_end, Time_total;
+        Time_start = MPI_Wtime();
+        for (double temperature = T_init; temperature <= T_final; temperature += Temp_step){
+            if (fabs(temperature - 2.2) <= 1e-7){
+                // Changes temperature step length when T = 2.2. Interesting things happens between T = 2.2 and T = 2.3.
+                if (my_rank == 0){
+                    cout << "Changing temperature step length" << endl;
+                }
+                Temp_step = 0.01;
+            }
+
+            for (int cycles = loop_begin; cycles <= loop_end; cycles ++)
+                Metropolis_parallelization(L, temperature, Expectation_values);
+
+            for (int i = 0; i<5; i++){
+                // Merges all values from the different nodes
+                MPI_Reduce(&Expectation_values[i], &Total_expectation_values[i], 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+            }
+            if(my_rank == 0){
+                // Write to output file
+                write_parallellization(L, temperature, MC_cycles, Total_expectation_values);
+            }
+        }
         ofile_global.close();
+        Time_end = MPI_Wtime();
+        Time_total = Time_end - Time_start;
+        if (my_rank == 0){
+            cout << "Time = " << Time_total << " on number of processors: " << numprocs << endl;
+        }
         //  End MPI
-        // MPI_Finalize ();
+        MPI_Finalize ();
     }
-
-
     return 0;
 }
+/*
+SELF NOTE:
+Compile with
+mpic++ -std=c++11 ./main.x main.cpp
+Run with
+mpiexec -n 4 ./main.x (arguments)
+Example
+mpiexec -n 4 ./main.x 20 10000
+*/
