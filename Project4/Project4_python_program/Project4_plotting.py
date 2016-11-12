@@ -3,7 +3,9 @@ import matplotlib.pyplot as plt
 import os
 # Change directory based based on work place, i.e home or at UiO computer.
 #file_directory = 'C:/Users/Alex/Documents/FYS3150/FYS3150_projects/Project4/build-Project4_cpp_program-Desktop_Qt_5_7_0_MinGW_32bit-Debug'
-file_directory = '/uio/hume/student-u70/aleh/H2016/FYS3150/FYS3150_Projects/Project4/build-Project4_cpp_program-Desktop_Qt_5_7_0_GCC_64bit-Debug'
+#file_directory = '/uio/hume/student-u70/aleh/H2016/FYS3150/FYS3150_Projects/Project4/build-Project4_cpp_program-Desktop_Qt_5_7_0_GCC_64bit-Debug'
+file_directory = '../build-Project4_cpp_program-Desktop_Qt_5_7_0_GCC_64bit-Debug'
+
 class Plotter():
 	def __init__(self, savefile):
 		self.savefile = savefile	# If True, saves the plots to a file
