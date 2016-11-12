@@ -125,7 +125,7 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
                        Spin_matrix[periodic(ix,L,1)][iy]);
                 if (distr(generator) <= exp(-dE/Temperature)){
                     Spin_matrix[ix][iy] *= -1.0;
-                    currentM += 2*Spin_matrix[ix][iy];//Calculate_M(Spin_matrix, L);
+                    currentM += 2*Spin_matrix[ix][iy];
                     currentEnergy += dE;
                     accepted_flip += 1;
                 }
@@ -149,38 +149,55 @@ void Metropolis_method(int L, int MC_cycles, double Temperature, double *Expecta
     Expectation_values[4] = fabsMSum;
 }
 
-void Metropolis_parallelization(int L, double Temperature, double **Spin_matrix, double *Expectation_values){
-    // Function that solves the Metropolis method specifically for the parallellization part.
+void Metropolis_parallelization(int L, double **Spin_matrix, double Temperature, double *Expectation_values, int loop_begin, int loop_end){
+    // A function that uses the Metropolis method
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
     std::default_random_engine generator(seed);
     std::uniform_real_distribution<double> distr(0.0, 1.0);
-    initialize_system(L, Spin_matrix, 0);
+    int accepted_flip = 0;
+    double EnergySum=0;
+    double MSum=0;
+    double EnergySquaredSum=0;
+    double MSquaredSum=0;
+    double fabsMSum = 0;
+
+    initialize_system(L, Spin_matrix);
     double currentEnergy = Calculate_E(Spin_matrix, L);
     double currentM = Calculate_M(Spin_matrix, L);
 
-    for (int i=0; i<L; i++){
-        for (int j=0; j<L; j++){
-            int ix = distr(generator)*L;
-            int iy = distr(generator)*L;
-            int dE =  2*Spin_matrix[ix][iy]*
-                  (Spin_matrix[ix][periodic(iy,L,-1)]+
-                   Spin_matrix[periodic(ix,L,-1)][iy] +
-                   Spin_matrix[ix][periodic(iy,L,1)] +
-                   Spin_matrix[periodic(ix,L,1)][iy]);
-            if (distr(generator) <= exp(-dE/Temperature)){
-                Spin_matrix[ix][iy] *= -1.0;
-                currentM += 2*Spin_matrix[ix][iy];//Calculate_M(Spin_matrix, L);
-                currentEnergy += dE;
+    for (int cycle=loop_begin; cycle<loop_end; cycle++){
+        for (int i=0; i<L; i++){
+            for (int j=0; j<L; j++){
+                int ix = distr(generator)*L;
+                int iy = distr(generator)*L;
+                int dE =  2*Spin_matrix[ix][iy]*
+                      (Spin_matrix[ix][periodic(iy,L,-1)]+
+                       Spin_matrix[periodic(ix,L,-1)][iy] +
+                       Spin_matrix[ix][periodic(iy,L,1)] +
+                       Spin_matrix[periodic(ix,L,1)][iy]);
+                if (distr(generator) <= exp(-dE/Temperature)){
+                    Spin_matrix[ix][iy] *= -1.0;
+                    currentM += 2*Spin_matrix[ix][iy];
+                    currentEnergy += dE;
+                    accepted_flip += 1;
+                }
             }
         }
+        // Sums up the samplings
+        EnergySum += currentEnergy;
+        EnergySquaredSum += currentEnergy*currentEnergy;
+        MSum += currentM;
+        fabsMSum += fabs(currentM);
+        MSquaredSum += currentM*currentM;
+
     }
-    // Adds samplings
-    Expectation_values[0] += currentEnergy;
-    Expectation_values[1] += currentEnergy*currentEnergy;
-    Expectation_values[2] += currentM;
-    Expectation_values[3] += currentM*currentM;
-    Expectation_values[4] += fabs(currentM);
+    Expectation_values[0] = EnergySum;
+    Expectation_values[1] = EnergySquaredSum;
+    Expectation_values[2] = MSum;
+    Expectation_values[3] = MSquaredSum;
+    Expectation_values[4] = fabsMSum;
 }
+
 
 void write_file(int L, double T, int MC_cycles, double *accepted_flip, double *Mean_energies, double *Mean_mag_moments,
                 double *Expectation_values, string filename_E, string filename_M){
@@ -231,7 +248,7 @@ void write_file_parallellization(int L, double T, int MC_cycles, double *Total_e
 
     double E_variance = E_expect_2 - E_expect*E_expect;
     double M_variance = M_expect_2 - M_abs_expect*M_abs_expect;
-    double C_v = E_variance/T;
+    double C_v = E_variance/T/T;
     double Chi = M_variance/T;
     ofile_global << setw(15) << MC_cycles;
     ofile_global << setw(15) << T;
@@ -258,17 +275,16 @@ int main(int nargs, char*args[])
 
     clock_t start, finish;
     double *Expectation_values;
-    Expectation_values = new double[5];
     int L = 2;  // Number of spins
     int MC_cycles = 0;  // Number of Monte Carlo cycles
-
-    double *Energies_array, *Mag_moments_array, *accepted_config;
     if (nargs <= 1){
         // Analytical expressions
         double T_init = 1.0; // Temperature = 1.0 kT/J
-        double AC_v = 64.0*(1+3*cosh(8.0/T_init))/(T_init*pow((cosh(8.0/T_init)+3), 2));
+        double AC_v = 64.0*(1+3*cosh(8.0/T_init/T_init))/(T_init*pow((cosh(8.0/T_init)+3), 2));
         double Achi = 8*(exp(8.0/T_init) + cosh(8.0/T_init) + 3.0/2.0)/(T_init*pow((cosh(8.0/T_init)+3), 2));
         int MC_cycles = 1000000;
+        double *Energies_array, *Mag_moments_array, *accepted_config;
+        Expectation_values = new double[5];
         Energies_array = new double[MC_cycles];
         Mag_moments_array = new double [MC_cycles];
         accepted_config = new double[MC_cycles];
@@ -276,9 +292,9 @@ int main(int nargs, char*args[])
         start = clock();
         Metropolis_method(L, MC_cycles, T_init, Expectation_values, accepted_config, Energies_array, Mag_moments_array);
         double C_v = (Expectation_values[1]/MC_cycles -
-            Expectation_values[0]*Expectation_values[0]/MC_cycles/MC_cycles)/T_init/T_init;
+            Expectation_values[0]*Expectation_values[0]/MC_cycles/MC_cycles)/T_init/T_init/L/L;
         double Chi = (Expectation_values[3]/MC_cycles -
-            Expectation_values[4]*Expectation_values[4]/MC_cycles/MC_cycles)/T_init/T_init;
+            Expectation_values[4]*Expectation_values[4]/MC_cycles/MC_cycles)/T_init/L/L;
         cout << "Number of Monte Carlo cycles = " << MC_cycles << endl;
         cout << "Analytic C_v = " << AC_v << ", Numerical C_v = " << C_v << endl;
         cout << "Analytic Chi = " << Achi << ", Numerical Chi = " << Chi << endl;
@@ -287,6 +303,10 @@ int main(int nargs, char*args[])
         cout << "Time elapsed for MC_cycles = " << MC_cycles << ":  " <<
             ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
 
+        cout << "E = " << Expectation_values[0]/MC_cycles/L/L << endl;
+        cout << "M = " << Expectation_values[4]/MC_cycles/L/L << endl;
+
+        return 0;
 
         cout << "\n" << "Running multiple times, using MC_cycles = "<< MC_cycles << endl;
         for (int i=0; i<=5; i++)
@@ -384,15 +404,6 @@ int main(int nargs, char*args[])
         filename.append(argument);
         filename.append(".txt");
 
-        // New empty arrays
-        double **Spin_matrix , *Total_expectation_values;
-        Expectation_values = new double[5];
-        Total_expectation_values = new double[5];
-        Spin_matrix = new double*[L];
-        for (int i=0; i<L; i++){
-            Spin_matrix[i] = new double[L];
-        }
-
         int numprocs, my_rank;
         //  Initialize MPI
         cout << "Waiting for MPI to initialize..." << endl;
@@ -424,11 +435,20 @@ int main(int nargs, char*args[])
             cout << "MC_cycles = "<< MC_cycles << endl;
             cout << "This may take a while..." << endl;
         }
+
+        // New empty arrays
+        double **Spin_matrix , *Total_expectation_values;
+        Expectation_values = new double[5];
+        Total_expectation_values = new double[5];
+        Spin_matrix = new double*[L];
+        for (int i=0; i<L; i++){
+            Spin_matrix[i] = new double[L];
+        }
+
         double Time_start, Time_end, Time_total;
         Time_start = MPI_Wtime();
         for (double temperature = T_init; temperature <= T_final; temperature += Temp_step){
-            //Expectation_values = new double[5];
-            //Total_expectation_values = new double[5];
+            // Resets the arrays for a new temperature.
             for (int k=0; k<5; k++){
                 Expectation_values[k] = 0;
                 Total_expectation_values[k] = 0;
@@ -440,10 +460,13 @@ int main(int nargs, char*args[])
                 }
                 Temp_step = 0.01;
             }
-
-            for (int cycles = loop_begin; cycles <= loop_end; cycles ++)
+            //Metropolis_method(L, MC_cycles, T_init, Expectation_values, accepted_config, Energies_array, Mag_moments_array);
+            Metropolis_parallelization(L, Spin_matrix, temperature, Expectation_values, loop_begin, loop_end);
+            /*
+            for (int cycles = loop_begin; cycles <= loop_end; cycles ++){
                 Metropolis_parallelization(L, temperature, Spin_matrix, Expectation_values);
-
+            }
+            */
             for (int i = 0; i<5; i++){
                 // Merges all values from the different nodes
                 MPI_Reduce(&Expectation_values[i], &Total_expectation_values[i], 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
