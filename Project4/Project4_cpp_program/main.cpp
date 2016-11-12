@@ -374,7 +374,7 @@ int main(int nargs, char*args[])
         MC_cycles = atoi(args[2]);
         double T_init = 2.0;
         double T_final = 2.3;
-        double Temp_step = 0.01;
+        double Temp_step = 0.02;
 
         // Initialize filename to fit the number of spins L
         string filename = "../build-Project4_cpp_program-Desktop_Qt_5_7_0_GCC_64bit-Debug/4e_data_L";
@@ -438,7 +438,7 @@ int main(int nargs, char*args[])
                 if (my_rank == 0){
                     cout << "Changing temperature step length" << endl;
                 }
-                Temp_step = 0.005;
+                Temp_step = 0.01;
             }
 
             for (int cycles = loop_begin; cycles <= loop_end; cycles ++)
