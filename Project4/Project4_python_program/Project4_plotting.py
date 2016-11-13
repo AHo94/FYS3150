@@ -221,6 +221,19 @@ class Plotter():
 		plt.xlabel('Energies')
 		plt.ylabel('Number of times energy is calculated')
 		plt.legend(['T = 1.0','T = 2.4'])
+		plt.title('Probability distribution of the energies')
+		
+		fig2 = plt.figure()
+		plt.hist(self.E_values_T1, bins=100)
+		plt.xlabel('Energies')
+		plt.ylabel('Number of times energy is calculated')
+		plt.title('Probability distribution of the energy, for $T = 1.0$')
+
+		fig3 = plt.figure()
+		plt.hist(self.E_values_T24, bins=100)
+		plt.xlabel('Energies')
+		plt.ylabel('Number of times energy is calculated')
+		plt.title('Probability distribution of the energy, for $T=2.4$')
 		
 		print 'Computed variance = ', self.E_variance_T1, ', for T = 1.0'
 		print 'Computed variance = ', self.E_variance_T24, ', for T = 2.4'
@@ -228,23 +241,24 @@ class Plotter():
 		print 'Numpy variance = ', np.var(self.E_values_T24), ',for T = 2.4'
 		
 		if self.savefile == True:
-			fig1.savefig('../Plots/Probability_distribution_T1.pdf')
-			fig2.savefig('../Plots/Probability_distribution_T2.pdf')
+			fig1.savefig('../Plots/Probability_distribution_merged.pdf')
+			fig2.savefig('../Plots/Probability_distribution_T1.pdf')
+			fig3.savefig('../Plots/Probability_distribution_T2.pdf')
 		else:
 			plt.show()
 
-	def TESTPLOT(self):
+	def plot_state_logarithmic(self):
 		# Plots the expecation values for T = 1
 		self.read_data_4c("E_expect_T1.00.txt", "M_expect_T1.00.txt", 1)
 		fig1 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.E_expectation_1, 'b-')
-		plt.xlabel('$log(N_{MC})$')
+		plt.xlabel('$\log(N_{MC})$')
 		plt.ylabel(r'$\langle  E \rangle$')
 		plt.title('Plot of the energies as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Abritary initial state' \
 							 %(self.T1, self.MC_max))
 		fig2 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.M_expectation_1, 'r-')
-		plt.xlabel('$(N_{MC})$')
+		plt.xlabel('$\log(N_{MC})$')
 		plt.ylabel(r'$\langle  |M| \rangle$')
 		plt.title('Plot of magnetization as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Abritary initial state' \
 							 %(self.T1, self.MC_max))
@@ -253,13 +267,13 @@ class Plotter():
 		self.read_data_4c("E_expect_T2.40.txt", "M_expect_T2.40.txt", 2)
 		fig3 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.E_expectation_2, 'b-')
-		plt.xlabel('$log(N_{MC})$')
+		plt.xlabel('$\log(N_{MC})$')
 		plt.ylabel(r'$\langle  E \rangle$')
 		plt.title('Plot of the energies as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Abritary initial state' \
 							 %(self.T2, self.MC_max))
 		fig4 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.M_expectation_2, 'r-')
-		plt.xlabel('$(N_{MC})$')
+		plt.xlabel('$\log(N_{MC})$')
 		plt.ylabel(r'$\langle  |M| \rangle$')
 		plt.title('Plot of magnetization as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Abritary initial state' \
 							 %(self.T2, self.MC_max))
@@ -268,13 +282,13 @@ class Plotter():
 		self.read_data_4c("E_expect_AllUpState_T1.00.txt", "M_expect_AllUpState_T1.00.txt", 1)
 		fig5 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.E_expectation_1, 'b-')
-		plt.xlabel('$log(N_{MC})$')
+		plt.xlabel('$\log(N_{MC})$')
 		plt.ylabel(r'$\langle  E \rangle$')
 		plt.title('Plot of the energies as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Initial state, all spins up' \
 							 %(self.T1, self.MC_max))
 		fig2 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.M_expectation_1, 'r-')
-		plt.xlabel('$(N_{MC})$')
+		plt.xlabel('$\log(N_{MC})$')
 		plt.ylabel(r'$\langle  |M| \rangle$')
 		plt.title('Plot of magnetization as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Initial state, all spins up'\
 							 %(self.T1, self.MC_max))
@@ -283,13 +297,13 @@ class Plotter():
 		self.read_data_4c("E_expect_AllUpState_T2.40.txt", "M_expect_AllUpState_T2.40.txt", 2)
 		fig3 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.E_expectation_2, 'b-')
-		plt.xlabel('$log(N_{MC})$')
+		plt.xlabel('$\log(N_{MC})$')
 		plt.ylabel(r'$\langle  E \rangle$')
 		plt.title('Plot of the energies as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Initial state, all spins up'\
 							 %(self.T2, self.MC_max))
 		fig4 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.M_expectation_2, 'r-')
-		plt.xlabel('$(N_{MC})$')
+		plt.xlabel('$\log(N_{MC})$')
 		plt.ylabel(r'$\langle  |M| \rangle$')
 		plt.title('Plot of magnetization as a function of MC Cycles. T = %.2f, $N_{mc}$ = %.g. \n Initial state, all spins up'\
 							 %(self.T2, self.MC_max))
@@ -354,8 +368,8 @@ class Plotter():
 		else:
 			plt.show()
 
-solver = Plotter(False)
+solver = Plotter(True)
 #solver.plot_state()
-#solver.plot_probability()
-#solver.TESTPLOT()
-solver.plot_parallellization()
+solver.plot_probability()
+#solver.plot_state_logarithmic()
+#solver.plot_parallellization()
