@@ -387,7 +387,7 @@ int main(int nargs, char*args[])
         L = atoi(args[1]);
         MC_cycles = atoi(args[2]);
         double T_init = 2.0;
-        double T_final = 2.3;
+        double T_final = 2.301;
         double Temp_step = 0.04;
 
         // Initialize filename to fit the number of spins L
