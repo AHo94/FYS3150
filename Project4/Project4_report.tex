@@ -358,28 +358,28 @@ Let us first consider the case where the initial spin state is set at random. Fi
 \begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{Plots/Energy_stability_logarithmic_T1.pdf}
-\caption{Stability of the energy, with $T = 1.0$ as a function of time. Logarithmic x-axis.}
+\caption{Stability of the energy, with $T = 1.0$ as a function of time. Logarithmic x-axis. Random initial state.}
 \label{fig:Energy_stab_log_T1}
 \end{figure}
 \begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{Plots/Magnetization_stability_logarithmic_T1.pdf}
-\caption{Stability of the magnetization, with $T = 1.0$ as a function of time. Logarithmic x-axis.}
+\caption{Stability of the magnetization, with $T = 1.0$ as a function of time. Logarithmic x-axis. Random initial state.}
 \label{fig:Mag_stab_log_T1}
 \end{figure}
 
-We now increase the temperature to $T = 2.4$. Figure \ref{fig:Energy_stab_log_T2} and \ref{fig:Mag_stab_log_T2} again shows how the energy and magnetization stabilizes respectively. This time, however, there are a lot more fluctuations for both parameters. This is not surprising. When we have a higher temperature, the system can reach a higher energetic state. Because of this, the spins will have the ability to change more (that is, more frequent flips) compared to the lower temperature case.
+We now increase the temperature to $T = 2.4$. Figure \ref{fig:Energy_stab_log_T2} and \ref{fig:Mag_stab_log_T2} again shows how the energy and magnetization stabilizes respectively. This time, however, there are a lot more fluctuations for both parameters. This is not surprising. When we have a higher temperature, the system can reach a higher energetic state. Because of this, the spins will have the ability to change more (that is, more frequent flips) compared to the lower temperature case. Also note that the energy oscillates around $\langle E \rangle = -500$ instead of $\langle E \rangle = -500$ (for the lower energy case). Again, due to an increase in temperature, the system will therefore be in an excited state, which means it has a larger energy on average.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{Plots/Energy_stability_logarithmic_T24.pdf}
-\caption{Stability of the energy, with $T = 2.4$ as a function of time. Logarithmic x-axis.}
+\caption{Stability of the energy, with $T = 2.4$ as a function of time. Logarithmic x-axis. Random initial state.}
 \label{fig:Energy_stab_log_T2}
 \end{figure}
 \begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{Plots/Magnetization_stability_logarithmic_T24.pdf}
-\caption{Stability of the magnetization, with $T = 2.4$ as a function of time. Logarithmic x-axis.}
+\caption{Stability of the magnetization, with $T = 2.4$ as a function of time. Logarithmic x-axis. Random initial state.}
 \label{fig:Mag_stab_log_T2}
 \end{figure}
 
@@ -401,7 +401,39 @@ Figure \ref{fig:Accepted_configs_wrt_MC_cycles} shows how the number of accepted
 \caption{Number of accepted configuration changes over time. Logarithmic y-axis. We see that the number of accepted configurations increases as the temperature increases}
 \label{fig:Accepted_configs_wrt_MC_cycles}
 \end{figure}
+If we now let all spins in the initial state be up spins, we would expect that the system will reach equilibrium a lot faster than a random initial state. The reason is that the energy will be at the lowest for a system with only up spins (also for down spins), which was shown previously in table \ref{table:All_energies}. Because of this, the energy (as well as the magnetization) will already start near their equilibrium value.
 
+This can easily be seen in figure \ref{fig:Energy_stab_log_T1_SpinUp} and \ref{fig:Mag_stab_log_T1_SpinUp} for the energy and magnetization respectively. Let us look at the plot for energy as an example. The initial energy is very close to the lowest possible energy for our system. On the other hand, in figure \ref{fig:Energy_stab_log_T1}, the initial energy was larger due to an random initial state. The system will therefore reach an equilibrium state much faster when the system starts will all spins up.
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Energy_stability_UpInitSpin_logarithmic_T1.pdf}
+\caption{Stability for the energy for an initial state where all spins points up, with $T=1.0$. Notice the lower initial energy, which is already close to the equilibrium energy.}
+\label{fig:Energy_stab_log_T1_SpinUp}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Magnetization_stability_UpInitSpin_logarithmic_T1.pdf}
+\caption{Stability of the magnetization for an initiale state where all spins points up, with $T=1.0$. Like the energy case, the magnetization has an initial value close to equilibrium.}
+\label{fig:Mag_stab_log_T1_SpinUp}
+\end{figure}
+We can also look at the case with $T=2.4$. Again, since the temperature is higher, the system can reach many more states  compared to the lower energy case. Recall that that the spin state will change it's configuration much more frequently for larger temperatures, so we can also expect more oscillations for the energy and magnetization in this system, where all spins starts as up spins.
+
+In figure \ref{fig:Energy_stab_log_T2_SpinUp}, we can see that the energy oscillates around $\langle E \rangle = -500$. This is also not surprising due to a larger temperature, which means that the system will be in an excited state. Similar result can be seen for the magnetization in figure \ref{fig:Mag_stab_log_T2_SpinUp}.
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Energy_stability_UpInitSpin_logarithmic_T24.pdf}
+\caption{Stability for the energy for an initial state where all spins points up, with $T=2.4$. }
+\label{fig:Energy_stab_log_T2_SpinUp}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Magnetization_stability_UpInitSpin_logarithmic_T24.pdf}
+\caption{Stability of the magnetization for an initiale state where all spins points up, with $T=2.4$.}
+\label{fig:Mag_stab_log_T2_SpinUp}
+\end{figure}
+
+\FloatBarrier
+\subsection*{Probability distribution}
 
 \FloatBarrier
 \subsection*{Phase transitions}
