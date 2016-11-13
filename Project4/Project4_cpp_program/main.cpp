@@ -48,7 +48,7 @@ void initialize_system(int L, double **Spin_matrix, int random_state = 0){
         // All spins will be up-spins
         for (int x=0; x < L; x++){
             for (int y=0; y<L; y++){
-                Spin_matrix[x][y] = 1;
+                Spin_matrix[x][y] = 1.0;
             }
         }
     }
@@ -56,7 +56,7 @@ void initialize_system(int L, double **Spin_matrix, int random_state = 0){
         // All spins will be down-spins
         for (int x=0; x < L; x++){
             for (int y=0; y<L; y++){
-                Spin_matrix[x][y] = -1;
+                Spin_matrix[x][y] = -1.0;
             }
         }
     }
@@ -231,12 +231,6 @@ void write_file(int L, double T, int MC_cycles, double *accepted_flip, double *M
     ofileM.close();
 }
 
-void write_file_4d(int L, double T, int MC_cycles, double *Expectation_values, string filename){
-    float norm = 1.0/MC_cycles;
-    double variance = (Expectation_values[1]*norm -
-            Expectation_values[0]*Expectation_values[0]*norm*norm)/L/L;
-    ofile_global << Expectation_values[0]*norm/L/L << setw(15) << variance;
-}
 
 void write_file_parallellization(int L, double T, int MC_cycles, double *Total_expectation_values){
     // Writes out data to the output file. Function made specific for the parallellization part.
@@ -460,13 +454,9 @@ int main(int nargs, char*args[])
                 }
                 Temp_step = 0.01;
             }
-            //Metropolis_method(L, MC_cycles, T_init, Expectation_values, accepted_config, Energies_array, Mag_moments_array);
+
             Metropolis_parallelization(L, Spin_matrix, temperature, Expectation_values, loop_begin, loop_end);
-            /*
-            for (int cycles = loop_begin; cycles <= loop_end; cycles ++){
-                Metropolis_parallelization(L, temperature, Spin_matrix, Expectation_values);
-            }
-            */
+
             for (int i = 0; i<5; i++){
                 // Merges all values from the different nodes
                 MPI_Reduce(&Expectation_values[i], &Total_expectation_values[i], 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
