@@ -54,21 +54,18 @@ All relevant files can be found in this GitHub page:
 \section{Method} \label{section:methods}
 \subsection{The Ising model}
 The Ising model is a mathematical model for magnetic systems in statistical mechanics. We will in this project consider phase transitions at finite temperatures. The energy, for a specific microstate $i$, is expressed as
-\begin{align}
+\begin{align*}
 E_i = -J \displaystyle \sum^N_{< kl >}s_ks_l - \mathcal{B}\sum^N_k s_k
-\label{eq:Energy_eq}
-\end{align}
+\end{align*}
 With the spins $s_k$ which can take values $s_k = \pm 1$. $N$ is the total number of spins in the system and $J$ is a coupling constant, which we will assume to be $J>0$. The symbol $< kl >$ indicates that we only sum over the nearest neighbouring spin. That is, we only the spin $s_k$ with the closest spin $s_l$. $\mathcal{B}$ is an external magnetic field that is interacting with the magnetic moment between neighbouring spins. For simplicity of this project, we will set $\mathcal{B} = 0$.\\\\
 We also have the magnetization (or magnetic moment) defined as
-\begin{align}
+\begin{align*}
 \mathcal{M} = \displaystyle \sum^N_{j=1} s_j
-\label{eq:Magnetization}
-\end{align}
+\end{align*}
 What we are interested in is the expectation values of the energy $\langle E \rangle$ and the magnetization $\langle \mathcal{M} \rangle$. In order to do that, we will need a probability distribution
-\begin{align}
+\begin{align*}
 P_i(\beta) = \frac{e^{-\beta E_i}}{Z}
-\label{eq:Probability_dist}
-\end{align}
+\end{align*}
 where $\beta = 1/k_bT$, the inverse temperature with $k_b$ as the Boltzmann constant. The partition function $Z$ is given as
 \begin{align}
 Z = \displaystyle \sum_{i=1}^M e^{-\beta E_i}
@@ -241,7 +238,7 @@ The standard deviation of the energy then becomes
 Dividing by $k_B T^2$ gives us the specific heat $C_V$
 \begin{align}
 C_V = \frac{1}{k_BT^2} \left( \langle E^2 \rangle
-- \langle E \rangle^2 \right) = \frac{64J^2}{k_B T} \frac{(1+3\cosh(8\beta J))}{(\cosh(8\beta J) + 3)^2}
+- \langle E \rangle^2 \right) = \frac{64J^2}{k_B T^2} \frac{(1+3\cosh(8\beta J))}{(\cosh(8\beta J) + 3)^2}
 \label{eq:heat_capacity}
 \end{align}
 We can do similar calculations to obtain the mean magnetization (or the mean absolute value of the magnetic moment), which then gives us
