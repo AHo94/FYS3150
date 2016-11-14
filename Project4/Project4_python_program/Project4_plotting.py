@@ -90,33 +90,7 @@ class Plotter():
 			self.E_values_T1[j] = float(data_E1[j+1][0])
 			self.E_values_T24[j] = float(data_E2[j+1][0])
 
-	def read_data_parallellization(self, filename_open):
-		filename = open(os.path.join(file_directory, filename_open), 'r')
-		i = 0
-		data = []
-		for line in filename:
-			if i != 0:
-				data_set = line.split()
-				data.append(data_set)
-			i += 1
-		filename.close()
-		N = len(data)-1
-		self.L = int(data[0][2])
-		self.MC_cycles = int(data[0][0])
-		self.T = np.zeros(N)
-		self.E_expectation = np.zeros(N)
-		self.M_abs_expectation = np.zeros(N)
-		self.C_v = np.zeros(N)
-		self.Chi = np.zeros(N)
-
-		for j in range(0,N):
-			self.T[j] = float(data[j][1])
-			self.E_expectation[j] = float(data[j][3])
-			self.M_abs_expectation[j] = float(data[j][4])
-			self.C_v[j] = float(data[j][5])
-			self.Chi[j] = float(data[j][6])
-
-	def read_data_parallelization(self, fileL40, fileL60, fileL100, fileL140):
+	def read_data_parallellization(self, fileL40, fileL60, fileL100, fileL140):
 		""" Function specifically made to read data for the parallelization part """
 		filename = open(os.path.join(file_directory, fileL40), 'r')
 		i = 0
@@ -409,7 +383,7 @@ class Plotter():
 			plt.show()
 
 	def plot_parallellization(self):
-		self.read_data_parallelization("4e_data_L40.txt","4e_data_L100.txt","4e_data_L100.txt","4e_data_L140.txt")
+		self.read_data_parallellization("4e_data_L40.txt","4e_data_L100.txt","4e_data_L100.txt","4e_data_L140.txt")
 		fig1 = plt.figure()
 		plt.plot(self.T_parallell, self.E_L40)
 		plt.hold("on")
