@@ -116,6 +116,90 @@ class Plotter():
 			self.C_v[j] = float(data[j][5])
 			self.Chi[j] = float(data[j][6])
 
+	def read_data_parallelization(self, fileL40, fileL60, fileL100, fileL140):
+		""" Function specifically made to read data for the parallelization part """
+		filename = open(os.path.join(file_directory, fileL40), 'r')
+		i = 0
+		dataL40 = []
+		for line in filename:
+			if i != 0:
+				data_set = line.split()
+				dataL40.append(data_set)
+			i += 1
+		filename.close()
+		filename = open(os.path.join(file_directory, fileL60), 'r')
+		i = 0
+		dataL60 = []
+		for line in filename:
+			if i != 0:
+				data_set = line.split()
+				data60.append(data_set)
+			i += 1
+		filename.close()
+		filename = open(os.path.join(file_directory, fileL100), 'r')
+		i = 0
+		dataL100 = []
+		for line in filename:
+			if i != 0:
+				data_set = line.split()
+				data100.append(data_set)
+			i += 1
+		filename.close()
+		filename = open(os.path.join(file_directory, fileL140), 'r')
+		i = 0
+		dataL140 = []
+		for line in filename:
+			if i != 0:
+				data_set = line.split()
+				data140.append(data_set)
+			i += 1
+		filename.close()
+
+		N = len(dataL40)-1
+		MC_max = int(dataL40[0][0])
+		self.T_parallell = np.zeros(N)
+
+		self.E_L40 = np.zeros(N)
+		self.E_L60 = np.zeros(N)
+		self.E_L100 = np.zeros(N)
+		self.E_L140 = np.zeros(N)
+
+		self.M_L40 = np.zeros(N)
+		self.M_L60 = np.zeros(N)
+		self.M_L100 = np.zeros(N)
+		self.M_L140 = np.zeros(N)
+
+		self.C_vL40 = np.zeros(N)
+		self.C_vL60 = np.zeros(N)
+		self.C_vL100 = np.zeros(N)
+		self.C_vL140 = np.zeros(N)
+
+		self.ChiL40 = np.zeros(N)
+		self.ChiL60 = np.zeros(N)
+		self.ChiL100 = np.zeros(N)
+		self.ChiL140 = np.zeros(N)
+		for j in range(0, N):
+			self.T_parallell[j] = float(dataE40[j][1]) 
+
+			self.E_L40[j] = float(dataL40[j][3])
+			self.E_L60[j] = float(dataL60[j][3])
+			self.E_L100[j] = float(dataL100[j][3])
+			self.E_L140[j] = float(dataL140[j][3])
+
+			self.M_L40[j] = float(dataL40[j][4])
+			self.M_L60[j] = float(dataL60[j][4])
+			self.M_L100[j] = float(dataL100[j][4])
+			self.M_L140[j] = float(dataL140[j][4])
+
+			self.C_VL40[j] = float(dataL40[j][5])
+			self.C_VL60[j] = float(dataL60[j][5])
+			self.C_VL100[j] = float(dataL100[j][5])
+			self.C_VL140[j] = float(dataL140[j][5])
+
+			self.ChiL40[j] = float(self.dataE40[j][6])
+			self.ChiL60[j] = float(self.dataE60[j][6])
+			self.ChiL100[j] = float(self.dataE100[j][6])
+			self.ChiL140[j] = float(self.dataE140[j][6])
 	def plot_state(self):
 		""" Function that plots all plots in task 4c """
 		# Plots the expecation values for T = 1
@@ -234,7 +318,7 @@ class Plotter():
 		plt.xlabel('Energies')
 		plt.ylabel('Number of times energy is calculated')
 		plt.title('Probability distribution of the energy, for $T=2.4$')
-		
+
 		print 'Computed variance = ', self.E_variance_T1, ', for T = 1.0'
 		print 'Computed variance = ', self.E_variance_T24, ', for T = 2.4'
 		print 'Numpy variance = ', np.var(self.E_values_T1), ',for T = 1.0'
@@ -248,7 +332,7 @@ class Plotter():
 			plt.show()
 
 	def plot_state_logarithmic(self):
-		# Plots the expecation values for T = 1
+		""" Plots the stability of E and M, with logarithmic x axis """
 		self.read_data_4c("E_expect_T1.00.txt", "M_expect_T1.00.txt", 1)
 		fig1 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.E_expectation_1, 'b-')
@@ -286,7 +370,7 @@ class Plotter():
 		plt.ylabel(r'$\langle  E \rangle$')
 		plt.title('Plot of the energies as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Initial state, all spins up' \
 							 %(self.T1, self.MC_max))
-		fig2 = plt.figure()
+		fig6 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.M_expectation_1, 'r-')
 		plt.xlabel('$\log(N_{MC})$')
 		plt.ylabel(r'$\langle  |M| \rangle$')
@@ -295,46 +379,45 @@ class Plotter():
 
 		# Plots the expecation values for T = 2.4, now with all states pointing up
 		self.read_data_4c("E_expect_AllUpState_T2.40.txt", "M_expect_AllUpState_T2.40.txt", 2)
-		fig3 = plt.figure()
+		fig7 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.E_expectation_2, 'b-')
 		plt.xlabel('$\log(N_{MC})$')
 		plt.ylabel(r'$\langle  E \rangle$')
 		plt.title('Plot of the energies as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Initial state, all spins up'\
 							 %(self.T2, self.MC_max))
-		fig4 = plt.figure()
+		fig8 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.M_expectation_2, 'r-')
 		plt.xlabel('$\log(N_{MC})$')
 		plt.ylabel(r'$\langle  |M| \rangle$')
 		plt.title('Plot of magnetization as a function of MC Cycles. T = %.2f, $N_{mc}$ = %.g. \n Initial state, all spins up'\
 							 %(self.T2, self.MC_max))
 
-		# Plots the accepted configurations as a function of MC cycles
-		fig5 = plt.figure()
-		plt.semilogy(self.MC_cycles, self.E_counter_1, 'b-')
-		plt.hold("on")
-		plt.semilogy(self.MC_cycles, self.E_counter_2, 'r-')
-		plt.title('Number of accepted configurations as a function of Monte Carlo cycles')
-		plt.xlabel('$N_{MC}$')
-		plt.ylabel('Accepted spin flips')
-		plt.legend(['T=1.0','T=2.40'])
-
-		# Plots accepted configurations as a function of temperature
-		fig6 = plt.figure()
-		plt.semilogy(np.array([self.T1, self.T2]), np.array([self.E_counter_1[-1], self.E_counter_2[-1]]))
-		plt.xlabel('Temperature - T')
-		plt.ylabel('Accepted spin flips - Logscale')
-		plt.title('Number of accepted spin configurations as a function of temperature')
 		if self.savefile == True:
-			fig1.savefig('../Plots/Energy_stability_T1.pdf')
-			fig2.savefig('../Plots/Magnetization_stability_T1.pdf')
-			fig3.savefig('../Plots/Energy_stability_T24.pdf')
-			fig4.savefig('../Plots/Magnetization_stability_T24.pdf')
-			fig5.savefig('../Plots/Accepted_configurations_wrt_MC_cycles.pdf')
-			fig6.savefig('../Plots/Accepted_configs_wrt_temp.pdf')
+			fig1.savefig('../Plots/Energy_stability_logarithmic_T1.pdf')
+			fig2.savefig('../Plots/Magnetization_stability_logarithmic_T1.pdf')
+			fig3.savefig('../Plots/Energy_stability_logarithmic_T24.pdf')
+			fig4.savefig('../Plots/Magnetization_stability_logarithmic_T24.pdf')
+
+			fig5.savefig('../Plots/Energy_stability_UpInitSpin_logarithmic_T1.pdf')
+			fig6.savefig('../Plots/Magnetization_stability_UpInitSpin_logarithmic_T1.pdf')
+			fig7.savefig('../Plots/Energy_stability_UpInitSpin_logarithmic_T24.pdf')
+			fig8.savefig('../Plots/Magnetization_stability_UpInitSpin_logarithmic_T24.pdf')
+			
 		else:
 			plt.show()
 
 	def plot_parallellization(self):
+		self.read_data_parallelization("4e_data_L40.txt","4e_data_L60.txt","4e_data_L100.txt","4e_data_L140.txt")
+		fig1 = plt.figure()
+		plt.plot(self.T_parallell, self.E_L40)
+		plt.hold("on")
+		plt.plot(self.T_parallell, self.E_L60)
+		plt.plot(self.T_parallell, self.E_L100)
+		plt.plot(self.T_parallell, self.E_L140)
+		plt.xlabel('$T$')
+		plt.ylabel(r'$\langle E \rangle$')
+		plt.title(r'Plot of $\langle E \rangle$ as a function of $T$. $N_{mc} = %.g$' %(self.MC_max))
+		"""
 		self.read_data_parallellization("4e_data_L20.txt")
 		fig1 = plt.figure()
 		plt.plot(self.T, self.E_expectation)
@@ -359,7 +442,7 @@ class Plotter():
 		plt.xlabel('Temperature - $T$')
 		plt.ylabel(r'Suceptibility - $\chi$')
 		plt.title('Plot of suceptibility as a function of $T$, $N_{mc}$ = %.g' %(self.MC_cycles))
-
+		"""
 		if self.savefile == True:
 			fig1.savefig('../Plots/Energy_parallellization.pdf')
 			fig2.savefig('../Plots/Magnetization_parallellization.pdf')
@@ -369,7 +452,7 @@ class Plotter():
 			plt.show()
 
 solver = Plotter(True)
-#solver.plot_state()
-solver.plot_probability()
-#solver.plot_state_logarithmic()
+solver.plot_state()
+#solver.plot_probability()
+solver.plot_state_logarithmic()
 #solver.plot_parallellization()
