@@ -129,20 +129,22 @@ class Plotter():
 		filename.close()
 		filename = open(os.path.join(file_directory, fileL60), 'r')
 		i = 0
+		"""
 		dataL60 = []
 		for line in filename:
 			if i != 0:
 				data_set = line.split()
-				data60.append(data_set)
+				dataL60.append(data_set)
 			i += 1
 		filename.close()
 		filename = open(os.path.join(file_directory, fileL100), 'r')
 		i = 0
+		"""
 		dataL100 = []
 		for line in filename:
 			if i != 0:
 				data_set = line.split()
-				data100.append(data_set)
+				dataL100.append(data_set)
 			i += 1
 		filename.close()
 		filename = open(os.path.join(file_directory, fileL140), 'r')
@@ -151,55 +153,55 @@ class Plotter():
 		for line in filename:
 			if i != 0:
 				data_set = line.split()
-				data140.append(data_set)
+				dataL140.append(data_set)
 			i += 1
 		filename.close()
 
 		N = len(dataL40)-1
-		MC_max = int(dataL40[0][0])
+		self.MC_max_parallell = int(dataL40[0][0])
 		self.T_parallell = np.zeros(N)
 
 		self.E_L40 = np.zeros(N)
-		self.E_L60 = np.zeros(N)
+		#self.E_L60 = np.zeros(N)
 		self.E_L100 = np.zeros(N)
 		self.E_L140 = np.zeros(N)
 
 		self.M_L40 = np.zeros(N)
-		self.M_L60 = np.zeros(N)
+		#self.M_L60 = np.zeros(N)
 		self.M_L100 = np.zeros(N)
 		self.M_L140 = np.zeros(N)
 
 		self.C_vL40 = np.zeros(N)
-		self.C_vL60 = np.zeros(N)
+		#self.C_vL60 = np.zeros(N)
 		self.C_vL100 = np.zeros(N)
 		self.C_vL140 = np.zeros(N)
 
 		self.ChiL40 = np.zeros(N)
-		self.ChiL60 = np.zeros(N)
+		#self.ChiL60 = np.zeros(N)
 		self.ChiL100 = np.zeros(N)
 		self.ChiL140 = np.zeros(N)
 		for j in range(0, N):
-			self.T_parallell[j] = float(dataE40[j][1]) 
+			self.T_parallell[j] = float(dataL40[j][1]) 
 
 			self.E_L40[j] = float(dataL40[j][3])
-			self.E_L60[j] = float(dataL60[j][3])
+			#self.E_L60[j] = float(dataL60[j][3])
 			self.E_L100[j] = float(dataL100[j][3])
 			self.E_L140[j] = float(dataL140[j][3])
 
 			self.M_L40[j] = float(dataL40[j][4])
-			self.M_L60[j] = float(dataL60[j][4])
+			#self.M_L60[j] = float(dataL60[j][4])
 			self.M_L100[j] = float(dataL100[j][4])
 			self.M_L140[j] = float(dataL140[j][4])
 
-			self.C_VL40[j] = float(dataL40[j][5])
-			self.C_VL60[j] = float(dataL60[j][5])
-			self.C_VL100[j] = float(dataL100[j][5])
-			self.C_VL140[j] = float(dataL140[j][5])
+			self.C_vL40[j] = float(dataL40[j][5])
+			#self.C_vL60[j] = float(dataL60[j][5])
+			self.C_vL100[j] = float(dataL100[j][5])
+			self.C_vL140[j] = float(dataL140[j][5])
 
-			self.ChiL40[j] = float(self.dataE40[j][6])
-			self.ChiL60[j] = float(self.dataE60[j][6])
-			self.ChiL100[j] = float(self.dataE100[j][6])
-			self.ChiL140[j] = float(self.dataE140[j][6])
+			self.ChiL40[j] = float(dataL40[j][6])
+			#self.ChiL60[j] = float(dataL60[j][6])
+			self.ChiL100[j] = float(dataL100[j][6])
+			self.ChiL140[j] = float(dataL140[j][6])
 	def plot_state(self):
 		""" Function that plots all plots in task 4c """
 		# Plots the expecation values for T = 1
@@ -407,42 +409,52 @@ class Plotter():
 			plt.show()
 
 	def plot_parallellization(self):
-		self.read_data_parallelization("4e_data_L40.txt","4e_data_L60.txt","4e_data_L100.txt","4e_data_L140.txt")
+		self.read_data_parallelization("4e_data_L40.txt","4e_data_L100.txt","4e_data_L100.txt","4e_data_L140.txt")
 		fig1 = plt.figure()
 		plt.plot(self.T_parallell, self.E_L40)
 		plt.hold("on")
-		plt.plot(self.T_parallell, self.E_L60)
+		#plt.plot(self.T_parallell, self.E_L60)
 		plt.plot(self.T_parallell, self.E_L100)
 		plt.plot(self.T_parallell, self.E_L140)
 		plt.xlabel('$T$')
 		plt.ylabel(r'$\langle E \rangle$')
-		plt.title(r'Plot of $\langle E \rangle$ as a function of $T$. $N_{mc} = %.g$' %(self.MC_max))
-		"""
-		self.read_data_parallellization("4e_data_L20.txt")
-		fig1 = plt.figure()
-		plt.plot(self.T, self.E_expectation)
-		plt.xlabel('Temperature - $T$')
-		plt.ylabel('Energy - $<E>$')
-		plt.title('Plot of energy as a function of $T$, $N_{mc}$ = %.g' %(self.MC_cycles))
-		# Plots for Mean magnetization
+		plt.title(r'Plot of $\langle E \rangle$ as a function of $T$. $N_{mc} = %.g$' %(self.MC_max_parallell))
+		plt.legend(['$L=40$','$L=60$','$L=100$','$L=140$'])
+		
 		fig2 = plt.figure()
-		plt.plot(self.T, self.M_abs_expectation)
-		plt.xlabel('Temperature - $T$')
-		plt.ylabel('Mean magnetization - $<|M|>$')
-		plt.title('Plot of mean magnetization as a function of $T$, $N_{mc}$ = %.g' %(self.MC_cycles))
-		# Plots for Heat capacity
+		plt.plot(self.T_parallell, self.M_L40)
+		plt.hold("on")
+		#plt.plot(self.T_parallell, self.M_L60)
+		plt.plot(self.T_parallell, self.M_L100)
+		plt.plot(self.T_parallell, self.M_L140)
+		plt.xlabel('$T$')
+		plt.ylabel(r'$\langle |M| \rangle$')
+		plt.title(r'Plot of $\langle |M| \rangle$ as a function of $T$. $N_{mc} = %.g$' %(self.MC_max_parallell))
+		plt.legend(['$L=40$','$L=60$','$L=100$','$L=140$'])
+		
 		fig3 = plt.figure()
-		plt.plot(self.T, self.C_v)
-		plt.xlabel('Temperature - $T$')
-		plt.ylabel('Heat capacity - $C_v$')
-		plt.title('Plot of heat capacity as a function of $T$, $N_{mc}$ = %.g' %(self.MC_cycles))
-		# Plots for suceptibility		
+		plt.plot(self.T_parallell, self.C_vL40)
+		plt.hold("on")
+		#plt.plot(self.T_parallell, self.C_vL60)
+		plt.plot(self.T_parallell, self.C_vL100)
+		plt.plot(self.T_parallell, self.C_vL140)
+		plt.xlabel('$T$')
+		plt.ylabel(r'$C_V$')
+		plt.title(r'Plot of $C_V$ as a function of $T$. $N_{mc} = %.g$' %(self.MC_max_parallell))
+		plt.legend(['$L=40$','$L=60$','$L=100$','$L=140$'])
+		
 		fig4 = plt.figure()
-		plt.plot(self.T, self.Chi)
-		plt.xlabel('Temperature - $T$')
-		plt.ylabel(r'Suceptibility - $\chi$')
-		plt.title('Plot of suceptibility as a function of $T$, $N_{mc}$ = %.g' %(self.MC_cycles))
-		"""
+		plt.plot(self.T_parallell, self.ChiL40)
+		plt.hold("on")
+		#plt.plot(self.T_parallell, self.ChiL60)
+		plt.plot(self.T_parallell, self.ChiL100)
+		plt.plot(self.T_parallell, self.ChiL140)
+		plt.xlabel('$T$')
+		plt.ylabel(r'$\chi$')
+		plt.title(r'Plot of $\chi$ as a function of $T$. $N_{mc} = %.g$' %(self.MC_max_parallell))
+		plt.legend(['$L=40$','$L=60$','$L=100$','$L=140$'])
+		
+		
 		if self.savefile == True:
 			fig1.savefig('../Plots/Energy_parallellization.pdf')
 			fig2.savefig('../Plots/Magnetization_parallellization.pdf')
@@ -451,8 +463,8 @@ class Plotter():
 		else:
 			plt.show()
 
-solver = Plotter(True)
-solver.plot_state()
+solver = Plotter(False)
+#solver.plot_state()
 #solver.plot_probability()
-solver.plot_state_logarithmic()
-#solver.plot_parallellization()
+#solver.plot_state_logarithmic()
+solver.plot_parallellization()
