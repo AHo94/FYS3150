@@ -103,7 +103,6 @@ class Plotter():
 		filename.close()
 		filename = open(os.path.join(file_directory, fileL60), 'r')
 		i = 0
-		"""
 		dataL60 = []
 		for line in filename:
 			if i != 0:
@@ -113,7 +112,6 @@ class Plotter():
 		filename.close()
 		filename = open(os.path.join(file_directory, fileL100), 'r')
 		i = 0
-		"""
 		dataL100 = []
 		for line in filename:
 			if i != 0:
@@ -136,44 +134,44 @@ class Plotter():
 		self.T_parallell = np.zeros(N)
 
 		self.E_L40 = np.zeros(N)
-		#self.E_L60 = np.zeros(N)
+		self.E_L60 = np.zeros(N)
 		self.E_L100 = np.zeros(N)
 		self.E_L140 = np.zeros(N)
 
 		self.M_L40 = np.zeros(N)
-		#self.M_L60 = np.zeros(N)
+		self.M_L60 = np.zeros(N)
 		self.M_L100 = np.zeros(N)
 		self.M_L140 = np.zeros(N)
 
 		self.C_vL40 = np.zeros(N)
-		#self.C_vL60 = np.zeros(N)
+		self.C_vL60 = np.zeros(N)
 		self.C_vL100 = np.zeros(N)
 		self.C_vL140 = np.zeros(N)
 
 		self.ChiL40 = np.zeros(N)
-		#self.ChiL60 = np.zeros(N)
+		self.ChiL60 = np.zeros(N)
 		self.ChiL100 = np.zeros(N)
 		self.ChiL140 = np.zeros(N)
 		for j in range(0, N):
 			self.T_parallell[j] = float(dataL40[j][1]) 
 
 			self.E_L40[j] = float(dataL40[j][3])
-			#self.E_L60[j] = float(dataL60[j][3])
+			self.E_L60[j] = float(dataL60[j][3])
 			self.E_L100[j] = float(dataL100[j][3])
 			self.E_L140[j] = float(dataL140[j][3])
 
 			self.M_L40[j] = float(dataL40[j][4])
-			#self.M_L60[j] = float(dataL60[j][4])
+			self.M_L60[j] = float(dataL60[j][4])
 			self.M_L100[j] = float(dataL100[j][4])
 			self.M_L140[j] = float(dataL140[j][4])
 
 			self.C_vL40[j] = float(dataL40[j][5])
-			#self.C_vL60[j] = float(dataL60[j][5])
+			self.C_vL60[j] = float(dataL60[j][5])
 			self.C_vL100[j] = float(dataL100[j][5])
 			self.C_vL140[j] = float(dataL140[j][5])
 
 			self.ChiL40[j] = float(dataL40[j][6])
-			#self.ChiL60[j] = float(dataL60[j][6])
+			self.ChiL60[j] = float(dataL60[j][6])
 			self.ChiL100[j] = float(dataL100[j][6])
 			self.ChiL140[j] = float(dataL140[j][6])
 	def plot_state(self):
@@ -383,11 +381,11 @@ class Plotter():
 			plt.show()
 
 	def plot_parallellization(self):
-		self.read_data_parallellization("4e_data_L40.txt","4e_data_L100.txt","4e_data_L100.txt","4e_data_L140.txt")
+		self.read_data_parallellization("4e_data_L40.txt","4e_data_L60.txt","4e_data_L100.txt","4e_data_L140.txt")
 		fig1 = plt.figure()
 		plt.plot(self.T_parallell, self.E_L40)
 		plt.hold("on")
-		#plt.plot(self.T_parallell, self.E_L60)
+		plt.plot(self.T_parallell, self.E_L60)
 		plt.plot(self.T_parallell, self.E_L100)
 		plt.plot(self.T_parallell, self.E_L140)
 		plt.xlabel('$T$')
@@ -398,7 +396,7 @@ class Plotter():
 		fig2 = plt.figure()
 		plt.plot(self.T_parallell, self.M_L40)
 		plt.hold("on")
-		#plt.plot(self.T_parallell, self.M_L60)
+		plt.plot(self.T_parallell, self.M_L60)
 		plt.plot(self.T_parallell, self.M_L100)
 		plt.plot(self.T_parallell, self.M_L140)
 		plt.xlabel('$T$')
@@ -409,7 +407,7 @@ class Plotter():
 		fig3 = plt.figure()
 		plt.plot(self.T_parallell, self.C_vL40)
 		plt.hold("on")
-		#plt.plot(self.T_parallell, self.C_vL60)
+		plt.plot(self.T_parallell, self.C_vL60)
 		plt.plot(self.T_parallell, self.C_vL100)
 		plt.plot(self.T_parallell, self.C_vL140)
 		plt.xlabel('$T$')
@@ -420,7 +418,7 @@ class Plotter():
 		fig4 = plt.figure()
 		plt.plot(self.T_parallell, self.ChiL40)
 		plt.hold("on")
-		#plt.plot(self.T_parallell, self.ChiL60)
+		plt.plot(self.T_parallell, self.ChiL60)
 		plt.plot(self.T_parallell, self.ChiL100)
 		plt.plot(self.T_parallell, self.ChiL140)
 		plt.xlabel('$T$')
