@@ -34,7 +34,7 @@ moredelim=**[is][\color{blue}]{@}{@}
 \begin{document}
 \maketitle
 \begin{abstract}
-
+We will take a look at the Ising model and implement the Metropolis method to solve the Ising model numerically. With this, we observe the behaviour of the energy and magnetization for different lattice sizes. We also will also study the behaviour of the Ising model near the critical temperature.
 \end{abstract}
 \newpage
 \tableofcontents
@@ -54,21 +54,18 @@ All relevant files can be found in this GitHub page:
 \section{Method} \label{section:methods}
 \subsection{The Ising model}
 The Ising model is a mathematical model for magnetic systems in statistical mechanics. We will in this project consider phase transitions at finite temperatures. The energy, for a specific microstate $i$, is expressed as
-\begin{align}
+\begin{align*}
 E_i = -J \displaystyle \sum^N_{< kl >}s_ks_l - \mathcal{B}\sum^N_k s_k
-\label{eq:Energy_eq}
-\end{align}
+\end{align*}
 With the spins $s_k$ which can take values $s_k = \pm 1$. $N$ is the total number of spins in the system and $J$ is a coupling constant, which we will assume to be $J>0$. The symbol $< kl >$ indicates that we only sum over the nearest neighbouring spin. That is, we only the spin $s_k$ with the closest spin $s_l$. $\mathcal{B}$ is an external magnetic field that is interacting with the magnetic moment between neighbouring spins. For simplicity of this project, we will set $\mathcal{B} = 0$.\\\\
 We also have the magnetization (or magnetic moment) defined as
-\begin{align}
+\begin{align*}
 \mathcal{M} = \displaystyle \sum^N_{j=1} s_j
-\label{eq:Magnetization}
-\end{align}
+\end{align*}
 What we are interested in is the expectation values of the energy $\langle E \rangle$ and the magnetization $\langle \mathcal{M} \rangle$. In order to do that, we will need a probability distribution
-\begin{align}
+\begin{align*}
 P_i(\beta) = \frac{e^{-\beta E_i}}{Z}
-\label{eq:Probability_dist}
-\end{align}
+\end{align*}
 where $\beta = 1/k_bT$, the inverse temperature with $k_b$ as the Boltzmann constant. The partition function $Z$ is given as
 \begin{align}
 Z = \displaystyle \sum_{i=1}^M e^{-\beta E_i}
@@ -92,7 +89,7 @@ C_v &= \frac{\sigma_E^2}{k_BT^2} \\
 
 \subsection{Metropolis algorithm and computation time}
 Monte Carlo methods are widely used to solve problems in different fields in science. The idea behind Monte Carlo simulation is do statistical simulations by drawing a sequence of random numbers In this project, we will use the Monte Carlo method known as the Metropolis algorithm to solve the Ising model numerically.
-The algorithm is as follows: for each Monte Carlo cycle we do:
+The algorithm are as follows: for each Monte Carlo cycle we do:
 \begin{itemize}
 \item \textbf{1)} We start with an arbitrary microstate for the given lattice. We use that microstate to calculate the energy $E_b$
 \item \textbf{2)} Choose a random spin in the microstate and flip it (e.g, from $\uparrow$ to $\downarrow$). Now we use that state to calculate the energy $E_t$.
@@ -110,14 +107,14 @@ We repeat this process $N_{mc}$ times (with $N_{mc}$ as the number of Monte Carl
 \end{align*}
 With $E_i$ is energy sample of the $i$'th Monte Carlo cycle. Similar expressions are used for the magnetic moment and their squares.
 
-Since we are working with probabilities, we will have to run this algorithm many, many times. Take a dice roll as an example. We know that the probability of getting the number 3 is $1/6$. If we were to throw the dice 10 times, the probability of getting 3 will most likely not be $1/6$ any more. One have to throw the die many many times to get the expected probability. The same idea is applied for Monte Carlo methods, as one has to do many samplings to get a reasonable result. This is also why Monte Carlo simulations are known to be greedy simulations.
+Since we are working with probabilities, we will have to run this algorithm many, many times. Take a dice roll as an example. We know that the probability of getting the number 3 is $1/6$. If we were to throw the dice 10 times, the probability of getting 3 will most likely not be $1/6$ any more. One have to throw the die many many times to get the expected probability. The same idea is applied for Monte Carlo methods, as one has to do many samplings to get a reasonable result. This is also why Monte Carlo simulations are known to be greedy simulations (in terms of computation time).
 
 Because of this, doing Monte Carlo simulation will take a lot of computation time. Since we have to change all the possible spins $L$, the number of floating point operations our algorithm will be roughly $L^2$. This is not including other intermediate calculations within the algorithm. When we consider $L = 2$, the computation time will be incredibly short. However, as we increase the total number of spins to $L = 20, 40, 60, 100, 140$, the computation time will increase by roughly $400, 1600, 3600, 10 000$ and $19 600$ times respectively.
 
 Note that this is only for one Monte Carlo cycle. As mentioned earlier, we will have to do many Monte Carlo cycles to obtain a reasonable result. This will increase the computation time to roughly $N_{mc} L^2$. On top of that, we  will have to do these simulations for different temperature $T$, so the simulations will increase yet again to roughly $N_T N_{mc} L^2$, where $N_T$ is the number of temperatures we would like to have. To save time, we will have to do Parallel computation, which will explained in the next part.
 
 \subsection{Parallel computation}
-As mentioned in the previous part, there will be very long computation time once we increase or lattice grid. In order to save time, we will have to use multiple cores, that should be provided in a modern computer or laptop, to do our simulation. The idea is to let the core work in parallel with each other, that is, to split the computation work among different cores, which will speed up our process quite significantly.
+As mentioned in the previous part, there will be very long computation time once we increase the lattice size. In order to save time, we will have to use multiple cores, that should be provided in a modern computer or laptop, to do our simulation. The idea is to let the core work in parallel with each other, that is, to split the computation work among different cores, which will speed up our process quite significantly.
 
 We will use openMPI to do parallel computing. One has to first specify the number of cores the computer has available, and openMPI will automatically split these cores to different nodes (or ranks). Each node will run the program separately, but we can specify certain initial numbers, or intervals, for each node. One can, for example, tell each node to do the computation for different temperatures. One can also specify which interval each nodes computes. For example, node 0 can compute the Monte Carlo cycles in the range $N_{mc} \in [0,100]$, while node 1 computes in the interval $N_{cm} \in [101, 200]$. If we were to do the latter option, we will have to keep in mind that the nodes are working separately, and the computed values will therefore be unknown to each other. We will have to merge the values together to one main node (or the master node), which can be done by using the command \texttt{MPI\_Reduce}.
 
@@ -241,7 +238,7 @@ The standard deviation of the energy then becomes
 Dividing by $k_B T^2$ gives us the specific heat $C_V$
 \begin{align}
 C_V = \frac{1}{k_BT^2} \left( \langle E^2 \rangle
-- \langle E \rangle^2 \right) = \frac{64J^2}{k_B T} \frac{(1+3\cosh(8\beta J))}{(\cosh(8\beta J) + 3)^2}
+- \langle E \rangle^2 \right) = \frac{64J^2}{k_B T^2} \frac{(1+3\cosh(8\beta J))}{(\cosh(8\beta J) + 3)^2}
 \label{eq:heat_capacity}
 \end{align}
 We can do similar calculations to obtain the mean magnetization (or the mean absolute value of the magnetic moment), which then gives us
@@ -299,8 +296,8 @@ There are also various of functions that is used to do all the calculations. Som
 
 Like my previous projects, I will plot all the data, made from the C++ program, in Python. The Python script simply reads the output file, saves the required data and then plots them.
 \section{Results} \label{section:result}
-\subsection*{Comparing with the analytical solution}
-We will now compare the numerical values for $C_v$ and $\chi$ with their respective analytical values given in equation \ref{eq:heat_capacity} and \ref{eq:suceptibility}. For this case, we will use the temperature $T = 1.0$ in units of $kT/J$. Running this in C++, with $10^6$ Monte Carlo cycles we obtain the following output (Note that the numerical values has not been divided by the number of spins):
+\subsection{Comparing with the analytical solution}
+We will now compare the numerical values for $C_v$ and $\chi$ with their respective analytical values given in equation \ref{eq:heat_capacity} and \ref{eq:suceptibility}. For this case, we will use the temperature $T = 1.0$ in units of $kT/J$. The coupling constant $J$ will be set to $J=1$ throughout the whole project. Running this in C++, with $10^6$ Monte Carlo cycles we obtain the following output (Note that the numerical values has not been divided by the number of spins):
 
 \begin{lstlisting}
 @Number of Monte Carlo cycles = 1000000
@@ -350,7 +347,7 @@ Analytic C_v = 0.128329, Numerical C_v = 0.160237
 Analytic Chi = 0.016043, Numerical Chi = 0.0194764@
 \end{lstlisting}
 
-\subsection*{Lattice with L = 20}
+\subsection{Lattice with L = 20}
 We will now increase our lattice to a $20\times 20$ lattice.  For this task, we will have a look at how the mean energy and mean magnetization (absolute value) will reach an equilibrium as a function of the number of Monte Carlo cycles. Monte Carlo cycles will represent the time for this case. This will be done for temperatures at $T=1.0$ and $T = 2.4$. We will also consider two different cases. One where all the spins in the system is randomly set and one where all spins are pointing up.
  
 Let us first consider the case where the initial spin state is set at random. Figure \ref{fig:Energy_stab_log_T1} and \ref{fig:Mag_stab_log_T1} are plots of the expectation values of energy and magnetization respectively, as a function of time (the number of Monte Carlo cycles) for $T = 1.0$. The x axis is plotted in logarithmic scales to better show how the  expectation values stabilizes over time. Non-logarithmic x-axis of these plots can be found in the appendix (also found in my GitHub page). We see that both parameters stabilizes fairly quickly, even though we start in a random spin state.
@@ -433,18 +430,44 @@ In figure \ref{fig:Energy_stab_log_T2_SpinUp}, we can see that the energy oscill
 \end{figure}
 
 \FloatBarrier
-\subsection*{Probability distribution}
+\subsection{Probability distribution}
+Instead of plotting how the energy evolves over time (as we did in the previous part), we can instead plot the probability distribution of the energy for different temperatures. We know that there is a higher probability of the energy being larger when the temperature is larger. Let us try to count how many times an energy has occurred during the computation and then plot a histogram of the result.
+
+A plot of the probability distribution for both $T=1.0$ and $T=2.4$ can be found in \ref{fig:prob_dist_merged}. As we can see, when the temperature is lower, the energy has a higher probability of being in a lower energetic state. When the temperature is larger, the energy can be at a more energetic state. Plots where the histograms are separated can be found in the appendix.
+
+Although, the standard deviation of the histogram, for $T=2.4$, larger than the case of $T=1.0$. What this means is that the system for $T=2.4$ has many more energy states to choose from, and each of them has roughly the same probability. As we mentioned in the previous part, the system can reach many more states when it has a higher temperature, which corresponds to different energies. The result of this also agrees with the results from figure \ref{fig:Energy_stab_log_T2} and \ref{fig:Energy_stab_log_T2_SpinUp}. The energies for those cases were oscillating around $\langle E \rangle = -500$, and the histogram shows the exact same result.
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Probability_distribution_merged.pdf}
+\caption{Probability distribution of the energies for $T=1.0$ (blue) and $T=2.4$ (green).}
+\label{fig:prob_dist_merged}
+\end{figure}
+We are also tasked to compute the variance of the energies. I have computed the standard variance from the C++ program and I will compare it to the variance given from the Python (Numpy) function $numpy.var$. This is done by saving all the energies (that was counted in the C++ program) in an array and then just call the variance function from Numpy. The results are found in the following output:
+\begin{lstlisting}
+@Computed variance =  10.2423 , for T = 1.0
+Computed variance =  3214.74 , for T = 2.4
+Numpy variance =  31.11786096 ,for T = 1.0
+Numpy variance =  3121.04932864 ,for T = 2.4@
+\end{lstlisting}
+The variance for $T=2.4$ from Numpy is very close to the computed value. However, they are not quite in agreement for $T=1.0$. The reasons are unknown to me, and I really doubt that there are any errors in the Numpy function, which means that there has probably been a computation error from my part. As we saw from the histogram, the system with a higher temperature had more energies to choose from. This results to a larger variance, which is exactly what got.
 
 \FloatBarrier
-\subsection*{Phase transitions}
+\subsection{Phase transitions}
 
 \FloatBarrier
 \section{Conclusion} \label{section:conclusion}
+As we saw from the results, the Metropolis algorithm is a solid Monte Carlo algorithm. The computed value, when we compared it to a simple $2\times 2$ lattice, were incredibly close to the analytical one. 
 
+The algorithm also worked very well when we increased the lattice size. We saw that the computed energy were indeed larger for a larger temperature. This agrees with our physical intuition, where a system with a higher temperature is more energetic than a system with lower temperature.
+
+However, the results of the phase transitions and critical temperature may or may not be completely consistent. The system were expected to be very volatile near the critical temperature for a larger lattice, but we used very few Monte Carlo samplings near this region. The results may therefore not be 100\% correct.
+
+Although, one can probably bump the number Monte Carlo cycles for $L=140$ and even reduce the temperature step to obtain a more consistent answer, but that will increase the computation time quite considerably.
 \FloatBarrier
 
 \section{Appendix}
-\begin{figure}[hbtp]
+All the figures given in the appendix can also be found in the GitHub page.
+\begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{Plots/Energy_stability_T1.pdf}
 \caption{Stability of the energy for T = 1.0.}
