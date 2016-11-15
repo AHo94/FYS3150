@@ -237,7 +237,7 @@ void write_file_parallellization(int L, double T, int MC_cycles, double *Total_e
     double norm = 1.0/MC_cycles;
     double E_expect = Total_expectation_values[0]*norm;
     double E_expect_2 = Total_expectation_values[1]*norm;
-    double M_expect_2 = Total_expectation_values[2]*norm;
+    double M_expect_2 = Total_expectation_values[3]*norm;
     double M_abs_expect = Total_expectation_values[4]*norm;
 
     double E_variance = E_expect_2 - E_expect*E_expect;
@@ -299,8 +299,6 @@ int main(int nargs, char*args[])
 
         cout << "E = " << Expectation_values[0]/MC_cycles/L/L << endl;
         cout << "M = " << Expectation_values[4]/MC_cycles/L/L << endl;
-
-        return 0;
 
         cout << "\n" << "Running multiple times, using MC_cycles = "<< MC_cycles << endl;
         for (int i=0; i<=5; i++)
@@ -386,9 +384,9 @@ int main(int nargs, char*args[])
         // Reads L and MC cycles from command line and sets up temperature limits.
         L = atoi(args[1]);
         MC_cycles = atoi(args[2]);
-        double T_init = 2.0;
-        double T_final = 2.301;
-        double Temp_step = 0.04;
+        double T_init = 2.1;
+        double T_final = 2.35;
+        double Temp_step = 0.05;
 
         // Initialize filename to fit the number of spins L
         string filename = "../build-Project4_cpp_program-Desktop_Qt_5_7_0_GCC_64bit-Debug/4e_data_L";
@@ -454,6 +452,13 @@ int main(int nargs, char*args[])
                 }
                 Temp_step = 0.02;
             }
+            if (fabs(temperature - 2.3) <= 1e-7){
+                // Changes back the temperature step
+                if (my_rank == 0){
+                    cout << "Changing temperature step length back to it's original value" << endl;
+                }
+                Temp_step = 0.05;
+            }
 
             Metropolis_parallelization(L, Spin_matrix, temperature, Expectation_values, loop_begin, loop_end);
 
@@ -480,7 +485,7 @@ int main(int nargs, char*args[])
 /*
 SELF NOTE:
 Compile with
-mpic++ -std=c++11 ./main.x main.cpp
+mpic++ -std=c++11 main.x main.cpp
 Run with
 mpiexec -n 4 ./main.x (arguments)
 Example
