@@ -129,7 +129,7 @@ class Plotter():
 			i += 1
 		filename.close()
 
-		N = len(dataL40)-1
+		N = len(dataL40)
 		self.MC_max_parallell = int(dataL40[0][0])
 		self.T_parallell = np.zeros(N)
 
@@ -174,6 +174,7 @@ class Plotter():
 			self.ChiL60[j] = float(dataL60[j][6])
 			self.ChiL100[j] = float(dataL100[j][6])
 			self.ChiL140[j] = float(dataL140[j][6])
+
 	def plot_state(self):
 		""" Function that plots all plots in task 4c """
 		# Plots the expecation values for T = 1
@@ -384,51 +385,97 @@ class Plotter():
 		self.read_data_parallellization("4e_data_L40.txt","4e_data_L60.txt","4e_data_L100.txt","4e_data_L140.txt")
 		fig1 = plt.figure()
 		ax = plt.subplot(111)
-		line, = ax.plot(self.T_parallell, self.E_L40, label='$L=40$')
+		xvals = np.linspace(2.1, 2.35, 70)
+		# Calculation interpolation of the energy
+		E_interp_L40 = np.interp(xvals, self.T_parallell, self.E_L40)
+		E_interp_L60 = np.interp(xvals, self.T_parallell, self.E_L60)
+		E_interp_L100 = np.interp(xvals, self.T_parallell, self.E_L100)
+		E_interp_L140 = np.interp(xvals, self.T_parallell, self.E_L140)
+
+		line, = ax.plot(self.T_parallell, self.E_L40, 'o', label='$L=40$')
 		plt.hold("on")
-		line, = ax.plot(self.T_parallell, self.E_L60, label='$L=60$')
-		line, = ax.plot(self.T_parallell, self.E_L100, label='$L=100$')
-		line, = ax.plot(self.T_parallell, self.E_L140, label='$L=140$')
+		line, = ax.plot(self.T_parallell, self.E_L60, 'o', label='$L=60$')
+		line, = ax.plot(self.T_parallell, self.E_L100, 'o', label='$L=100$')
+		line, = ax.plot(self.T_parallell, self.E_L140, 'o', label='$L=140$')
+
+		line, = ax.plot(xvals, E_interp_L40, '-x', label='$L=40$')
+		line, = ax.plot(xvals, E_interp_L60, '-x', label='$L=60$')
+		line, = ax.plot(xvals, E_interp_L100, '-x' , label='$L=100$')
+		line, = ax.plot(xvals, E_interp_L140, '-x' , label='$L=140$')
+		
 		plt.xlabel('$T$')
-		plt.ylabel(r'$\langle E \rangle$')
-		plt.title(r'Plot of $\langle E \rangle$ as a function of $T$. $N_{mc} = %.g$' %(self.MC_max_parallell))
+		plt.ylabel(r'$\langle E \rangle/L^2$')
+		plt.title(r'Plot of $\langle E \rangle/L^2$ as a function of $T$. $N_{mc} = %.g$' %(self.MC_max_parallell))
 		ax.legend(loc='upper center', bbox_to_anchor=(0.5,1.00), ncol=2, fancybox=True)
 		
 		fig2 = plt.figure()
 		ax = plt.subplot(111)
-		line, = ax.plot(self.T_parallell, self.M_L40, label='$L=40$')
+		# Calculate interpolation of the magnetization
+		M_interp_L40 = np.interp(xvals, self.T_parallell, self.M_L40)
+		M_interp_L60 = np.interp(xvals, self.T_parallell, self.M_L60)
+		M_interp_L100 = np.interp(xvals, self.T_parallell, self.M_L100)
+		M_interp_L140 = np.interp(xvals, self.T_parallell, self.M_L140)
+
+		line, = ax.plot(self.T_parallell, self.M_L40, 'o', label='$L=40$')
 		plt.hold("on")
-		line, = ax.plot(self.T_parallell, self.M_L60, label='$L=60$')
-		line, = ax.plot(self.T_parallell, self.M_L100, label='$L=100$')
-		line, = ax.plot(self.T_parallell, self.M_L140, label='$L=140$')
+		line, = ax.plot(self.T_parallell, self.M_L60, 'o', label='$L=60$')
+		line, = ax.plot(self.T_parallell, self.M_L100, 'o', label='$L=100$')
+		line, = ax.plot(self.T_parallell, self.M_L140, 'o', label='$L=140$')
+		# Plots interpolation
+		line, = ax.plot(xvals, M_interp_L40, '-x', label='$L=40$')
+		line, = ax.plot(xvals, M_interp_L60, '-x', label='$L=60$')
+		line, = ax.plot(xvals, M_interp_L100, '-x', label='$L=100$')
+		line, = ax.plot(xvals, M_interp_L140, '-x', label='$L=140$')
 		plt.xlabel('$T$')
-		plt.ylabel(r'$\langle |M| \rangle$')
-		plt.title(r'Plot of $\langle |M| \rangle$ as a function of $T$. $N_{mc} = %.g$' %(self.MC_max_parallell))
+		plt.ylabel(r'$\langle |M| \rangle/L^2$')
+		plt.title(r'Plot of $\langle |M| \rangle/L^2$ as a function of $T$. $N_{mc} = %.g$' %(self.MC_max_parallell))
 		ax.legend(loc='upper center', bbox_to_anchor=(0.3,0.2), ncol=2, fancybox=True)
 		
 		fig3 = plt.figure()
 		ax = plt.subplot(111)
-		line, = ax.plot(self.T_parallell, self.C_vL40, label='$L=40$')
+		# Calculate interpolation of the heat capacity
+		C_v_interp_L40 = np.interp(xvals, self.T_parallell, self.C_vL40)
+		C_v_interp_L60 = np.interp(xvals, self.T_parallell, self.C_vL60)
+		C_v_interp_L100 = np.interp(xvals, self.T_parallell, self.C_vL100)
+		C_v_interp_L140 = np.interp(xvals, self.T_parallell, self.C_vL140)
+
+		line, = ax.plot(self.T_parallell, self.C_vL40, 'o', label='$L=40$')
 		plt.hold("on")
-		line, = ax.plot(self.T_parallell, self.C_vL60, label='$L=40$')
-		line, = ax.plot(self.T_parallell, self.C_vL100, label='$L=40$')
-		line, = ax.plot(self.T_parallell, self.C_vL140, label='$L=40$')
+		line, = ax.plot(self.T_parallell, self.C_vL60, 'o', label='$L=60$')
+		line, = ax.plot(self.T_parallell, self.C_vL100, 'o', label='$L=100$')
+		line, = ax.plot(self.T_parallell, self.C_vL140, 'o', label='$L=140$')
+		# Plots interpolation
+		line, = ax.plot(xvals, C_v_interp_L40, '-x', label='$L=40$')
+		line, = ax.plot(xvals, C_v_interp_L60, '-x', label='$L=60$')
+		line, = ax.plot(xvals, C_v_interp_L100, '-x', label='$L=100$')
+		line, = ax.plot(xvals, C_v_interp_L140, '-x', label='$L=140$')
 		plt.xlabel('$T$')
-		plt.ylabel(r'$C_V$')
-		plt.title(r'Plot of $C_V$ as a function of $T$. $N_{mc} = %.g$' %(self.MC_max_parallell))
-		ax.legend(loc='upper center', bbox_to_anchor=(0.5,1.00), ncol=2, fancybox=True)
+		plt.ylabel(r'$C_V/L^2$')
+		plt.title(r'Plot of $C_V/L^2$ as a function of $T$. $N_{mc} = %.g$' %(self.MC_max_parallell))
+		ax.legend(loc='upper center', bbox_to_anchor=(0.4,1.00), ncol=2, fancybox=True)
 		
 		fig4 = plt.figure()
 		ax = plt.subplot(111)
-		line, = ax.plot(self.T_parallell, self.ChiL40, label='$L=40$')
+		# Calculate interpolation of the susceptibility
+		Chi_interp_L40 = np.interp(xvals, self.T_parallell, self.ChiL40)
+		Chi_interp_L60 = np.interp(xvals, self.T_parallell, self.ChiL60)
+		Chi_interp_L100 = np.interp(xvals, self.T_parallell, self.ChiL100)
+		Chi_interp_L140 = np.interp(xvals, self.T_parallell, self.ChiL140)
+
+		line, = ax.plot(self.T_parallell, self.ChiL40, 'o', label='$L=40$')
 		plt.hold("on")
-		line, = ax.plot(self.T_parallell, self.ChiL60, label='$L=40$')
-		line, = ax.plot(self.T_parallell, self.ChiL100, label='$L=40$')
-		line, = ax.plot(self.T_parallell, self.ChiL140, label='$L=40$')
+		line, = ax.plot(self.T_parallell, self.ChiL60, 'o', label='$L=60$')
+		line, = ax.plot(self.T_parallell, self.ChiL100, 'o', label='$L=100$')
+		line, = ax.plot(self.T_parallell, self.ChiL140, 'o', label='$L=140$')
+		# Plots interpolation
+		line, = ax.plot(xvals, Chi_interp_L40, '-x', label='$L=40$')
+		line, = ax.plot(xvals, Chi_interp_L60, '-x', label='$L=60$')
+		line, = ax.plot(xvals, Chi_interp_L100, '-x', label='$L=100$')
+		line, = ax.plot(xvals, Chi_interp_L140, '-x', label='$L=140$')
 		plt.xlabel('$T$')
-		plt.ylabel(r'$\chi$')
-		plt.title(r'Plot of $\chi$ as a function of $T$. $N_{mc} = %.g$' %(self.MC_max_parallell))
-		ax.legend(loc='upper center', bbox_to_anchor=(0.5,1.00), ncol=2, fancybox=True)
+		plt.ylabel(r'$\chi/L^2$')
+		plt.title(r'Plot of $\chi/L^2$ as a function of $T$. $N_{mc} = %.g$' %(self.MC_max_parallell))
+		ax.legend(loc='upper center', bbox_to_anchor=(0.4,1.00), ncol=2, fancybox=True)
 		
 		
 		if self.savefile == True:
@@ -440,7 +487,7 @@ class Plotter():
 			plt.show()
 
 ## Comment out the functions to plot what you want
-solver = Plotter(True)
+solver = Plotter(False)
 #solver.plot_state()
 #solver.plot_probability()
 #solver.plot_state_logarithmic()
