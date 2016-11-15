@@ -40,20 +40,17 @@ We will take a look at the Ising model and implement the Metropolis method to so
 \tableofcontents
 \newpage
 \section{Introduction} \label{section:intro}
-In fields like thermal dynamics, one will study the phenomena called a \emph{phase transition}. Not only do we study it, but we experience this phenomena on a day-by-day basis. An example of a phase transition is when water turns to steam when we boil the water. More general, a phase transition is when matter changes it's form, either from gas to liquid, or liquid to solid (and vice versa).
+In fields like thermal dynamics, one will study the phenomena called a \emph{phase transition}. Not only do we study it, but we experience this phenomena on a day-by-day basis. An example of a phase transition is when water turns to steam when we boil the water or when water freezes to ice, when it is very cold outside. More general, a phase transition is when matter changes it's form, either from gas to liquid, or liquid to solid (and vice versa).
 
-We will in this project use a very popular model, the Ising model, to look at the statistical properties of phase transitions analytically. We will first consider a small $2\times 2$ lattice and see how the Metropolis algorithm compares to the analytical solutions for this system. After that, we will see how this system evolves with time as we increase the lattice size. Finally, we will take a look at phase transitions near the critical temperature for very, very large lattices.
+We will in this project use a very popular model, the Ising model, to look at the statistical properties of phase transitions analytically. We will first consider a small $2\times 2$ lattice and see how the Metropolis algorithm compares to the analytical solutions for this system. After that, we will see how this system evolves with time as we increase the lattice size. Finally, we will take a look at the phase transition of a system with a finite magnetic moment to a system with (almost) zero magnetic moment, which will be done for different lattice sizes.
 
-%After that, we will use the Metropolis algorithm to see how well it works with the analytical solution and see how our system evolves with time, when we increase the grid.
 All relevant files can be found in this GitHub page:
 
 \url{https://github.com/AHo94/FYS3150_Projects/tree/master/Project4}
 
-%In fields like thermal dynamics, one will study the phenomena called phase transitions. A phase transition is when matter changes it's form. An example of a phase transition is when water turns into ice, i.e, liquid transitions into solid matter. We will in this project study a very popular model, the Ising model, to simulate phase transitions.
-
 \section{Method} \label{section:methods}
 \subsection{The Ising model}
-The Ising model is a mathematical model for magnetic systems in statistical mechanics. We will in this project consider phase transitions at finite temperatures. The energy, for a specific microstate $i$, is expressed as
+The Ising model, named after Ernst Ising, is a mathematical model for magnetic systems in statistical mechanics. It was originally motivated by the studies of ferromagnets. We will in this project consider phase transitions at finite temperatures. The energy, for a specific microstate $i$, is expressed as
 \begin{align*}
 E_i = -J \displaystyle \sum^N_{< kl >}s_ks_l - \mathcal{B}\sum^N_k s_k
 \end{align*}
@@ -120,7 +117,7 @@ We will use openMPI to do parallel computing. One has to first specify the numbe
 
 The computation time will decrease proportionally with the number of cores we use for the simulation. The computation time will be roughly $(N_TN_{mc}L^2)/N_{c}$, where $N_{c}$ is the number of cores used in the computation. Most computers and laptops, that one can buy from a computer shop, usually contains 4 cores. Using all four of them will reduce the computation time by roughly 4.
 \subsection{Simple 2 $\times$ 2 lattice}
-We will first consider a 2$\times$2 lattice, find the analytical expression for partition function $Z$ and find the corresponding expectation value of energy $E$, mean magnetization $|M|$, specific heat $C_V$ and susceptibility $\xi$ as functions of temperature $T$. We also consider periodic boundary condition for this lattice. Once we have the analytical expressions, we will compare them to the numerical values from the Metropolis algorithm.
+We will first consider a 2$\times$2 lattice, find the analytical expression for partition function $Z$ and find the corresponding expectation value of energy $E$, mean magnetization $|\mathcal{M}|$, specific heat $C_V$ and susceptibility $\xi$ as functions of temperature $T$. We also consider periodic boundary condition for this lattice. Once we have the analytical expressions, we will compare them to the numerical values from the Metropolis algorithm.
 
 For this system, we will assume that every spin has two directions, i.e. our states can be either be in spin up state or spin down state (shorthand notation as $\uparrow$ or $\downarrow$ respectively).
 
@@ -130,7 +127,7 @@ E_i = \displaystyle -J \sum_{<kl>}^Ns_k s_l
 \end{align*} 
 Where $J > 0$ is a coupling constant and $N$ is the total number of spins. The symbol $<kl>$ indicates that we only sum over the neighbours only. The values $s_k = \pm 1$ depends on which state it is in. We let $s_{\downarrow} = -1$ and $s_{\uparrow} = 1$. We also have the magnetic moment is given as
 \begin{align*}
-M_i = \displaystyle \sum_{<k>}^N s_k
+\mathcal{M}_i = \displaystyle \sum_{<k>}^N s_k
 \end{align*}
 Since we have a $2\times2=4$ lattice, and we have two spin directions, then the number of microstate (or configuration) is $2^4 = 16$. What this means is that our we can have 16 different energies, as well as 16 different magnetic moment, for each respective microstate. Table \ref{table:All_microstates} shows all the possible microstates.
 
@@ -168,40 +165,26 @@ E_i = -2J\displaystyle \sum_{s_1 = \pm1} \sum_{s_2 = \pm1} \sum_{s_3 = \pm1} \su
 \end{align}
 Similarly for the magnetic moment we get when we sum over all microstates 
 \begin{align}
-M_i = \displaystyle \sum_{s_1 = \pm1} \sum_{s_2 = \pm1} \sum_{s_3 = \pm1} \sum_{s_4 = \pm1} (s_1 + s_2 + s_3 + s_4)
+\mathcal{M}_i = \displaystyle \sum_{s_1 = \pm1} \sum_{s_2 = \pm1} \sum_{s_3 = \pm1} \sum_{s_4 = \pm1} (s_1 + s_2 + s_3 + s_4)
 \label{eq:Magnetic_moment}
 \end{align}
-Let us now determine both the energies and magnetic moments for all microstates. Using table \ref{table:All_microstates}, we can determine equation (\ref{eq:Energy}) and (\ref{eq:Magnetic_moment}) to their respective microstate. Table \ref{table:All_energies} and \ref{table:All_magnetic_moment} shows the energies and magnetic momenta (using the same combinations in table \ref{table:All_microstates}) respectively.
+Let us now determine both the energies and magnetic moments for all microstates. Using table \ref{table:All_microstates}, we can determine equation (\ref{eq:Energy}) and (\ref{eq:Magnetic_moment}) to their respective microstate. Table \ref{table:All_energies} shows the energies and magnetic moments based on how many spins are up spins. The degeneracy indicates how many times the energy and magnetic moment occurs for the given number of up spins.
 
 \begin{table}
 \begin{center}
-	\begin{tabular}{c c c c}
-	$E_i =$& & &\\
+	\begin{tabular}{|l| l| r| r |}
+	Number of spins up& Degeneracy & Energy & Magnetic moment\\
 	\hline
-	-8J & 0 & 0 & 0\\
-	0 & 8J & 0 & 0\\
-	0 & 8J & 0 & 0\\
-	0 & 0 & 0 & -8J\\
+	4 & 1 & $-8J$ & 4\\
+	3 & 4 & 0 & 2\\
+	2 & 4 & 0 & 0\\
+	2 & 2 & $8J$ & 0\\
+	1 & 4 & 0 & -2\\
+	0 & 1 & $-8J$ & 4 \\
 	\hline
 	\end{tabular}
-\caption{Energies for each respective microstate.}
+\caption{Energies and magnetic moment based on how many spins are pointing up. Degeneracy means how many times the energy or magnetization it occurs.}
 \label{table:All_energies}
-\end{center}
-\end{table}
-
-\begin{table}
-\begin{center}
-	\begin{tabular}{c c c c}
-	$M_i = $& & & \\
-	\hline
-	4 & 2 & 2 & 2\\
-	2 & 0 & 0 & 0\\
-	0 & 0 & 0 & -2\\
-	-2 & -2 & -2 & -4\\
-	\hline
-	\end{tabular}
-\caption{Magnetic moments for each respective microstate.}
-\label{table:All_magnetic_moment}
 \end{center}
 \end{table}
 
@@ -243,19 +226,21 @@ C_V = \frac{1}{k_BT^2} \left( \langle E^2 \rangle
 \end{align}
 We can do similar calculations to obtain the mean magnetization (or the mean absolute value of the magnetic moment), which then gives us
 \begin{align*}
-\langle |M|\rangle &= \frac{1}{Z} \displaystyle \sum_i |M_i| e^{-\beta E_i} = \frac{2(e^{8\beta J} + 2)}{\cosh(8\beta J) + 3} \\
-\langle M^2\rangle &= \frac{1}{Z}\displaystyle \sum_i M_i^2e^{-\beta E_i} = \frac{8(e^{8\beta J} + 1)}{\cosh(8\beta J) + 3}
+\langle |\mathcal{M}|\rangle &= \frac{1}{Z} \displaystyle \sum_i |\mathcal{M}_i| e^{-\beta E_i} = \frac{2(e^{8\beta J} + 2)}{\cosh(8\beta J) + 3} \\
+\langle \mathcal{M}^2\rangle &= \frac{1}{Z}\displaystyle \sum_i \mathcal{M}_i^2e^{-\beta E_i} = \frac{8(e^{8\beta J} + 1)}{\cosh(8\beta J) + 3}
 \end{align*}
 Which we can use to calculate the susceptibility $\chi$
 \begin{align}
-\chi = \frac{1}{k_B T} \left(\langle M^2 \rangle - \langle |M| \rangle^2\right) = \frac{8}{k_B T} \frac{(e^{8\beta J}+ \cosh(8\beta J) + \frac{3}{2}))}{(\cosh(8\beta J) + 3)^2}
+\chi = \frac{1}{k_B T} \left(\langle \mathcal{M}^2 \rangle - \langle |\mathcal{M}| \rangle^2\right) = \frac{8}{k_B T} \frac{(e^{8\beta J}+ \cosh(8\beta J) + \frac{3}{2}))}{(\cosh(8\beta J) + 3)^2}
 \label{eq:suceptibility}
 \end{align} 
 Now that we have the analytical expressions, we will later compare it to the numerical values (for a given temperature) from the Metropolis algorithm.
 \FloatBarrier
 
 \subsection{Studies of phase transition}
-Once we have properly tested the Ising model by using the Metropolis algorithm, we will study the behaviour of the Ising model near the critical temperature $T_C$. 
+Once we have properly tested the Ising model by using the Metropolis algorithm, we will study phase transitions. A phase transition is the transition between solid, liquid or gas states of the matter. An example of this is water boiling to steam, or water freezing to ice. We can study this by studying the behaviour of the Ising model near the critical temperature. We are also interested in the critical temperature for infinitely large lattices.
+
+The system will undergo a phase transition when it reaches the critical temperature $T_C$. Our system will initially start with a finite magnetization. Once the system reaches the critical temperature, and undergoes the phase transition, we will expect that the system will have almost zero magnetization.
 
 Through so-called finite size scaling relations, we can relate the behaviour of finite sized lattices with the results of an infinitely large lattice. The critical temperature then scales as
 \begin{align}
@@ -267,25 +252,27 @@ Where $a$ is a constant, and $\nu$ is defined from
 \xi(T) ~ |T_C - T|^{-\nu}
 \end{align*}
 For our case, we will set $\nu = 1$. This is to compare the exact result of the critical temperature after Lars Onsager, which is.
-\begin{align*}
+\begin{align}
 \frac{kT_C}{J} = \frac{1}{\ln(1 + \sqrt{2})} \approx 2.269
-\end{align*}
+\label{eq:Crit_temp_infty_exact}
+\end{align}
 With $\nu = 1$. First, we will have to find what this constant $a$ is. By taking the difference of equation \ref{eq:crit_temp_scaling} for two different total spins, we have
 \begin{align*}
 aL_i^{-1} - aL_j^{-1} &= [T_C(L_i) - T_C(L=\infty)] - [T_C(L_j) - T_C(L = \infty)] \\
 &= T_C(L_i) - T_C(L_j)\\
-\implies a &= \frac{T_C(L_i) - T_C(L_j)}{L_i^{-1} - L_j^{-1}}
+\implies a(L_i, L_j) &= \frac{T_C(L_i) - T_C(L_j)}{L_i^{-1} - L_j^{-1}}
 \end{align*}
 The critical temperature for an infinitely large lattice, for a given total spin $L_i$, is then
 \begin{align*}
-T_C(L=_i\infty) &= T_C(L_i) - L_i^{-1}\frac{T_C(L_i) - T_C(L_j)}{L_i^{-1} - L_j^{-1}} \\
+T_C(L=\infty) &= T_C(L_i) - L_i^{-1}\frac{T_C(L_i) - T_C(L_j)}{L_i^{-1} - L_j^{-1}} \\
 &= T_C(L_i) - \frac{T_C(L_i) - T_C(L_j)}{1 - \left(\frac{L_i}{L_j} \right)}
 \end{align*}
-Since we have multiple total spins, we will have to sum over all the other total spins, and then average them out. That is
-\begin{align*}
-T_C(L_i=\infty) = \frac{1}{N_L} \displaystyle \sum_j \left( T_C(L_i) - \frac{T_C(L_i) - T_C(L_j)}{1 - \left(\frac{L_i}{L_j} \right)} \right)
-\end{align*}
-Where $N_L$ is the number of all lattice sizes considered. We will for this part let the total spins be $L=40, 60, 100$ and $140$, which means that $N_L = 4$. We will also consider the temperature range $T \in [2.1, 2.35]$.
+We will have to sum over all possible combinations of $L_i$ and $L_j$. For this case, we have to sum the values of $a(40, 60), a(40, 100), a(40,140), a(60,100)$ etc. When we sum over all these combinations, we will need to normalize the number of times we have summed over these $a(L_i, L_j)$'s. The final expression is then
+\begin{align}
+T_C(L = \infty) = \frac{1}{N_a}\displaystyle \sum_i \sum_{j\neq i} \left( T_C(L_i) - \frac{T_C(L_i) - T_C(L_j)}{1 - \left( \frac{L_i}{L_j} \right)} \right)
+\label{eq:Crit_temp_infty}
+\end{align}
+Where $N_a$ is the number of times we have summed over $a(L_i, L_j)$. 
 
 \section{Implementation} \label{section:implement}
 All programming are done in C++ and data will be saved in a text file. The plotting part will be done in Python.
@@ -293,6 +280,8 @@ All programming are done in C++ and data will be saved in a text file. The plott
 The main function in the C++ program is split into two parts by an if test. The if test will see if there is any arguments given in the command line. If there is none, the program will compute the simple lattice model for $L = 2$ and $L = 20$. If the there are arguments in the command line, the program will run the program for large lattices. The program will here do parallel computation, where I have decided to separate the Monte Carlo cycle interval for each node. 
 
 There are also various of functions that is used to do all the calculations. Some of the functions have relatively similar names. One example is the \texttt{write\_file} functions. I have made two (or three, if you include the function that initializes the output file) of these functions. Both creates differently formatted output files, which is done because it will be easier to read the required data for the different tasks. 
+
+When we have to draw random numbers, when doing the Monte Carlo computations, my program have set a seed that depends on the time of the computer. This will ensure that the random numbers will always be different each time we run the program.
 
 Like my previous projects, I will plot all the data, made from the C++ program, in Python. The Python script simply reads the output file, saves the required data and then plots them.
 \section{Results} \label{section:result}
@@ -325,7 +314,7 @@ Analytic Chi = 0.016043, Numerical Chi = 0.0156962
 Analytic C_v = 0.128329, Numerical C_v = 0.124365
 Analytic Chi = 0.016043, Numerical Chi = 0.0159204@
 \end{lstlisting}
-Using $10^5$ Monte Carlo cycles can also give a good numerical result, but it is not as consistent compared to $10^6$ Monte Carlo cycles. What that means is that the difference between the analytical and numerical values (for both $C_v$ and $\chi$) may be larger for a lower number of Monte Carlo cycles. The output below shows an example with $N_{mc} = 10^5$. Notice how, for example, the numerical values of $C_v$ can be as low as $0.112442$ and as high as $0.160237$.
+Using $10^5$ Monte Carlo cycles can also give a good numerical result, but it is not as consistent compared to $10^6$ Monte Carlo cycles. What that means is that the difference between the analytical and numerical values (for both $C_v$ and $\chi$) may be larger for a lower number of Monte Carlo cycles. The output below shows an example with $N_{mc} = 10^5$. Notice how, for example, the numerical values of $C_v$ can be as low as $0.112442$ and as high as $0.160237$. We can therefore safely say that we need roughly $10^6$ Monte Carlo cycles in order to achieve a good agreement with the analytical results.
 \begin{lstlisting}
 @Running multiple times, using MC_cycles = 100000
 Analytic C_v = 0.128329, Numerical C_v = 0.125194
@@ -348,7 +337,7 @@ Analytic Chi = 0.016043, Numerical Chi = 0.0194764@
 \end{lstlisting}
 
 \subsection{Lattice with L = 20}
-We will now increase our lattice to a $20\times 20$ lattice.  For this task, we will have a look at how the mean energy and mean magnetization (absolute value) will reach an equilibrium as a function of the number of Monte Carlo cycles. Monte Carlo cycles will represent the time for this case. This will be done for temperatures at $T=1.0$ and $T = 2.4$. We will also consider two different cases. One where all the spins in the system is randomly set and one where all spins are pointing up.
+We will now increase our lattice to a $20\times 20$ lattice.  For this task, we will have a look at how the mean energy and mean magnetization (absolute value) will reach an equilibrium as a function of the number of Monte Carlo cycles. Monte Carlo cycles will represent the time for this case. This will be done for temperatures at $T=1.0$ and $T = 2.4$. We will also consider two different cases. One where all the spins in the system is randomly set and one where all spins are pointing up. Note, all the plots for this part are not divided by the total number of spins.
  
 Let us first consider the case where the initial spin state is set at random. Figure \ref{fig:Energy_stab_log_T1} and \ref{fig:Mag_stab_log_T1} are plots of the expectation values of energy and magnetization respectively, as a function of time (the number of Monte Carlo cycles) for $T = 1.0$. The x axis is plotted in logarithmic scales to better show how the  expectation values stabilizes over time. Non-logarithmic x-axis of these plots can be found in the appendix (also found in my GitHub page). We see that both parameters stabilizes fairly quickly, even though we start in a random spin state.
 
@@ -365,7 +354,7 @@ Let us first consider the case where the initial spin state is set at random. Fi
 \label{fig:Mag_stab_log_T1}
 \end{figure}
 
-We now increase the temperature to $T = 2.4$. Figure \ref{fig:Energy_stab_log_T2} and \ref{fig:Mag_stab_log_T2} again shows how the energy and magnetization stabilizes respectively. This time, however, there are a lot more fluctuations for both parameters. This is not surprising. When we have a higher temperature, the system can reach a higher energetic state. Because of this, the spins will have the ability to change more (that is, more frequent flips) compared to the lower temperature case. Also note that the energy oscillates around $\langle E \rangle = -500$ instead of $\langle E \rangle = -500$ (for the lower energy case). Again, due to an increase in temperature, the system will therefore be in an excited state, which means it has a larger energy on average.
+We now increase the temperature to $T = 2.4$. Figure \ref{fig:Energy_stab_log_T2} and \ref{fig:Mag_stab_log_T2} again shows how the energy and magnetization stabilizes respectively. This time, however, there are a lot more fluctuations for both parameters. This is not surprising. When we have a higher temperature, the system can reach a higher energetic state. Because of this, the spins will have the ability to change more (that is, more frequent flips) compared to the lower temperature case. Also note that the energy oscillates around $\langle E \rangle = -500$ instead of $\langle E \rangle = -500$ (for the lower energy case). Again, due to an increase in temperature, the system will therefore be in an excited state, which means it has a larger energy on average. We also note that the magnetization has now become smaller due to the increased temperature.
 
 \begin{figure}[H]
 \centering
@@ -450,7 +439,6 @@ Numpy variance =  31.11786096 ,for T = 1.0
 Numpy variance =  3121.04932864 ,for T = 2.4@
 \end{lstlisting}
 The variance for $T=2.4$ from Numpy is very close to the computed value. However, they are not quite in agreement for $T=1.0$. The reasons are unknown to me, and I really doubt that there are any errors in the Numpy function, which means that there has probably been a computation error from my part. As we saw from the histogram, the system with a higher temperature had more energies to choose from. This results to a larger variance, which is exactly what got.
-
 \FloatBarrier
 \subsection{Phase transitions}
 We will now study phase transitions within the Ising model. This can be done by running the Metropolis method for multiple temperature values. In this case, I have decided to choose the temperature range of $T\in [2.1, 2.35]$. The temperature step length will be $\Delta T = 0.05$. However, the interesting effects will happen near $T=2.2$, so I have told my program to switch the temperature step length to $\Delta T = 0.02$ in the interval $T\in[2.2,2.3]$. Grids sizes we consider are $L=40,60,100,140$. I will also use $10^6$ Monte Carlo cycles for every grid sizes.
@@ -461,7 +449,7 @@ Before I show the results, we will have to check if everything works correctly w
 Comparing it with the results, provided by Morten H. Jensen in the following GitHub link: 
 \url{https://github.com/CompPhysics/ComputationalPhysics/blob/master/doc/Programs/ParallelizationMPI/Results/Lattice20}, the values from my case are almost identical. However, the value of $\chi$ is different because Morten used the value of $\langle M \rangle$ instead of $\langle |M| \rangle$. We can, with relatively good confidence, assume that the results for larger lattices should also be correct.
 
-Let us first see how the energy and magnetization evolves. We already know that the energy should be larger (and magnetization smaller) when the temperature increases. The plots of the energy and magnetization (per spin squared), for different grid sizes, can be found in figure \ref{fig:parallell_energy} and \ref{fig:parallell_magnetization} respectively. These results agrees with our physical intuition and the results from our studies of the systems stability (section 4.2). 
+Let us first see how the energy and magnetization evolves. We already know that the energy should be larger (and magnetization smaller) when the temperature increases. The plots of the energy and magnetization (per spin squared), for different grid sizes, can be found in figure \ref{fig:parallell_energy} and \ref{fig:parallell_magnetization} respectively. As we see, the energy increases and magnetization becomes very small as the temperature increases. These results agrees with our physical intuition and the results from our studies of the systems stability (section 4.2).
 \begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{Plots/Energy_parallellization.pdf}\caption{The energy per spin squared as a function of temperature for different grid sizes.}
@@ -491,8 +479,6 @@ In order to study phase transitions, we will have to study how the heat capacity
 \label{fig:parallell_susceptiblity_interpolated}
 \end{figure}
 
-%Before we proceed, I want to point out that the critical temperature, that we simply read from the graph, may not be completely correct. We are using very few temperature points, so the maximum of the heat capacity (or susceptibility) may not be exactly on the point I have calculated. Although, we could try to interpolate the points near the maximum, which will could give a more precise critical temperature. However, due to time constraints, I will just read the off the critical temperature from the plots.
-
 Before we proceed, the maximum of both $C_V$ and $\chi$ will increase as the grid size increases. We should therefore use a lot more Monte Carlo cycles for the larger grids, in order to get a more precise result. However, running it for a larger amount of Monte Carlo would take too much time.
 
 Another thing to keep in mind is that I have used very few temperature points for this task. More temperature points would, of course, give a better results. Again, it would take too much time to compute the data if we were to decrease the temperature step length. However, with our current data, we can interpolate the points near the maximum of $C_V$ and $\chi$. In fact, I have interpolated every point we have, to obtain a better result. This is done by using the Numpy function \texttt{numpy.interp}. Yet another thing to keep in mind is that interpolation may also not give correct answers, so the results may or may not be precise. Non-interpolated plots of $C_V$ and $\chi$ can be found in the appendix.
@@ -501,15 +487,29 @@ Let us finally take a look at how the heat capacity and susceptibility evolves a
 
 First thing we have to note is their odd values for low temperatures. For $L=140$, the susceptibility  starts near $\chi = 160$, which is a very large value. We would expect it to start at a lower value, just like the other grid sizes. The same thing can be said for the heat capacity, which should also have a lower value, in the case of $L=140$. Why this is the case is unknown to me, but it may be some errors within my program.
 
-Even though the values we have weird values for low temperatures, the form of the graphs are reasonable. Both graphs has a peak near the critical temperature
+Even though the values we have weird values for low temperatures, the form of the graphs are reasonable. Both graphs has a peak near the critical temperature, which should indicate that something went right in the program near these temperatures. I will here just look at the graph to determine the maximum of both $C_V$ and $\chi$ and then determine the critical temperatures from that.
+
+I will read off the critical temperature from the plot of the heat capacity. The rough values I get are as follows:
+\begin{align*}
+T_C(L=40) = 2.28874 \\
+T_C(L=60) = 2.28119 \\
+T_C(L=100) = 2.27788 \\
+T_C(L=140) = 2.27788
+\end{align*}
+All in units of $k_bT/J$. I have calculated the critical temperature, as $L\to \infty$ in python. By plugging in the critical temperatures into a list, which is in ascending order corresponding to the total spins $L$, we can sum them over just like the analytical expression in equation \ref{eq:Crit_temp_infty}. We will have to also count how many possible combinations we have, which is counted by the variable \texttt{norm}. Once we have summed over all combinations and normalized, we get the following result:
+\begin{lstlisting}
+@Computed critical temperature for L -> infinity:
+T_C(L = infty) =  2.52889166667@
+\end{lstlisting}
+This is very close to the exact solution given in equation \ref{eq:Crit_temp_infty_exact}. The small difference may be due to the fact that critical temperatures were read off manually from the plots. On top of that, we could have obtained a better result by decreasing the temperature step length as well as increasing the number of Monte Carlo cycles in the calculation.
 
 \FloatBarrier
 \section{Conclusion} \label{section:conclusion}
-As we saw from the results, the Metropolis algorithm is a solid Monte Carlo algorithm. The computed value, when we compared it to a simple $2\times 2$ lattice, were incredibly close to the analytical one. 
+As we saw from the results, the Metropolis algorithm is a solid Monte Carlo algorithm. The computed value, when we compared it to a simple $2\times 2$ lattice, were almost identical to the analytical one. 
 
 The algorithm also worked very well when we increased the lattice size. We saw that the computed energy were indeed larger for a larger temperature. This agrees with our physical intuition, where a system with a higher temperature is more energetic than a system with lower temperature. We can finally see why the Metropolis algorithm is considered one of the top 10 algorithms today.
 
-However, the results of the phase transitions and critical temperature may or may not be completely consistent. The system were expected to be very volatile near the critical temperature for a larger lattice, but we used very few Monte Carlo samplings near this region. The results may therefore not be 100\% correct.
+The results that we obtained when we studied phase transitions were also fairly reasonable. Although, the results for the heat capacity and susceptibility were a little odd for the lower temperatures, as both their values were very large. The critical temperature, when $L\to \infty$ that we computed were also very close to the exact one, but the small error may be due to the fact that the critical  temperatures, for the different lattice sizes, were manually read off the plots.
 
 Although, one can probably increase the number Monte Carlo cycles quite significantly for the larger lattices and even reduce the temperature step to obtain a more precise result, but that will increase the computation time quite considerably. One would have to gain access to a super computer, with many cores, if we wish to do the computation within a reasonable time frame.
 \FloatBarrier
