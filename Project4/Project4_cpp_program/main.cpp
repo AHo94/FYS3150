@@ -266,7 +266,6 @@ void initialize_output_file(){
 
 int main(int nargs, char*args[])
 {
-
     clock_t start, finish;
     double *Expectation_values;
     int L = 2;  // Number of spins
@@ -482,12 +481,3 @@ int main(int nargs, char*args[])
     }
     return 0;
 }
-/*
-SELF NOTE:
-Compile with
-mpic++ -std=c++11 main.x main.cpp
-Run with
-mpiexec -n 4 ./main.x (arguments)
-Example
-mpiexec -n 4 ./main.x 20 10000
-*/
