@@ -242,7 +242,7 @@ class Plotter():
 		plt.semilogy(self.MC_cycles, self.E_counter_1, 'b-')
 		plt.hold("on")
 		plt.semilogy(self.MC_cycles, self.E_counter_2, 'r-')
-		plt.title('Number of accepted configurations as a function of Monte Carlo cycles')
+		plt.title('Number of accepted configurations as a function of \n Monte Carlo cycles')
 		plt.xlabel('$N_{MC}$')
 		plt.ylabel('Accepted spin flips')
 		plt.legend(['T=1.0','T=2.40'])
@@ -252,7 +252,7 @@ class Plotter():
 		plt.semilogy(np.array([self.T1, self.T2]), np.array([self.E_counter_1[-1], self.E_counter_2[-1]]))
 		plt.xlabel('Temperature - T')
 		plt.ylabel('Accepted spin flips - Logscale')
-		plt.title('Number of accepted spin configurations as a function of temperature')
+		plt.title('Number of accepted spin configurations as a function of $T$')
 		if self.savefile == True:
 			fig1.savefig('../Plots/Energy_stability_T1.pdf')
 			fig2.savefig('../Plots/Magnetization_stability_T1.pdf')
@@ -514,7 +514,7 @@ class Plotter():
 
 ## Comment out the functions to plot what you want
 solver = Plotter(True)
-#solver.plot_state()
+solver.plot_state()
 #solver.plot_probability()
 #solver.plot_state_logarithmic()
-solver.plot_parallellization(False)
+#solver.plot_parallellization(False)
