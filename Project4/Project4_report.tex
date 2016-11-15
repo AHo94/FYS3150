@@ -455,6 +455,12 @@ The variance for $T=2.4$ from Numpy is very close to the computed value. However
 \subsection{Phase transitions}
 We will now study phase transitions within the Ising model. This can be done by running the Metropolis method for multiple temperature values. In this case, I have decided to choose the temperature range of $T\in [2.1, 2.35]$. The temperature step length will be $\Delta T = 0.05$. However, the interesting effects will happen near $T=2.2$, so I have told my program to switch the temperature step length to $\Delta T = 0.02$ in the interval $T\in[2.2,2.3]$. Grids sizes we consider are $L=40,60,100,140$. I will also use $10^6$ Monte Carlo cycles for every grid sizes.
 
+Before I show the results, we will have to check if everything works correctly when we parallelize the program. We will waste many computation hours if the program turns out to be wrong, and running it for the $L=140$ case would take at least 12 hours. \footnote{In fact, I did the same mistake myself, where my values of $\chi$ were negative, after running it for the $L=140$ case.} I have tested this for the $L=20$ case, and the results can be found in this GitHub link:
+ \url{https://github.com/AHo94/FYS3150_Projects/blob/master/Project4/build-Project4_cpp_program-Desktop_Qt_5_7_0_GCC_64bit-Debug/4e_data_L20.txt}
+
+Comparing it with the results, provided by Morten H. Jensen in the following GitHub link: 
+\url{https://github.com/CompPhysics/ComputationalPhysics/blob/master/doc/Programs/ParallelizationMPI/Results/Lattice20}, the values from my case are almost identical. However, the value of $\chi$ is different because Morten used the value of $\langle M \rangle$ instead of $\langle |M| \rangle$. We can, with relatively good confidence, assume that the results for larger lattices should also be correct.
+
 Let us first see how the energy and magnetization evolves. We already know that the energy should be larger (and magnetization smaller) when the temperature increases. The plots of the energy and magnetization (per spin squared), for different grid sizes, can be found in figure \ref{fig:parallell_energy} and \ref{fig:parallell_magnetization} respectively. These results agrees with our physical intuition and the results from our studies of the systems stability (section 4.2). 
 \begin{figure}[H]
 \centering
@@ -473,21 +479,29 @@ In order to study phase transitions, we will have to study how the heat capacity
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{Plots/Heat_capacity_parallellization.pdf}
-\caption{Plot of the heat capacity per spin squared as a function of temperature. Includes different grid sizes.}
-\label{fig:parallell_heat_capacity}
+\includegraphics[width=\linewidth]{Plots/Heat_capacity_parallellization_interpolated.pdf}
+\caption{Plot of the heat capacity per spin squared as a function of temperature. Includes different grid sizes. Also includes interpolated data.}
+\label{fig:parallell_heat_capacity_interpolated}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{Plots/Susceptibility_parallellization.pdf}
-\caption{Plot of susceptibility per spin squared as function of temperature. Includes different grid sizes.}
-\label{fig:parallell_susceptiblity}
+\includegraphics[width=\linewidth]{Plots/Susceptibility_parallellization_interpolated.pdf}
+\caption{Plot of susceptibility per spin squared as function of temperature. Includes different grid sizes. Also includes interpolated data.}
+\label{fig:parallell_susceptiblity_interpolated}
 \end{figure}
 
-Before we proceed, I want to point out that the critical temperature, that we simply read from the graph, may not be completely correct. We are using very few temperature points, so the maximum of the heat capacity (or susceptibility) may not be exactly on the point I have calculated. Although, we could try to interpolate the points near the maximum, which will could give a more precise critical temperature. However, due to time constraints, I will just read the off the critical temperature from the plots.
- 
-In addition to this, the maximum for both $C_V$ and $\chi$ will increase as the grid size increases. We should therefore use a lot more Monte Carlo cycles for the larger grids in order to get a more precise result. However, running it for a larger amount of Monte Carlo cycles would take too much time.
+%Before we proceed, I want to point out that the critical temperature, that we simply read from the graph, may not be completely correct. We are using very few temperature points, so the maximum of the heat capacity (or susceptibility) may not be exactly on the point I have calculated. Although, we could try to interpolate the points near the maximum, which will could give a more precise critical temperature. However, due to time constraints, I will just read the off the critical temperature from the plots.
+
+Before we proceed, the maximum of both $C_V$ and $\chi$ will increase as the grid size increases. We should therefore use a lot more Monte Carlo cycles for the larger grids, in order to get a more precise result. However, running it for a larger amount of Monte Carlo would take too much time.
+
+Another thing to keep in mind is that I have used very few temperature points for this task. More temperature points would, of course, give a better results. Again, it would take too much time to compute the data if we were to decrease the temperature step length. However, with our current data, we can interpolate the points near the maximum of $C_V$ and $\chi$. In fact, I have interpolated every point we have, to obtain a better result. This is done by using the Numpy function \texttt{numpy.interp}. Yet another thing to keep in mind is that interpolation may also not give correct answers, so the results may or may not be precise. Non-interpolated plots of $C_V$ and $\chi$ can be found in the appendix.
+
+Let us finally take a look at how the heat capacity and susceptibility evolves as the temperature increases. Figure \ref{fig:parallell_susceptiblity_interpolated} and \ref{fig:parallell_susceptiblity_interpolated} shows plots of the heat capacity and susceptibility with their interpolated data. 
+
+First thing we have to note is their odd values for low temperatures. For $L=140$, the susceptibility  starts near $\chi = 160$, which is a very large value. We would expect it to start at a lower value, just like the other grid sizes. The same thing can be said for the heat capacity, which should also have a lower value, in the case of $L=140$. Why this is the case is unknown to me, but it may be some errors within my program.
+
+Even though the values we have weird values for low temperatures, the form of the graphs are reasonable. Both graphs has a peak near the critical temperature
 
 \FloatBarrier
 \section{Conclusion} \label{section:conclusion}
@@ -551,9 +565,35 @@ All the figures given in the appendix can also be found in the GitHub page.
 \caption{Stability of the magnetization for $T=2.4$. Initial state with all spins up. Non-logarithmic x-axis.}
 \end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Probability_distribution_T1.pdf}
+\caption{Probability distribution for $T=1.0$.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Probability_distribution_T2.pdf}
+\caption{Probability distribution for $T=2.4$.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Heat_capacity_parallellization.pdf}
+\caption{Plot of the heat capacity per spin squared as a function of temperature. Includes different grid sizes. Non-interpolated plot.}
+\label{fig:parallell_heat_capacity}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Susceptibility_parallellization.pdf}
+\caption{Plot of susceptibility per spin squared as function of temperature. Includes different grid sizes. Non-interpolated plot.}
+\label{fig:parallell_susceptiblity}
+\end{figure}
 
 \FloatBarrier
 \begin{thebibliography}{1}
     \bibitem{cpyhsics} M. Hjorth-Jensen, \emph{Computational Physics}, 2015, 551 pages
+    \bibitem{thermphys} Daniel V. Schroeder, \emph{Thermal Physics}, 2000, 422 pages
 \end{thebibliography}
 \end{document}
