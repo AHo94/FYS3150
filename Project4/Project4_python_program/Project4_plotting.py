@@ -188,7 +188,7 @@ class Plotter():
 		fig2 = plt.figure()
 		plt.plot(self.MC_cycles, self.M_expectation_1, 'r-')
 		plt.xlabel('$(N_{MC})$')
-		plt.ylabel(r'$\langle  |M| \rangle$')
+		plt.ylabel(r'$\langle  |\mathcal{M}| \rangle$')
 		plt.title('Plot of magnetization as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Abritary initial state' \
 							 %(self.T1, self.MC_max))
 
@@ -203,7 +203,7 @@ class Plotter():
 		fig4 = plt.figure()
 		plt.plot(self.MC_cycles, self.M_expectation_2, 'r-')
 		plt.xlabel('$(N_{MC})$')
-		plt.ylabel(r'$\langle  |M| \rangle$')
+		plt.ylabel(r'$\langle  |\mathcal{M}| \rangle$')
 		plt.title('Plot of magnetization as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Abritary initial state' \
 							 %(self.T2, self.MC_max))
 
@@ -218,7 +218,7 @@ class Plotter():
 		fig6 = plt.figure()
 		plt.plot(self.MC_cycles, self.M_expectation_1, 'r-')
 		plt.xlabel('$(N_{MC})$')
-		plt.ylabel(r'$\langle  |M| \rangle$')
+		plt.ylabel(r'$\langle  |\mathcal{M}| \rangle$')
 		plt.title('Plot of magnetization as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Initial state, all spins up'\
 							 %(self.T1, self.MC_max))
 
@@ -233,7 +233,7 @@ class Plotter():
 		fig8 = plt.figure()
 		plt.plot(self.MC_cycles, self.M_expectation_2, 'r-')
 		plt.xlabel('$(N_{MC})$')
-		plt.ylabel(r'$\langle  |M| \rangle$')
+		plt.ylabel(r'$\langle  |\mathcal{M}| \rangle$')
 		plt.title('Plot of magnetization as a function of MC Cycles. T = %.2f, $N_{mc}$ = %.g. \n Initial state, all spins up'\
 							 %(self.T2, self.MC_max))
 
@@ -282,6 +282,7 @@ class Plotter():
 		plt.legend(['T = 1.0','T = 2.4'])
 		plt.title('Probability distribution of the energies')
 		
+		# Splits the probability distribution in two separate plots
 		fig2 = plt.figure()
 		plt.hist(self.E_values_T1, bins=100)
 		plt.xlabel('Energies')
@@ -318,7 +319,7 @@ class Plotter():
 		fig2 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.M_expectation_1, 'r-')
 		plt.xlabel('$\log(N_{MC})$')
-		plt.ylabel(r'$\langle  |M| \rangle$')
+		plt.ylabel(r'$\langle  |\mathcal{M}| \rangle$')
 		plt.title('Plot of magnetization as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Abritary initial state' \
 							 %(self.T1, self.MC_max))
 
@@ -333,7 +334,7 @@ class Plotter():
 		fig4 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.M_expectation_2, 'r-')
 		plt.xlabel('$\log(N_{MC})$')
-		plt.ylabel(r'$\langle  |M| \rangle$')
+		plt.ylabel(r'$\langle  |\mathcal{M}| \rangle$')
 		plt.title('Plot of magnetization as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Abritary initial state' \
 							 %(self.T2, self.MC_max))
 
@@ -348,7 +349,7 @@ class Plotter():
 		fig6 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.M_expectation_1, 'r-')
 		plt.xlabel('$\log(N_{MC})$')
-		plt.ylabel(r'$\langle  |M| \rangle$')
+		plt.ylabel(r'$\langle  |\mathcal{M}| \rangle$')
 		plt.title('Plot of magnetization as a function of MC cycles. T = %.2f, $N_{mc}$ = %.g. \n Initial state, all spins up'\
 							 %(self.T1, self.MC_max))
 
@@ -363,7 +364,7 @@ class Plotter():
 		fig8 = plt.figure()
 		plt.semilogx(self.MC_cycles, self.M_expectation_2, 'r-')
 		plt.xlabel('$\log(N_{MC})$')
-		plt.ylabel(r'$\langle  |M| \rangle$')
+		plt.ylabel(r'$\langle  |\mathcal{M}| \rangle$')
 		plt.title('Plot of magnetization as a function of MC Cycles. T = %.2f, $N_{mc}$ = %.g. \n Initial state, all spins up'\
 							 %(self.T2, self.MC_max))
 
@@ -381,7 +382,7 @@ class Plotter():
 		else:
 			plt.show()
 
-	def plot_parallellization(self):
+	def plot_parallellization(self, compute_TC):
 		""" Function made specifically for the parallelization part of plotting """
 		self.read_data_parallellization("4e_data_L40.txt","4e_data_L60.txt","4e_data_L100.txt","4e_data_L140.txt")
 		# Plots energy
@@ -406,8 +407,8 @@ class Plotter():
 		line, = ax.plot(self.T_parallell, self.M_L100, label='$L=100$')
 		line, = ax.plot(self.T_parallell, self.M_L140, label='$L=140$')
 		plt.xlabel('$T$')
-		plt.ylabel(r'$\langle |M| \rangle/L^2$')
-		plt.title(r'Plot of $\langle |M| \rangle/L^2$ as a function of $T$. $N_{mc} = %.g$' %(self.MC_max_parallell))
+		plt.ylabel(r'$\langle |\mathcal{M}| \rangle/L^2$')
+		plt.title(r'Plot of $\langle |\mathcal{M}| \rangle/L^2$ as a function of $T$. $N_{mc} = %.g$' %(self.MC_max_parallell))
 		ax.legend(loc='upper center', bbox_to_anchor=(0.3,0.2), ncol=2, fancybox=True)
 		
 		# Plots non-interpolated heat capacity
@@ -459,7 +460,7 @@ class Plotter():
 		plt.xlabel('$T$')
 		plt.ylabel(r'$C_V/L^2$')
 		plt.title(r'Plot of $C_V/L^2$ as a function of $T$. Interpolated points. $N_{mc} = %.g$' %(self.MC_max_parallell))
-		ax.legend(loc='upper center', bbox_to_anchor=(0.4,1.00), ncol=2, fancybox=True)
+		ax.legend(loc='upper center', bbox_to_anchor=(0.3,1.00), ncol=2, fancybox=True)
 		
 		# Plots interpolated heat capacity
 		fig6 = plt.figure()
@@ -484,20 +485,36 @@ class Plotter():
 		plt.ylabel(r'$\chi/L^2$')
 		plt.title(r'Plot of $\chi/L^2$ as a function of $T$. Interpolated points. $N_{mc} = %.g$' %(self.MC_max_parallell))
 		ax.legend(loc='upper center', bbox_to_anchor=(0.3,1.00), ncol=2, fancybox=True)
-		
-		if self.savefile == True:
-			fig1.savefig('../Plots/Energy_parallellization.pdf')
-			fig2.savefig('../Plots/Magnetization_parallellization.pdf')
-			fig3.savefig('../Plots/Heat_capacity_parallellization.pdf')
-			fig4.savefig('../Plots/Susceptibility_parallellization.pdf')			
-			fig5.savefig('../Plots/Heat_capacity_parallellization_interpolated.pdf')
-			fig6.savefig('../Plots/Susceptibility_parallellization_interpolated.pdf')
+
+		if compute_TC == True:
+			# Calculate the critical temperature for L -> infinity
+			T_C = [2.28874, 2.28119, 2.27788, 2.7788]
+			L = [40, 60, 100, 140]
+			T_C_inf = 0
+			norm = 0
+			for i in range(0, 3):
+				for j in range(i+1, 4):
+					norm += 1
+					T_C_inf += T_C[i] - (T_C[i]-T_C[j])/(1 - (L[i]/L[j]))
+
+			T_C_inf = T_C_inf/(norm)
+			print 'Computed critical temperature for L -> infinity:'
+			print 'T_C(L = infty) = ', T_C_inf
 		else:
-			plt.show()
+			# Plots or saves the files.
+			if self.savefile == True:
+				fig1.savefig('../Plots/Energy_parallellization.pdf')
+				fig2.savefig('../Plots/Magnetization_parallellization.pdf')
+				fig3.savefig('../Plots/Heat_capacity_parallellization.pdf')
+				fig4.savefig('../Plots/Susceptibility_parallellization.pdf')			
+				fig5.savefig('../Plots/Heat_capacity_parallellization_interpolated.pdf')
+				fig6.savefig('../Plots/Susceptibility_parallellization_interpolated.pdf')
+			else:
+				plt.show()
 
 ## Comment out the functions to plot what you want
 solver = Plotter(True)
 #solver.plot_state()
 #solver.plot_probability()
 #solver.plot_state_logarithmic()
-solver.plot_parallellization()
+solver.plot_parallellization(False)
