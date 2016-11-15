@@ -372,7 +372,7 @@ We now increase the temperature to $T = 2.4$. Figure \ref{fig:Energy_stab_log_T2
 
 We can also have the program count how many times the a new configuration have been accepted. In figure \ref{fig:Accepted_configs_wrt_temp}, we see that we accept a lot more configurations as the temperature increases. The y-axis for this plot is in logarithmic scale. Note that I have only plotted two temperature points in the plot, so the number of accepted configurations may or may not increase linearly with temperature. This result agrees with the stability plots for $T=2.4$ that we saw earlier. 
 
-Figure \ref{fig:Accepted_configs_wrt_MC_cycles} shows how the number of accepted configurations increases over time. The y-axis is once again logarithmic. Once again, we see that the number of accepted configurations is higher for a higher temperature. Notice how we accept a lot more configuration changes at early times, and as time passes, we accept less. This indicates that the system is going towards equilibrium. 
+Figure \ref{fig:Accepted_configs_wrt_MC_cycles} shows how the number of accepted configurations increases over time. The y-axis here is also logarithmic. Once again, we see that the number of accepted configurations is larger for a higher temperature. Notice how we accept a lot more configuration changes at early times, and as time passes, we accept less. This indicates that the system is going towards equilibrium. 
 
 \begin{figure}[H]
 \centering
@@ -424,14 +424,14 @@ Instead of plotting how the energy evolves over time (as we did in the previous 
 
 A plot of the probability distribution for both $T=1.0$ and $T=2.4$ can be found in \ref{fig:prob_dist_merged}. As we can see, when the temperature is lower, the energy has a higher probability of being in a lower energetic state. When the temperature is larger, the energy can be at a more energetic state. Plots where the histograms are separated can be found in the appendix.
 
-Although, the standard deviation of the histogram, for $T=2.4$, larger than the case of $T=1.0$. What this means is that the system for $T=2.4$ has many more energy states to choose from, and each of them has roughly the same probability. As we mentioned in the previous part, the system can reach many more states when it has a higher temperature, which corresponds to different energies. The result of this also agrees with the results from figure \ref{fig:Energy_stab_log_T2} and \ref{fig:Energy_stab_log_T2_SpinUp}. The energies for those cases were oscillating around $\langle E \rangle = -500$, and the histogram shows the exact same result.
+The variance, in the case of $T=2.4$, will be larger than the case of $T=1.0$. What this means is that the system for $T=2.4$ has many more energy states to choose from, and each of them has roughly the same probability. As we mentioned in the previous part, the system can reach many more states when it has a higher temperature, which corresponds to different energies. The result of this also agrees with the results from figure \ref{fig:Energy_stab_log_T2} and \ref{fig:Energy_stab_log_T2_SpinUp}. The energies for those cases were oscillating around $\langle E \rangle = -500$, and the histogram shows the exact same result.
 \begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{Plots/Probability_distribution_merged.pdf}
 \caption{Probability distribution of the energies for $T=1.0$ (blue) and $T=2.4$ (green).}
 \label{fig:prob_dist_merged}
 \end{figure}
-We are also tasked to compute the variance of the energies. I have computed the standard variance from the C++ program and I will compare it to the variance given from the Python (Numpy) function $numpy.var$. This is done by saving all the energies (that was counted in the C++ program) in an array and then just call the variance function from Numpy. The results are found in the following output:
+We are also tasked to compute the variance of the energies. I have computed the standard variance from the C++ program and I will compare it to the variance given from the Python (Numpy) function \texttt{numpy.var}. This is done by saving all the energies (that was counted in the C++ program) in an array and then just call the variance function from Numpy. The results are found in the following output:
 \begin{lstlisting}
 @Computed variance =  10.2423 , for T = 1.0
 Computed variance =  3214.74 , for T = 2.4
@@ -443,7 +443,7 @@ The variance for $T=2.4$ from Numpy is very close to the computed value. However
 \subsection{Phase transitions}
 We will now study phase transitions within the Ising model. This can be done by running the Metropolis method for multiple temperature values. In this case, I have decided to choose the temperature range of $T\in [2.1, 2.35]$. The temperature step length will be $\Delta T = 0.05$. However, the interesting effects will happen near $T=2.2$, so I have told my program to switch the temperature step length to $\Delta T = 0.02$ in the interval $T\in[2.2,2.3]$. Grids sizes we consider are $L=40,60,100,140$. I will also use $10^6$ Monte Carlo cycles for every grid sizes.
 
-Before I show the results, we will have to check if everything works correctly when we parallelize the program. We will waste many computation hours if the program turns out to be wrong, and running it for the $L=140$ case would take at least 12 hours. \footnote{In fact, I did the same mistake myself, where my values of $\chi$ were negative, after running it for the $L=140$ case.} I have tested this for the $L=20$ case, and the results can be found in this GitHub link:
+Before I show the results, we will have to check if everything works correctly when we parallelize the program. We will waste many computation hours if the program turns out to be wrong, and running it for the $L=140$ case, using 4 CPUs, would take at least 12 hours. \footnote{In fact, I did the same mistake myself, where my values of $\chi$ were negative, after running it for the $L=140$ case.} I have tested this for the $L=20$ case, and the results can be found in this GitHub link:
  \url{https://github.com/AHo94/FYS3150_Projects/blob/master/Project4/build-Project4_cpp_program-Desktop_Qt_5_7_0_GCC_64bit-Debug/4e_data_L20.txt}
 
 Comparing it with the results, provided by Morten H. Jensen in the following GitHub link: 
