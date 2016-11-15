@@ -431,11 +431,11 @@ class Plotter():
 			fig1.savefig('../Plots/Energy_parallellization.pdf')
 			fig2.savefig('../Plots/Magnetization_parallellization.pdf')
 			fig3.savefig('../Plots/Heat_capacity_parallellization.pdf')
-			fig4.savefig('../Plots/Suceptibility_parallellization.pdf')
+			fig4.savefig('../Plots/Susceptibility_parallellization.pdf')
 		else:
 			plt.show()
 
-solver = Plotter(False)
+solver = Plotter(True)
 #solver.plot_state()
 #solver.plot_probability()
 #solver.plot_state_logarithmic()

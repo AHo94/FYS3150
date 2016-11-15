@@ -88,7 +88,7 @@ C_v &= \frac{\sigma_E^2}{k_BT^2} \\
 
 
 \subsection{Metropolis algorithm and computation time}
-Monte Carlo methods are widely used to solve problems in different fields in science. The idea behind Monte Carlo simulation is do statistical simulations by drawing a sequence of random numbers In this project, we will use the Monte Carlo method known as the Metropolis algorithm to solve the Ising model numerically.
+Monte Carlo methods are widely used to solve problems in different fields in science. The idea behind Monte Carlo simulation is do statistical simulations by drawing a sequence of random numbers In this project, we will use the Monte Carlo method known as the Metropolis algorithm, which is one of the top 10 algorithms, to solve the Ising model numerically.
 The algorithm are as follows: for each Monte Carlo cycle we do:
 \begin{itemize}
 \item \textbf{1)} We start with an arbitrary microstate for the given lattice. We use that microstate to calculate the energy $E_b$
@@ -118,7 +118,7 @@ As mentioned in the previous part, there will be very long computation time once
 
 We will use openMPI to do parallel computing. One has to first specify the number of cores the computer has available, and openMPI will automatically split these cores to different nodes (or ranks). Each node will run the program separately, but we can specify certain initial numbers, or intervals, for each node. One can, for example, tell each node to do the computation for different temperatures. One can also specify which interval each nodes computes. For example, node 0 can compute the Monte Carlo cycles in the range $N_{mc} \in [0,100]$, while node 1 computes in the interval $N_{cm} \in [101, 200]$. If we were to do the latter option, we will have to keep in mind that the nodes are working separately, and the computed values will therefore be unknown to each other. We will have to merge the values together to one main node (or the master node), which can be done by using the command \texttt{MPI\_Reduce}.
 
-The computation time will decrease proportionally with the number of cores we use for the simulation. The computation time will be roughly $(N_TN_{mc}L^2)/N_{c}$, where $N_{c}$ is the number of cores used in the computation.
+The computation time will decrease proportionally with the number of cores we use for the simulation. The computation time will be roughly $(N_TN_{mc}L^2)/N_{c}$, where $N_{c}$ is the number of cores used in the computation. Most computers and laptops, that one can buy from a computer shop, usually contains 4 cores. Using all four of them will reduce the computation time by roughly 4.
 \subsection{Simple 2 $\times$ 2 lattice}
 We will first consider a 2$\times$2 lattice, find the analytical expression for partition function $Z$ and find the corresponding expectation value of energy $E$, mean magnetization $|M|$, specific heat $C_V$ and susceptibility $\xi$ as functions of temperature $T$. We also consider periodic boundary condition for this lattice. Once we have the analytical expressions, we will compare them to the numerical values from the Metropolis algorithm.
 
@@ -285,7 +285,7 @@ Since we have multiple total spins, we will have to sum over all the other total
 \begin{align*}
 T_C(L_i=\infty) = \frac{1}{N_L} \displaystyle \sum_j \left( T_C(L_i) - \frac{T_C(L_i) - T_C(L_j)}{1 - \left(\frac{L_i}{L_j} \right)} \right)
 \end{align*}
-Where $N_L$ is the number of all lattice sizes considered. We will for this part let the total spins be $L=40, 60, 100$ and $140$, which means that $N_L = 4$. We will also consider the temperature range $T \in [2.0, 2.3]$.
+Where $N_L$ is the number of all lattice sizes considered. We will for this part let the total spins be $L=40, 60, 100$ and $140$, which means that $N_L = 4$. We will also consider the temperature range $T \in [2.1, 2.35]$.
 
 \section{Implementation} \label{section:implement}
 All programming are done in C++ and data will be saved in a text file. The plotting part will be done in Python.
@@ -453,24 +453,102 @@ The variance for $T=2.4$ from Numpy is very close to the computed value. However
 
 \FloatBarrier
 \subsection{Phase transitions}
+We will now study phase transitions within the Ising model. This can be done by running the Metropolis method for multiple temperature values. In this case, I have decided to choose the temperature range of $T\in [2.1, 2.35]$. The temperature step length will be $\Delta T = 0.05$. However, the interesting effects will happen near $T=2.2$, so I have told my program to switch the temperature step length to $\Delta T = 0.02$ in the interval $T\in[2.2,2.3]$. Grids sizes we consider are $L=40,60,100,140$. I will also use $10^6$ Monte Carlo cycles for every grid sizes.
+
+Let us first see how the energy and magnetization evolves. We already know that the energy should be larger (and magnetization smaller) when the temperature increases. The plots of the energy and magnetization (per spin squared), for different grid sizes, can be found in figure \ref{fig:parallell_energy} and \ref{fig:parallell_magnetization} respectively. These results agrees with our physical intuition and the results from our studies of the systems stability (section 4.2). 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Energy_parallellization.pdf}\caption{The energy per spin squared as a function of temperature for different grid sizes.}
+\label{fig:parallell_energy}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Magnetization_parallellization.pdf}
+\caption{The magnetization per spin squared as a function of temperature for different grid sizes.}
+\label{fig:parallell_magnetization}
+\end{figure}
+
+In order to study phase transitions, we will have to study how the heat capacity and susceptibility evolves when the temperature increases. Phase transitions happens when the temperature reaches the critical temperature. The critical temperature is when the heat capacity and susceptibility reaches a maximum. We can then plot our data and simply read it off the resulting graph. Plots of the heat capacity and susceptibility can be found in figure \ref{fig:parallell_heat_capacity} and \ref{fig:parallell_susceptiblity} respectively.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Heat_capacity_parallellization.pdf}
+\caption{Plot of the heat capacity per spin squared as a function of temperature. Includes different grid sizes.}
+\label{fig:parallell_heat_capacity}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Susceptibility_parallellization.pdf}
+\caption{Plot of susceptibility per spin squared as function of temperature. Includes different grid sizes.}
+\label{fig:parallell_susceptiblity}
+\end{figure}
+
+Before we proceed, I want to point out that the critical temperature, that we simply read from the graph, may not be completely correct. We are using very few temperature points, so the maximum of the heat capacity (or susceptibility) may not be exactly on the point I have calculated. Although, we could try to interpolate the points near the maximum, which will could give a more precise critical temperature. However, due to time constraints, I will just read the off the critical temperature from the plots.
+ 
+In addition to this, the maximum for both $C_V$ and $\chi$ will increase as the grid size increases. We should therefore use a lot more Monte Carlo cycles for the larger grids in order to get a more precise result. However, running it for a larger amount of Monte Carlo cycles would take too much time.
 
 \FloatBarrier
 \section{Conclusion} \label{section:conclusion}
 As we saw from the results, the Metropolis algorithm is a solid Monte Carlo algorithm. The computed value, when we compared it to a simple $2\times 2$ lattice, were incredibly close to the analytical one. 
 
-The algorithm also worked very well when we increased the lattice size. We saw that the computed energy were indeed larger for a larger temperature. This agrees with our physical intuition, where a system with a higher temperature is more energetic than a system with lower temperature.
+The algorithm also worked very well when we increased the lattice size. We saw that the computed energy were indeed larger for a larger temperature. This agrees with our physical intuition, where a system with a higher temperature is more energetic than a system with lower temperature. We can finally see why the Metropolis algorithm is considered one of the top 10 algorithms today.
 
 However, the results of the phase transitions and critical temperature may or may not be completely consistent. The system were expected to be very volatile near the critical temperature for a larger lattice, but we used very few Monte Carlo samplings near this region. The results may therefore not be 100\% correct.
 
-Although, one can probably bump the number Monte Carlo cycles for $L=140$ and even reduce the temperature step to obtain a more consistent answer, but that will increase the computation time quite considerably.
+Although, one can probably increase the number Monte Carlo cycles quite significantly for the larger lattices and even reduce the temperature step to obtain a more precise result, but that will increase the computation time quite considerably. One would have to gain access to a super computer, with many cores, if we wish to do the computation within a reasonable time frame.
 \FloatBarrier
 
 \section{Appendix}
 All the figures given in the appendix can also be found in the GitHub page.
+\url{https://github.com/AHo94/FYS3150_Projects/tree/master/Project4}
 \begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{Plots/Energy_stability_T1.pdf}
-\caption{Stability of the energy for T = 1.0.}
+\caption{Stability of the energy for $T = 1.0$. Arbitrary initial spin state. Non-logarithmic x-axis.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Magnetization_stability_T1.pdf}
+\caption{Stability of the magnetization for $T=1.0$. Arbitrary initial spin state. Non-logarithmic x-axis.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Energy_stability_T24.pdf}
+\caption{Stability of the energy for $T=2.4$. Arbitrary initial spin state. Non-logarithmic x-axis.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Magnetization_stability_T24.pdf}
+\caption{Stability of the magnetization for $T=2.4$. Arbitrary initial spin state. Non-logarithmic x-axis.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Energy_stability_UpInitSpin_T1.pdf}
+\caption{Stability of the energy for $T = 1.0$. Initial state with all spins up. Non-logarithmic x-axis.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Magnetization_stability_UpInitSpin_T1.pdf}
+\caption{Stability of the magnetization for $T=1.0$. Initial state with all spins up. Non-logarithmic x-axis.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Energy_stability_UpInitSpin_T24.pdf}
+\caption{Stability of the energy for $T=2.4$. Initial state with all spins up. Non-logarithmic x-axis.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Plots/Magnetization_stability_UpInitSpin_T24.pdf}
+\caption{Stability of the magnetization for $T=2.4$. Initial state with all spins up. Non-logarithmic x-axis.}
 \end{figure}
 
 
