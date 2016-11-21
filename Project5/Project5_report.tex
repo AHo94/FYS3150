@@ -1,6 +1,6 @@
 \documentclass[12pt]{article}
 \author{Alex Ho}
-\title{FYS4150 - Computational Physics \\ Project 4}
+\title{FYS4150 - Computational Physics \\ Project 5}
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{verbatim}
@@ -39,9 +39,82 @@ moredelim=**[is][\color{blue}]{@}{@}
 \tableofcontents
 \newpage
 \section{Introduction} \label{section:intro}
-1
-\section{Method} \label{section:method}
 
+All relevant files used in this project can be found in the this GitHub page:
+\url{https://github.com/AHo94/FYS3150_Projects/tree/master/Project5}
+\section{Method} \label{section:method}
+\subsection{Analytical form for the trial wave function and local energy}
+We will consider two electrons in a quantum dot with a frequency $\hbar \omega = 1$. The Hamiltonian for these two electrons is
+\begin{align*}
+H_0 = -\frac{1}{2}(\nabla_1^2 + \nabla_2^2) + \frac{1}{2}\omega^2(r_1^2 + r_2^2)
+\end{align*}
+The wave function for one electron in a harmonic oscillator potential is
+\begin{align*}
+\phi_{n_x, n_y, n_z}(x,y,z) = \frac{A}{2}H_{n_x}(\sqrt{\omega} x)H_{n_y}(\sqrt{\omega}y)H_{n_z}(\sqrt{\omega}z)e^{-\frac{\omega}{2}(x^2+y^2+z^2)}
+\end{align*}
+Where $H_{n_x}$ are Hermite polynomials and $A$ is a normalization constant. $n_x, n_y$ and $n_z$ are some quantum numbers. When the Hamiltonian is acted on this wave function, we obtain the energy. That is
+\begin{align*}
+H_0\phi_{n_x, n_y, n_z} &= \epsilon_{n_x, n_y, n_z}\phi_{n_x, n_y, n_z}
+\end{align*}
+with the energy given as
+\begin{align*}
+\epsilon_{n_x, n_y, n_z} &= \omega\left(n_x + n_y + n_z + \frac{3}{2} \right)
+\end{align*}
+For the ground state, $n_x = n_y = n_z = 0$, the energy of the single electron is
+\begin{align*}
+\epsilon_{0,0,0} = \frac{3}{2}\omega
+\end{align*}
+Let us now consider two electrons, so we have $\phi_{n_x, n_y, n_z}^1$ and $\phi_{n_x, n_y, n_z}^2$ (not squared!). Acting the Hamiltonian on both these wave functions gives
+\begin{align*}
+H_0(\phi_{n_x, n_y, n_z}^1 + \phi_{n_x, n_y, n_z}^2) &= \epsilon_{n_x, n_y, n_z}^1\phi_{n_x, n_y, n_z}^1 + \epsilon_{n_x, n_y, n_z}^2\phi_{n_x, n_y, n_z}^2 \\
+&= (\epsilon_{n_x, n_y, n_z}^1+\epsilon_{n_x, n_y, n_z}^2)(\phi_{n_x, n_y, n_z}^1 + \phi_{n_x, n_y, n_z}^2)
+\end{align*}
+The total energy for these two electrons, when we consider the ground state, is then
+\begin{align*}
+\epsilon_{0,0,0}^{\text{tot}} &= \epsilon_{0,0,0}^1 + \epsilon_{0,0,0}^2 \\
+&= \omega\left(\frac{3}{2} \right) + \omega\left(\frac{3}{2} \right)\\
+&= 3\omega
+\end{align*}
+
+%% Add stuff for unperturbed case
+
+We will now consider two trial functions given as
+\begin{align*}
+\psi_{T_1} &= C e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)} \\
+\psi_{T_2} &= C e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)}e^{\frac{r_{12}}{2(1+\beta r_{12})}}
+\end{align*}
+Where $r_{12} = \sqrt{r_1 - r_2}$ and $\alpha$ and $\beta$ are variational parameters. Let us find the energy of the first trial function. First, we should rewrite the Hamiltonian in spherical coordinates. Our system does not depend on the radial coordinates, so the $\nabla$ operator, for electron $i$ in spherical coordinates, becomes
+\begin{align*}
+\nabla^2_i = -\frac{1}{2} \frac{d^2}{dr^2_i} - \frac{1}{r_i}\frac{d}{dr_i}
+\end{align*}
+By acting the Hamiltonian on $\psi_{T_1}$, we get
+\begin{align*}
+H_0\psi_{T_1} = \left(-\frac{d^2}{dr^2_1} - \frac{1}{r_1}\frac{d}{dr_1} -\frac{d^2}{dr^2_2} - \frac{1}{r_2}\frac{d}{dr_2} + \frac{1}{2}\omega(r_1^2+r_2^2)\right)\psi_{T_1}
+\end{align*}
+There will be a lot of derivatives to keep track of here, so I will take this step by step. Let us first differentiate with respect to $r_1$ first. The first derivative is
+\begin{align*}
+\frac{d}{dr_1}e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)} &= \left( -\alpha \omega r_1 \right)e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)} \\
+&= -\alpha \omega r_1 \psi_{T_1}
+\end{align*}
+The second derivative then becomes
+\begin{align*}
+\frac{d^2}{dr_1^2}e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)} &= \frac{d}{dr_1}(-\alpha \omega r_1 e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)})\\
+&= (-\alpha \omega + \alpha^2 \omega^2 r_1^2)e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)} \\
+&= (\alpha^2 \omega^2 r_1^2 - \alpha \omega)\psi_{T_1}
+\end{align*}
+I will skip the calculation for the derivative with respect to $r_2$, but the results are
+\begin{align*}
+\frac{d}{dr_2}\psi_{T_1} &=  -\alpha \omega r_2 \psi_{T_1} \\
+\frac{d^2}{dr_2^2}\psi_{T_1} &= (\alpha^2 \omega^2 r_2^2 - \alpha \omega)\psi_{T_1}
+\end{align*}
+The local energy, for this trial function, is then
+\begin{align*}
+E_{L_1} &= -\frac{1}{2} (\alpha^2 \omega^2 r_1^2 - \alpha \omega) + \alpha \omega - \frac{1}{2} (\alpha^2 \omega^2 r_2^2 - \alpha \omega) + \alpha \omega + \frac{1}{2}\omega^2(r_1^2 + r_2^2) \\
+&= 2 \alpha \omega + \alpha \omega^2 - \frac{1}{2}\alpha^2 \omega^2 (r_1^2 + r_2^2) + \frac{1}{2}\omega(r_1^2 + r_2^2) \\
+&= 3\alpha \omega + \frac{1}{2}(\omega^2 - \alpha^2 \omega^2)(r_1^2 + r_2^2) \\
+&= 3 \alpha \omega +  \frac{1}{2}\omega^2(1-\alpha^2)(r_1^2 + r_2^2)
+\end{align*}
+Which is exactly what we wanted to show. We will now try to find the local energy of the second trial function. 
 \section{Implementation} \label{section:implement}
 
 \section{Results}\label{section:results}
