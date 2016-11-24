@@ -27,7 +27,13 @@ double LaplaceOperator(vec3 r1, vec3 r2, double alpha, double omega){
         SecondDerivative -= (TrialWavefunc_T1(r1, r2+rchange, alpha, omega) -\
                 2*wavefunc + TrialWavefunc_T1(r1, r2-rchange, alpha, omega));
     }
-    return SecondDerivative/(wavefunc*(dr*dr));
+    return 0.5*SecondDerivative/(wavefunc*(dr*dr));
+}
+
+double LaplaceAnalytic(vec3 r1, vec3 r2, double alpha, double omega){
+    double AlphaOmega = alpha*omega;
+    return  -0.5*(pow(AlphaOmega,2)*r1.lengthSquared() - 3*AlphaOmega) \
+            - 0.5*(pow(AlphaOmega,2)*r2.lengthSquared() - 3*AlphaOmega);
 }
 
 double LocalEnergy(vec3 r1, vec3 r2, double alpha, double omega){
@@ -43,14 +49,16 @@ void Metropolis_method(int MC_cycles, double omega, double alpha, double step_le
     vec3 r1(distr(generator),distr(generator),distr(generator));
     vec3 r2(distr(generator),distr(generator),distr(generator));
 
+    double E_local = 0;
     double EnergySum = 0;
     double EnergySquaredSum = 0;
     double NewWavefuncSquared = 0;
+    double omega2 = omega*omega;
     double OldWavefuncSquared = pow(TrialWavefunc_T1(r1, r2, alpha, omega), 2);
 
     //double step_length = StepLength(r1, r2, alpha, omega, distr(generator));
 
-    double E_an = 0.5*omega*omega*(r1.lengthSquared() + r2.lengthSquared())*(1-alpha*alpha) + 3*alpha*omega;
+    double E_an = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared())*(1-alpha*alpha) + 3*alpha*omega;
     int counter = 0;
     for (int cycle=0; cycle<MC_cycles; cycle++){
         vec3 r1_new(0,0,0);
@@ -67,16 +75,16 @@ void Metropolis_method(int MC_cycles, double omega, double alpha, double step_le
             counter += 1;
         }
         //step_length = StepLength(r1, r2, alpha, omega, distr(generator));
-        double E_local = 0.5*LaplaceOperator(r1, r2, alpha, omega) \
-                + 0.5*omega*omega*(r1.lengthSquared() + r2.lengthSquared());
+        E_local = LaplaceAnalytic(r1, r2, alpha, omega) + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
+        //E_local = LaplaceOperator(r1, r2, alpha, omega) + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
         EnergySum += E_local;
         EnergySquaredSum += E_local*E_local;
     }
     H_expect[0] = EnergySum;
     H_expect[1] = EnergySquaredSum;
-
     cout << "E = "<< H_expect[0]/(MC_cycles) << endl;
     cout << "E analytic = " << E_an << endl;
+    cout << "Variance = " << EnergySquaredSum/MC_cycles - EnergySum*EnergySum/MC_cycles/MC_cycles << endl;;
     cout << "Accepted configs = " << counter << endl;
 }
 
@@ -86,7 +94,7 @@ int main(int argc, char *argv[])
     H_expect = new double [2];
     int MC_cycles = 100000;
     double omega, alpha, step_length;
-    omega = 0.01;
+    omega = 1;
     alpha = 1;
     step_length = 0.005;
     Metropolis_method(MC_cycles, omega, alpha, step_length, H_expect);
