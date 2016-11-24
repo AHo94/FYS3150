@@ -10,16 +10,10 @@ double TrialWavefunc_T1(vec3 r1, vec3 r2, double alpha, double omega){
     return exp(-0.5*alpha*omega*(r1.lengthSquared() + r2.lengthSquared()));
 }
 
-double Probability(vec3 r1, vec3 r2, double alpha, double omega){
-    double Wavefunc = TrialWavefunc_T1(r1, r2, alpha, omega);
-    double WavefuncAbsSquared = fabs(Wavefunc);
-    double normalization = 1;
-    return WavefuncAbsSquared/normalization;
-}
 
 double StepLength(vec3 r1, vec3 r2, double alpha, double omega, double r){
     double vecSum = r1.length() + r2.length();
-    return (-(vecSum) + sqrt(pow(vecSum,2) - 4*log(0.5)/(alpha*omega)))/(4.0*r);
+    return (-(vecSum) + sqrt(pow(vecSum,2) - 2*log(0.5)*r/(alpha*omega)))/(2.0*r);
 }
 
 double LaplaceOperator(vec3 r1, vec3 r2, double alpha, double omega){
@@ -33,6 +27,7 @@ double LaplaceOperator(vec3 r1, vec3 r2, double alpha, double omega){
                 2*wavefunc + TrialWavefunc_T1(r1-rchange, r2, alpha, omega))/(dr*dr);
         SecondDerivative += (TrialWavefunc_T1(r1, r2+rchange, alpha, omega) -\
                 2*wavefunc + TrialWavefunc_T1(r1, r2-rchange, alpha, omega))/(dr*dr);
+
     }
     return SecondDerivative;
 }
@@ -48,8 +43,8 @@ void Metropolis_method(int MC_cycles, double omega, double alpha, double step_le
 
     double EnergySum = 0;
     double EnergySquaredSum = 0;
-    double NewWavefuncAbsSquared = 0;
-    double OldWavefuncAbsSquared = pow(fabs(TrialWavefunc_T1(r1, r2, alpha, omega)), 2);
+    double NewWavefuncSquared = 0;
+    double OldWavefuncSquared = pow(TrialWavefunc_T1(r1, r2, alpha, omega), 2);
 
     //double step_length = StepLength(r1, r2, alpha, omega, distr(generator));
 
@@ -62,15 +57,15 @@ void Metropolis_method(int MC_cycles, double omega, double alpha, double step_le
              r1_new[j] = r1[j] + step_length*distr(generator);
              r2_new[j] = r2[j] + step_length*distr(generator);
         }
-        NewWavefuncAbsSquared = pow(fabs(TrialWavefunc_T1(r1_new, r2_new, alpha, omega)), 2);
-        if (distr(generator) <= NewWavefuncAbsSquared/OldWavefuncAbsSquared){
+        NewWavefuncSquared = pow(TrialWavefunc_T1(r1_new, r2_new, alpha, omega), 2);
+        if (distr(generator) <= NewWavefuncSquared/OldWavefuncSquared){
             r1 = r1_new;
             r2 = r2_new;
-            OldWavefuncAbsSquared = NewWavefuncAbsSquared;
+            OldWavefuncSquared = NewWavefuncSquared;
             counter += 1;
         }
         //step_length = StepLength(r1, r2, alpha, omega, distr(generator));
-        double E_local = LaplaceOperator(r1, r2, alpha, omega) \
+        double E_local = 0.5*LaplaceOperator(r1, r2, alpha, omega) \
                 + 0.5*omega*omega*(r1.lengthSquared() + r2.lengthSquared());
         EnergySum += E_local;
         EnergySquaredSum += E_local*E_local;
@@ -89,9 +84,9 @@ int main(int argc, char *argv[])
     H_expect = new double [2];
     int MC_cycles = 100000;
     double omega, alpha, step_length;
-    omega = 0.01;
+    omega = 1;
     alpha = 1;
-    step_length = 1;
+    step_length = 0.005;
     Metropolis_method(MC_cycles, omega, alpha, step_length, H_expect);
     return 0;
 }
