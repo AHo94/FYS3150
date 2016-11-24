@@ -10,7 +10,6 @@ double TrialWavefunc_T1(vec3 r1, vec3 r2, double alpha, double omega){
     return exp(-0.5*alpha*omega*(r1.lengthSquared() + r2.lengthSquared()));
 }
 
-
 double StepLength(vec3 r1, vec3 r2, double alpha, double omega, double r){
     double vecSum = r1.length() + r2.length();
     return (-(vecSum) + sqrt(pow(vecSum,2) - 2*log(0.5)*r/(alpha*omega)))/(2.0*r);
@@ -23,13 +22,16 @@ double LaplaceOperator(vec3 r1, vec3 r2, double alpha, double omega){
     for (int i=0; i<3; i++){
         vec3 rchange(0,0,0);
         rchange[i] = dr;
-        SecondDerivative += (TrialWavefunc_T1(r1+rchange, r2, alpha, omega) -\
-                2*wavefunc + TrialWavefunc_T1(r1-rchange, r2, alpha, omega))/(dr*dr);
-        SecondDerivative += (TrialWavefunc_T1(r1, r2+rchange, alpha, omega) -\
-                2*wavefunc + TrialWavefunc_T1(r1, r2-rchange, alpha, omega))/(dr*dr);
-
+        SecondDerivative -= (TrialWavefunc_T1(r1+rchange, r2, alpha, omega) -\
+                2*wavefunc + TrialWavefunc_T1(r1-rchange, r2, alpha, omega));
+        SecondDerivative -= (TrialWavefunc_T1(r1, r2+rchange, alpha, omega) -\
+                2*wavefunc + TrialWavefunc_T1(r1, r2-rchange, alpha, omega));
     }
-    return SecondDerivative;
+    return SecondDerivative/(wavefunc*(dr*dr));
+}
+
+double LocalEnergy(vec3 r1, vec3 r2, double alpha, double omega){
+
 }
 
 void Metropolis_method(int MC_cycles, double omega, double alpha, double step_length, double *H_expect){
@@ -73,8 +75,8 @@ void Metropolis_method(int MC_cycles, double omega, double alpha, double step_le
     H_expect[0] = EnergySum;
     H_expect[1] = EnergySquaredSum;
 
-    cout << "E = "<< H_expect[0]/(MC_cycles*2.0) << endl;
-    cout << "E_an = " << E_an << endl;
+    cout << "E = "<< H_expect[0]/(MC_cycles) << endl;
+    cout << "E analytic = " << E_an << endl;
     cout << "Accepted configs = " << counter << endl;
 }
 
@@ -84,7 +86,7 @@ int main(int argc, char *argv[])
     H_expect = new double [2];
     int MC_cycles = 100000;
     double omega, alpha, step_length;
-    omega = 1;
+    omega = 0.01;
     alpha = 1;
     step_length = 0.005;
     Metropolis_method(MC_cycles, omega, alpha, step_length, H_expect);
