@@ -2,8 +2,14 @@
 #include <chrono>   // Used to seed random generator based on the time
 #include <random>
 #include <cmath>
+#include <fstream>
+#include <string>
+#include <iomanip>
+#include <time.h>
 #include "vec3.h"
 using namespace std;
+
+ofstream ofile_global;
 
 double TrialWavefunc_T1(vec3 r1, vec3 r2, double alpha, double omega){
     // Function that calculates the trial wave function when r_12 -> 0
@@ -75,8 +81,8 @@ void Metropolis_method(int MC_cycles, double omega, double alpha, double step_le
             counter += 1;
         }
         //step_length = StepLength(r1, r2, alpha, omega, distr(generator));
-        E_local = LaplaceAnalytic(r1, r2, alpha, omega) + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
-        //E_local = LaplaceOperator(r1, r2, alpha, omega) + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
+        //E_local = LaplaceAnalytic(r1, r2, alpha, omega) + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
+        E_local = LaplaceOperator(r1, r2, alpha, omega) + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
         EnergySum += E_local;
         EnergySquaredSum += E_local*E_local;
     }
@@ -88,6 +94,18 @@ void Metropolis_method(int MC_cycles, double omega, double alpha, double step_le
     cout << "Accepted configs = " << counter << endl;
 }
 
+void write_file(int MC_cycles, double *H_expectation, double alpha){
+    // Writes out data to the output file. Function made specific for the parallellization part.
+    double Energy = H_expectation[0]/MC_cycles;
+    ofile_global << setw(15) << alpha ;
+    ofile_global << setw(15) << Energy << endl;;
+}
+
+void initialize_outfile(){
+    ofile_global << setw(15) << "alpha";
+    ofile_global << setw(15) << "Energy" << endl;
+}
+
 int main(int argc, char *argv[])
 {
     double *H_expect;
@@ -95,8 +113,14 @@ int main(int argc, char *argv[])
     int MC_cycles = 100000;
     double omega, alpha, step_length;
     omega = 1;
-    alpha = 1;
+    //alpha = 1;
     step_length = 0.005;
-    Metropolis_method(MC_cycles, omega, alpha, step_length, H_expect);
+    ofile_global.open("Energy_alpha.txt");
+    initialize_outfile();
+    for (alpha = 0.2; alpha<=10; alpha +=0.1){
+        Metropolis_method(MC_cycles, omega, alpha, step_length, H_expect);
+        write_file(MC_cycles, H_expect, alpha);
+    }
+    ofile_global.close();
     return 0;
 }
