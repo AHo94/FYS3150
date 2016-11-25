@@ -24,6 +24,7 @@ class Plotter():
 		N = len(data)
 		self.Energy = np.zeros(N)
 		self.alpha = np.zeros(N)
+		self.Energy_Exact = np.ones(N)*3
 		for j in range(0, N):
 			self.Energy[j] = float(data[j][1])
 			self.alpha[j] = float(data[j][0])
@@ -31,10 +32,13 @@ class Plotter():
 	def plot_energy_alpha(self):
 		self.read_data("Energy_alpha.txt")
 		plt.plot(self.alpha, self.Energy)
+		plt.hold("on")
+		plt.plot(self.alpha, self.Energy_Exact)
 		plt.xlabel(r'$\alpha$')
 		plt.ylabel(r'$\langle H \rangle$')
-		plt.title(r'Plot of the energy as a functio no $\alpha$ with $\omega$ = 1')
-		plt.show()	
+		plt.title(r'Plot of the $\langle H \rangle$ as a function of $\alpha$ with $\omega$ = 1. Using $\psi_{T_1}$')
+		plt.legend(['Numerical value','Exact'])
+		plt.show()
 
 ## Comment out the functions to plot what you want
 solver = Plotter(False)
