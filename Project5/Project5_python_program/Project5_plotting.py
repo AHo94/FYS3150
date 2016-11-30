@@ -25,12 +25,15 @@ class Plotter():
 		self.Energy = np.zeros(N)
 		self.alpha = np.zeros(N)
 		self.Energy_Exact = np.ones(N)*3
+		self.MeanDistance = np.zeros(N)
 		for j in range(0, N):
-			self.Energy[j] = float(data[j][1])
 			self.alpha[j] = float(data[j][0])
+			self.Energy[j] = float(data[j][1])
+			self.MeanDistance[j] = float(data[j][2])
 
 	def plot_energy_alpha(self):
 		self.read_data("Energy_alpha.txt")
+		fig1 = plt.figure()
 		plt.plot(self.alpha, self.Energy)
 		plt.hold("on")
 		plt.plot(self.alpha, self.Energy_Exact)
@@ -38,7 +41,17 @@ class Plotter():
 		plt.ylabel(r'$\langle H \rangle$')
 		plt.title(r'Plot of the $\langle H \rangle$ as a function of $\alpha$ with $\omega$ = 1. Using $\psi_{T_1}$')
 		plt.legend(['Numerical value','Exact'])
-		plt.show()
+
+		fig2 = plt.figure()
+		plt.plot(self.alpha, self.MeanDistance)
+		plt.xlabel(r'$\alpha$')
+		plt.ylabel(r'$r_{12}$')
+		plt.title(r'Plot of the mean distance $r_{12}$ as a function of $\alpha$ with $\omega$ = 1')
+		if self.savefile == True:
+			fig1.savefig('../Plots/Energy_alpha_plot.pdf')
+			fig2.savefig('../Plots/MeanDistance_alpha_plot.pdf')
+		else:
+			plt.show()
 
 ## Comment out the functions to plot what you want
 solver = Plotter(False)
