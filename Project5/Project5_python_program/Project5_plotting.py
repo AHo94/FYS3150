@@ -32,7 +32,7 @@ class Plotter():
 			self.MeanDistance[j] = float(data[j][2])
 
 	def plot_energy_alpha(self):
-		self.read_data("Energy_alpha.txt")
+		self.read_data("Energy_Alpha_Mdistance.txt")
 		fig1 = plt.figure()
 		plt.plot(self.alpha, self.Energy)
 		plt.hold("on")
