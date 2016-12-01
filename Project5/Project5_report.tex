@@ -66,8 +66,7 @@ For the ground state, $n_x = n_y = n_z = 0$, the energy of the single electron i
 \end{align*}
 Let us now consider two electrons, so we have $\phi_{n_x, n_y, n_z}^1$ and $\phi_{n_x, n_y, n_z}^2$ (not squared!). Acting the Hamiltonian on both these wave functions gives
 \begin{align*}
-H_0(\phi_{n_x, n_y, n_z}^1 + \phi_{n_x, n_y, n_z}^2) &= \epsilon_{n_x, n_y, n_z}^1\phi_{n_x, n_y, n_z}^1 + \epsilon_{n_x, n_y, n_z}^2\phi_{n_x, n_y, n_z}^2 \\
-&= (\epsilon_{n_x, n_y, n_z}^1+\epsilon_{n_x, n_y, n_z}^2)(\phi_{n_x, n_y, n_z}^1 + \phi_{n_x, n_y, n_z}^2)
+H_0(\phi_{n_x, n_y, n_z}^1 + \phi_{n_x, n_y, n_z}^2) &= \epsilon_{n_x, n_y, n_z}^1\phi_{n_x, n_y, n_z}^1 + \epsilon_{n_x, n_y, n_z}^2\phi_{n_x, n_y, n_z}^2 
 \end{align*}
 The total energy for these two electrons, when we consider the ground state, is then
 \begin{align*}
@@ -80,10 +79,10 @@ The total energy for these two electrons, when we consider the ground state, is 
 
 We will now consider two trial functions given as
 \begin{align*}
-\psi_{T_1} &= C e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)} \\
-\psi_{T_2} &= C e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)}e^{\frac{r_{12}}{2(1+\beta r_{12})}}
+\psi_{T_1} &= C \exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right) \\
+\psi_{T_2} &= C \exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right)\exp\left(\frac{r_{12}}{2(1+\beta r_{12})}\right)
 \end{align*}
-Where $r_{12} = \sqrt{r_1 - r_2}$ and $\alpha$ and $\beta$ are variational parameters. Let us find the energy of the first trial function. First, we should rewrite the Hamiltonian in spherical coordinates. Our system does not depend on the radial coordinates, so the $\nabla$ operator, for electron $i$ in spherical coordinates, becomes
+where $r_{12} = \sqrt{r_1 - r_2}$ and $\alpha$ and $\beta$ are variational parameters. Let us find the energy of the first trial function. First, we should rewrite the Hamiltonian in spherical coordinates. Our system does not depend on the radial coordinates, so the $\nabla$ operator, for electron $i$ in spherical coordinates, becomes
 \begin{align*}
 \nabla^2_i = -\frac{1}{2} \frac{d^2}{dr^2_i} - \frac{1}{r_i}\frac{d}{dr_i}
 \end{align*}
@@ -93,32 +92,74 @@ H_0\psi_{T_1} = \left(-\frac{d^2}{dr^2_1} - \frac{1}{r_1}\frac{d}{dr_1} -\frac{d
 \end{align*}
 There will be a lot of derivatives to keep track of here, so I will take this step by step. Let us first differentiate with respect to $r_1$ first. The first derivative is
 \begin{align*}
-\frac{d}{dr_1}e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)} &= \left( -\alpha \omega r_1 \right)e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)} \\
+\frac{d}{dr_1}e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)} &= \left( -\alpha \omega r_1 \right)\exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right) \\
 &= -\alpha \omega r_1 \psi_{T_1}
 \end{align*}
 The second derivative then becomes
 \begin{align*}
-\frac{d^2}{dr_1^2}e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)} &= \frac{d}{dr_1}(-\alpha \omega r_1 e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)})\\
-&= (-\alpha \omega + \alpha^2 \omega^2 r_1^2)e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)} \\
+\frac{d^2}{dr_1^2}e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)} &= \frac{d}{dr_1}\left[-\alpha \omega r_1 \exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right)\right]\\
+&= (-\alpha \omega + \alpha^2 \omega^2 r_1^2)\exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right) \\
 &= (\alpha^2 \omega^2 r_1^2 - \alpha \omega)\psi_{T_1}
+\end{align*}
+In short, the kinetic term is
+\begin{align*}
+\nabla_1^2 \psi_{T_1} =-\frac{1}{2}(\alpha^2\omega^2r_1^2 -3 \alpha \omega)\psi_{T_1}
 \end{align*}
 I will skip the calculation for the derivative with respect to $r_2$, but the results are
 \begin{align*}
 \frac{d}{dr_2}\psi_{T_1} &=  -\alpha \omega r_2 \psi_{T_1} \\
 \frac{d^2}{dr_2^2}\psi_{T_1} &= (\alpha^2 \omega^2 r_2^2 - \alpha \omega)\psi_{T_1}
 \end{align*}
-The local energy, for this trial function, is then
+which gives
 \begin{align*}
-E_{L_1} &= -\frac{1}{2} (\alpha^2 \omega^2 r_1^2 - \alpha \omega) + \alpha \omega - \frac{1}{2} (\alpha^2 \omega^2 r_2^2 - \alpha \omega) + \alpha \omega + \frac{1}{2}\omega^2(r_1^2 + r_2^2) \\
-&= 2 \alpha \omega + \alpha \omega^2 - \frac{1}{2}\alpha^2 \omega^2 (r_1^2 + r_2^2) + \frac{1}{2}\omega(r_1^2 + r_2^2) \\
-&= 3\alpha \omega + \frac{1}{2}(\omega^2 - \alpha^2 \omega^2)(r_1^2 + r_2^2) \\
-&= 3 \alpha \omega +  \frac{1}{2}\omega^2(1-\alpha^2)(r_1^2 + r_2^2)
+\nabla_1^2 \psi_{T_1} =-\frac{1}{2}(\alpha^2\omega^2r_2^2 -3 \alpha \omega)\psi_{T_1}
 \end{align*}
-Which is exactly what we wanted to show. We will now try to find the local energy of the second trial function. 
+The local energy, for this trial function, is then
+\begin{align}
+E_{L_1} &= -\frac{1}{2} (\alpha^2 \omega^2 r_1^2 - 3\alpha \omega)  - \frac{1}{2} (\alpha^2 \omega^2 r_2^2 - 3\alpha \omega) + \frac{1}{2}\omega^2(r_1^2 + r_2^2) \nonumber \\
+&= 3 \alpha \omega  - \frac{1}{2}\alpha^2 \omega^2 (r_1^2 + r_2^2) + \frac{1}{2}\omega(r_1^2 + r_2^2) \nonumber \\
+&= 3\alpha \omega + \frac{1}{2}(\omega^2 - \alpha^2 \omega^2)(r_1^2 + r_2^2) \nonumber \\
+&= 3 \alpha \omega +  \frac{1}{2}\omega^2(1-\alpha^2)(r_1^2 + r_2^2)
+\label{eq:Energy_T1}
+\end{align}
+which is exactly what we wanted to show. We will skip the derivation of the analytical local energy for the second trial wave function. If we add Coulomb interaction, the local energy for the first trial wave function becomes
+\begin{align}
+E_{L1} = 3 \alpha \omega +  \frac{1}{2}\omega^2(1-\alpha^2)(r_1^2 + r_2^2) + \frac{1}{r_{12}}
+\label{eq:Energy_T1_Coulomb}
+\end{align}
+where $r_{12}= \sqrt{\mathbf{r}_1 - \mathbf{r}_2}$. The analytical expression for the second trial wave function, with Coulomb interaction, is then
+\begin{align}
+E_{L2} = E_{L1} + \frac{1}{2(1+\beta r_{12})^2}\left[\alpha \omega r_{12} - \frac{1}{2(1+\beta r_{12})} - \frac{2}{r_{12}} + \frac{2\beta}{1+\beta r_{12}} \right]
+\label{eq:Energy_T2_Coulomb}
+\end{align}
+with $E_{L1}$ given in equation \ref{eq:Energy_T1_Coulomb}.
+
+\subsection{The Metropolis Algorithm}
+We will once again, like in project 4, use the Metropolis algorithm to solve our quantum mechanical system. The algorithm is as follows: for every Monte Carlo cycle we 
+\begin{itemize}
+\item \textbf{1)} Start the electrons at an arbitrary position. We let the electron start at the position $x,y,z \in [-1,1]$.
+\item \textbf{2)} Give the electrons a new position determined by $\mathbf{R}' = \mathbf{R} + \delta\times r$, where $\mathbf{R} = (\mathbf{r}_1, \mathbf{r}_2, ..., \mathbf{r}_N)$, $r$ is a random number generated from a normal distribution $r\in [0,1]$ and $\delta$ is a small step length. For this project we will consider $N=2$ electrons.
+\item \textbf{3)} Calculate $w = P(\mathbf{R}')/P(\mathbf{R}) = |\Psi(\mathbf{R}')|^2/|\Psi(\mathbf{R})|^2$, where $\Psi$ is the wave function we will consider (i.e the trial wave functions $\psi_{T1}$ and $\psi_{T2}$ mentioned previously). We now have to consider these two cases
+\item \textbf{Case 1}: If $w <= r$, we accept this new position change and use the calculated $\mathbf{R}'$ to calculate the local energy. The system has now reached a lower energy state.
+\item \textbf{Case 2}: If $w > r$, we do not accept this new position and use the old position $\mathbf{R}$ to calculate the local energy.
+\end{itemize}
+By calculating the fraction $|\Psi(\mathbf{R}')|^2/|\Psi(\mathbf{R})|^2$, we eliminate the requirement to compute the integral given in
+\begin{align*}
+P(\mathbf{R}) = \frac{|\Psi(\mathbf{R})|^2}{\int |\Psi(\mathbf{R})|^2 d\mathbf{R}}
+\end{align*}
+which is similar to what we did in project 4. In project 4, by calculating $r<= e^{-\beta \delta E}$, we could skip the calculation of the partition function $Z$. 
+
+Once again, by running this for $N_{mc}$ Monte Carlo cycles, we find the energy expectation value as
+\begin{align*}
+\langle E \rangle = \displaystyle \frac{1}{N_{mc}}\sum_i E_i
+\end{align*}
+where $E_i$ is all the energy samples calculated from the Metropolis algorithm. One can also find the expectation value of the mean distance at the energy minimum $r_{12} = \sqrt{\mathbf{r}_1 - \mathbf{r}_2}$ in the same way.
 \section{Implementation} \label{section:implement}
+Like in the previous projects, I will do all the calculations in C++ and plot the results in Python.
 
 \section{Results}\label{section:results}
 
+\FloatBarrier
 \section{Conclusion}\label{section:conclusion}
 
 \FloatBarrier
