@@ -44,6 +44,7 @@ All relevant files used in this project can be found in the this GitHub page:
 \url{https://github.com/AHo94/FYS3150_Projects/tree/master/Project5}
 \section{Method} \label{section:method}
 \subsection{Analytical form for the trial wave function and local energy}
+For this project, we will use natural units. That is $\hbar = c = e = m_e = 1$.
 We will consider two electrons in a quantum dot with a frequency $\hbar \omega = 1$. The Hamiltonian for these two electrons is
 \begin{align*}
 H_0 = -\frac{1}{2}(\nabla_1^2 + \nabla_2^2) + \frac{1}{2}\omega^2(r_1^2 + r_2^2)
@@ -82,7 +83,9 @@ We will now consider two trial functions given as
 \psi_{T_1} &= C \exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right) \\
 \psi_{T_2} &= C \exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right)\exp\left(\frac{r_{12}}{2(1+\beta r_{12})}\right)
 \end{align*}
-where $r_{12} = \sqrt{r_1 - r_2}$ and $\alpha$ and $\beta$ are variational parameters. Let us find the energy of the first trial function. First, we should rewrite the Hamiltonian in spherical coordinates. Our system does not depend on the radial coordinates, so the $\nabla$ operator, for electron $i$ in spherical coordinates, becomes
+where $r_{12} = \sqrt{r_1 - r_2}$ and $\alpha$ and $\beta$ are variational parameters. The second exponential in the $\psi_{T_2}$ is known as the Jastrow factor, which is there because it gives the lowest possible energy for the system, while reducing the amount of variational parameters.
+
+Let us find the energy of the first trial function. First, we should rewrite the Hamiltonian in spherical coordinates. Our system does not depend on the radial coordinates, so the $\nabla$ operator, for electron $i$ in spherical coordinates, becomes
 \begin{align*}
 \nabla^2_i = -\frac{1}{2} \frac{d^2}{dr^2_i} - \frac{1}{r_i}\frac{d}{dr_i}
 \end{align*}
@@ -92,12 +95,12 @@ H_0\psi_{T_1} = \left(-\frac{d^2}{dr^2_1} - \frac{1}{r_1}\frac{d}{dr_1} -\frac{d
 \end{align*}
 There will be a lot of derivatives to keep track of here, so I will take this step by step. Let us first differentiate with respect to $r_1$ first. The first derivative is
 \begin{align*}
-\frac{d}{dr_1}e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)} &= \left( -\alpha \omega r_1 \right)\exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right) \\
+\frac{d}{dr_1}\exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right) &= \left( -\alpha \omega r_1 \right)\exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right) \\
 &= -\alpha \omega r_1 \psi_{T_1}
 \end{align*}
 The second derivative then becomes
 \begin{align*}
-\frac{d^2}{dr_1^2}e^{-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)} &= \frac{d}{dr_1}\left[-\alpha \omega r_1 \exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right)\right]\\
+\frac{d^2}{dr_1^2}\exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right) &= \frac{d}{dr_1}\left[-\alpha \omega r_1 \exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right)\right]\\
 &= (-\alpha \omega + \alpha^2 \omega^2 r_1^2)\exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right) \\
 &= (\alpha^2 \omega^2 r_1^2 - \alpha \omega)\psi_{T_1}
 \end{align*}
@@ -122,12 +125,16 @@ E_{L_1} &= -\frac{1}{2} (\alpha^2 \omega^2 r_1^2 - 3\alpha \omega)  - \frac{1}{2
 &= 3 \alpha \omega +  \frac{1}{2}\omega^2(1-\alpha^2)(r_1^2 + r_2^2)
 \label{eq:Energy_T1}
 \end{align}
-which is exactly what we wanted to show. We will skip the derivation of the analytical local energy for the second trial wave function. If we add Coulomb interaction, the local energy for the first trial wave function becomes
+which is exactly what we wanted to show. We will skip the derivation of the analytical local energy for the second trial wave function. If we add Coulomb interaction, the Hamiltonian now becomes
+\begin{align*}
+H_0 = \displaystyle \sum_{i=1}^N\left(-\frac{1}{2}\nabla_i^2 + \frac{1}{2}\omega^2r_i^2 \right) + \sum_{i<j}\frac{1}{r_{ij}}
+\end{align*}
+and the local energy for the first trial wave function is then
 \begin{align}
 E_{L1} = 3 \alpha \omega +  \frac{1}{2}\omega^2(1-\alpha^2)(r_1^2 + r_2^2) + \frac{1}{r_{12}}
 \label{eq:Energy_T1_Coulomb}
 \end{align}
-where $r_{12}= \sqrt{\mathbf{r}_1 - \mathbf{r}_2}$. The analytical expression for the second trial wave function, with Coulomb interaction, is then
+where $r_{12}= |\mathbf{r}_1 - \mathbf{r}_2|$. The analytical expression for the second trial wave function, with Coulomb interaction, is then
 \begin{align}
 E_{L2} = E_{L1} + \frac{1}{2(1+\beta r_{12})^2}\left[\alpha \omega r_{12} - \frac{1}{2(1+\beta r_{12})} - \frac{2}{r_{12}} + \frac{2\beta}{1+\beta r_{12}} \right]
 \label{eq:Energy_T2_Coulomb}
@@ -137,11 +144,15 @@ with $E_{L1}$ given in equation \ref{eq:Energy_T1_Coulomb}.
 \subsection{The Metropolis Algorithm}
 We will once again, like in project 4, use the Metropolis algorithm to solve our quantum mechanical system. The algorithm is as follows: for every Monte Carlo cycle we 
 \begin{itemize}
-\item \textbf{1)} Start the electrons at an arbitrary position. We let the electron start at the position $x,y,z \in [-1,1]$.
-\item \textbf{2)} Give the electrons a new position determined by $\mathbf{R}' = \mathbf{R} + \delta\times r$, where $\mathbf{R} = (\mathbf{r}_1, \mathbf{r}_2, ..., \mathbf{r}_N)$, $r$ is a random number generated from a normal distribution $r\in [0,1]$ and $\delta$ is a small step length. For this project we will consider $N=2$ electrons.
-\item \textbf{3)} Calculate $w = P(\mathbf{R}')/P(\mathbf{R}) = |\Psi(\mathbf{R}')|^2/|\Psi(\mathbf{R})|^2$, where $\Psi$ is the wave function we will consider (i.e the trial wave functions $\psi_{T1}$ and $\psi_{T2}$ mentioned previously). We now have to consider these two cases
-\item \textbf{Case 1}: If $w <= r$, we accept this new position change and use the calculated $\mathbf{R}'$ to calculate the local energy. The system has now reached a lower energy state.
-\item \textbf{Case 2}: If $w > r$, we do not accept this new position and use the old position $\mathbf{R}$ to calculate the local energy.
+\item \textbf{1)} Start the electrons at an arbitrary position. We let the electron start at the position $x,y,z \in [-1,1]$, which we get from a normal distribution.
+
+\item \textbf{2)} Give the electrons a new position determined by $\mathbf{R}' = \mathbf{R} + \delta\times r$, where $\mathbf{R} = (\mathbf{r}_1, \mathbf{r}_2, ..., \mathbf{r}_N)$, $r$ is a random number generated from a normal distribution $r\in [-1,1]$ and $\delta$ is a small step length. For this project we will consider $N=2$ electrons.
+
+\item \textbf{3)} Calculate $w = P(\mathbf{R}')/P(\mathbf{R}) = |\Psi(\mathbf{R}')|^2/|\Psi(\mathbf{R})|^2$, where $\Psi$ is the wave function we will consider (i.e the trial wave functions $\psi_{T1}$ and $\psi_{T2}$ mentioned previously). Pick a random number $s\in [0,1]$, also given from a normal distribution function. We now have to consider these two cases
+
+\item \textbf{Case 1}: If $s <= w$, we accept this new position change and use the calculated $\mathbf{R}'$ to calculate the local energy. The system has now reached a lower energy state.
+
+\item \textbf{Case 2}: If $s > w$, we do not accept this new position and use the old position $\mathbf{R}$ to calculate the local energy.
 \end{itemize}
 By calculating the fraction $|\Psi(\mathbf{R}')|^2/|\Psi(\mathbf{R})|^2$, we eliminate the requirement to compute the integral given in
 \begin{align*}
@@ -153,7 +164,31 @@ Once again, by running this for $N_{mc}$ Monte Carlo cycles, we find the energy 
 \begin{align*}
 \langle E \rangle = \displaystyle \frac{1}{N_{mc}}\sum_i E_i
 \end{align*}
-where $E_i$ is all the energy samples calculated from the Metropolis algorithm. One can also find the expectation value of the mean distance at the energy minimum $r_{12} = \sqrt{\mathbf{r}_1 - \mathbf{r}_2}$ in the same way.
+where $E_i$ is all the energy samples calculated from the Metropolis algorithm. One can also find the expectation value of the mean distance at the energy minimum $r_{12} = |\mathbf{r}_1 - \mathbf{r}_2|$ in the same way.
+
+\subsection{Algorithm that determines the step length}
+We would like to find an algorithm that, for a given value of $\alpha$, uses an optimal value of the step length $\delta$. This should ideally result to roughly 50\% accepted moves in the metropolis algorithm. One can run the program multiple times to determine the step length. However, one can also find an analytical solution, which would automatize the optimal step length.
+
+Since we are looking at accepted moves, we will take a look at the equation
+\begin{align*}
+s = \frac{|\Psi(\mathbf{R'})|^2}{|\Psi(\mathbf{R})|^2}
+\end{align*}
+which was used to determine whether we accept a move or not in the Metropolis algorithm. We let $s = 0.5$, as we want roughly 50\% accepted moves. We then plug in the first trial wave function to determine an optimal $\delta$ for a given $\alpha$, which gives
+\begin{align*}
+0.5 &= \frac{\exp\left[-\alpha \omega \big((r_1+r\delta)^2 + (r_2 + r\delta)^2\big)\right]}{\exp\left[-\alpha \omega(r_1^2+r_2^2) \right]} \\
+&= \frac{\exp\left[-\alpha \omega(r_1^2 + r_2^2 + 2r_1r\delta + 2r_2r\delta + 2(r\delta)^2)\right]}{\exp\left[-\alpha \omega(r_1^2+r_2^2) \right]}\\
+&= \exp\left[-2\alpha\omega r(r_1\delta + r_2\delta + r\delta^2) \right]
+\end{align*}
+Make sure not to confuse $r$ and $r_1, r_2$. $r \in [-1,1]$ is given by the random distribution. Taking the logarithm on both sides gives
+\begin{align*}
+\ln(0.5) &= -2\alpha\omega r\left(\delta(r_1+r_2) + r\delta^2\right) \\
+\implies & r\delta^2 + \delta(r_1 + r_2) + \frac{\ln(0.5)}{2\alpha \omega r} = 0
+\end{align*}
+This is a second order equation for $\delta$. We require that $\delta$ is always positive, so when we solve this equation for $\delta$, we will have to only consider the positive part. Doing this results to
+\begin{align*}
+\delta = \frac{1}{2r}\left(-(r_1 + r_2) + \sqrt{(r_1+r_2)^2 - \frac{2\ln(0.5)}{\alpha \omega}}\right)
+\end{align*}
+Implementing this in the program \emph{should} result to roughly 50\% of the configurations being accepted. However, we will see that it is not always the case, but the number of accepted configurations will be relatively close to 50\%.
 \section{Implementation} \label{section:implement}
 Like in the previous projects, I will do all the calculations in C++ and plot the results in Python.
 
