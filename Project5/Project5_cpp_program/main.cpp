@@ -3,6 +3,7 @@
 #include <random>
 #include <cmath>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <iomanip>
 #include <time.h>
@@ -105,14 +106,14 @@ void Metropolis_method(int MC_cycles, double omega, double alpha, double beta, d
             vec3 r1_new(0,0,0);
             vec3 r2_new(0,0,0);
             double s = distr(generator);
-            /*
+
             for (int j=0; j<3; j++){
-                r1_new[j] = r1[j] +s;// step_length*distr(generator);
-                r2_new[j] = r2[j] +s;// step_length*distr(generator);
+                r1_new[j] = r1[j] + step_length*distr(generator);
+                r2_new[j] = r2[j] + step_length*distr(generator);
             }
-            */
-            r1_new = r1 + s;
-            r2_new = r2 + s;
+
+            //r1_new = r1 + s;
+            //r2_new = r2 + s;
             NewWavefuncSquared = pow(TrialWavefunc_T1(r1_new, r2_new, alpha, omega), 2);
             if (distrUniform(generator) <= NewWavefuncSquared/OldWavefuncSquared){
                 r1 = r1_new;
@@ -120,7 +121,7 @@ void Metropolis_method(int MC_cycles, double omega, double alpha, double beta, d
                 OldWavefuncSquared = NewWavefuncSquared;
                 counter += 1;
             }
-            step_length = StepLength(r1, r2, alpha, omega, s);
+            step_length = StepLength(r1, r2, alpha, omega, distr(generator));
             //E_local = LaplaceAnalytic(r1, r2, alpha, omega) + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
             E_local = LaplaceOperator(r1, r2, alpha, omega) + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
             EnergySum += E_local;
@@ -201,16 +202,25 @@ int main(int argc, char *argv[])
     alpha = 1;
     beta = 1;
     step_length = 1;
-    Metropolis_method(MC_cycles, omega, alpha, beta, H_expect, 2);
-    /*
-    ofile_global.open("Energy_Alpha_Mdistance.txt");
-    initialize_outfile();
-    for (alpha = 0; alpha<=2; alpha +=0.1){
-        Metropolis_method(MC_cycles, omega, alpha, beta, step_length, H_expect, 1);
-        write_file(MC_cycles, H_expect, alpha, omega);
+    Metropolis_method(MC_cycles, omega, alpha, beta, H_expect, 1);
+    string filename = "Energy_Alpha_Mdistance_omega_";
+    double omegas[] = {0.01, 0.05, 1};
+    for (int i=0; i<3; i++){
+        string fileout = filename;
+        stringstream stream;
+        stream << fixed << setprecision(2) << omegas[i];
+        string argument = stream.str();
+        fileout.append(argument);
+        fileout.append(".txt");
+        ofile_global.open(fileout);
+
+        initialize_outfile();
+        for (alpha = 0.2; alpha<=2; alpha +=0.1){
+            Metropolis_method(MC_cycles, omegas[i], alpha, beta, H_expect, 1);
+            write_file(MC_cycles, H_expect, alpha, omegas[i]);
+        }
+        ofile_global.close();
     }
-    ofile_global.close();
-*/
 
     return 0;
 }
