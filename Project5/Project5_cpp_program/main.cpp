@@ -24,16 +24,12 @@ double TrialWavefunc_T2(vec3 r1, vec3 r2, double alpha, double beta, double omeg
     return Wavefunc1*exp(r_12/(2*(1+beta*r_12)));
 }
 
-double StepLength(vec3 r1, vec3 r2, double alpha, double omega, double *r){
+double StepLength(vec3 r1, vec3 r2, double alpha, double omega, double *s){
     // Calculates the optimal step length based on the alpha value
-    double a = (r[0]*r[0] + r[1]*r[1] + r[2]*r[2]);
-    double b = r[0]*(r1[0]+r2[0]) + r[1]*(r1[1]+r1[1]) + r[2]*(r1[2]+r2[2]);
+    double a = (s[0]*s[0] + s[1]*s[1] + s[2]*s[2]);
+    double b = s[0]*(r1[0]+r2[0]) + s[1]*(r1[1]+r1[1]) + s[2]*(r1[2]+r2[2]);
     double c = log(0.5)/(2*alpha*omega);
     return (-b + sqrt(b*b - 4*a*c))/(2*a);
-    /*
-    double vecSum = r1.length() + r2.length();
-    return (-(vecSum) + sqrt(pow(vecSum,2) - 2*log(0.5)/(alpha*omega)))/(2.0*r);
-    */
 }
 
 double StepLength2(vec3 r1, vec3 r2, double alpha, double omega, double *r){
