@@ -105,9 +105,10 @@ The second derivative then becomes
 &= (\alpha^2 \omega^2 r_1^2 - \alpha \omega)\psi_{T_1}
 \end{align*}
 In short, the kinetic term is
-\begin{align*}
+\begin{align}
 \nabla_1^2 \psi_{T_1} =-\frac{1}{2}(\alpha^2\omega^2r_1^2 -3 \alpha \omega)\psi_{T_1}
-\end{align*}
+\label{eq:Kinetic_psi1}
+\end{align}
 I will skip the calculation for the derivative with respect to $r_2$, but the results are
 \begin{align*}
 \frac{d}{dr_2}\psi_{T_1} &=  -\alpha \omega r_2 \psi_{T_1} \\
@@ -153,6 +154,8 @@ We will once again, like in project 4, use the Metropolis algorithm to solve our
 \item \textbf{Case 1}: If $s <= w$, we accept this new position change and use the calculated $\mathbf{R}'$ to calculate the local energy. The system has now reached a lower energy state.
 
 \item \textbf{Case 2}: If $s > w$, we do not accept this new position and use the old position $\mathbf{R}$ to calculate the local energy.
+
+\item \textbf{4)} Use the new or old position (depending on whatever case above hits) to calculate the local energy $E_L = \frac{1}{\Psi} H_0\Psi$. 
 \end{itemize}
 By calculating the fraction $|\Psi(\mathbf{R}')|^2/|\Psi(\mathbf{R})|^2$, we eliminate the requirement to compute the integral given in
 \begin{align*}
@@ -179,19 +182,32 @@ which was used to determine whether we accept a move or not in the Metropolis al
 &= \frac{\exp\left[-\alpha \omega(r_1^2 + r_2^2 + 2r_1r\delta + 2r_2r\delta + 2(r\delta)^2)\right]}{\exp\left[-\alpha \omega(r_1^2+r_2^2) \right]}\\
 &= \exp\left[-2\alpha\omega r(r_1\delta + r_2\delta + r\delta^2) \right]
 \end{align*}
-Make sure not to confuse $r$ and $r_1, r_2$. $r \in [-1,1]$ is given by the random distribution. Taking the logarithm on both sides gives
+Make sure not to confuse $r$ and $r_1, r_2$, as $r \in [-1,1]$ is given by the random distribution. Taking the logarithm on both sides gives
 \begin{align*}
 \ln(0.5) &= -2\alpha\omega r\left(\delta(r_1+r_2) + r\delta^2\right) \\
 \implies & r\delta^2 + \delta(r_1 + r_2) + \frac{\ln(0.5)}{2\alpha \omega r} = 0
 \end{align*}
 This is a second order equation for $\delta$. We require that $\delta$ is always positive, so when we solve this equation for $\delta$, we will have to only consider the positive part. Doing this results to
-\begin{align*}
+\begin{align}
 \delta = \frac{1}{2r}\left(-(r_1 + r_2) + \sqrt{(r_1+r_2)^2 - \frac{2\ln(0.5)}{\alpha \omega}}\right)
-\end{align*}
+\label{eq:step_length_algo}
+\end{align}
 Implementing this in the program \emph{should} result to roughly 50\% of the configurations being accepted. However, we will see that it is not always the case, but the number of accepted configurations will be relatively close to 50\%.
 \section{Implementation} \label{section:implement}
 Like in the previous projects, I will do all the calculations in C++ and plot the results in Python.
 
+For this project, I will utilize the \texttt{vec3} class that we developed in project 3. This class will make it easier to keep track of all the components contained within the radius variable $\mathbf{r} = (x, y, z)$, as it contains methods to do certain vector calculations, e.g finding vector length and vector addition. 
+\subsubsection*{Testing the Metropolis algorithm}
+Before we proceed with the results, we should check if the Metropolis algorithm works as it should. When calculating the local energy, we should use a numerical approach to calculate the kinetic term $\nabla^2\psi$. However, we already have the analytical expression of the local energy $E_{L1}$, given in equation \ref{eq:Energy_T1}. From that, we also know which terms contributes to the kinetic energy. In fact, the kinetic energy is given in equation \ref{eq:Kinetic_psi1}, which we can use to test the Metropolis algorithm.
+
+By implementing this term as its own function \texttt{LaplaceAnalytic}, we run the program with the analytical kinetic energy. Using $10^5$ Monte Carlo cycles, $\alpha = 1$, $\omega = 1$ and no Coulomb interaction, the result is:
+\begin{lstlisting}
+@Monte Carlo cycles = 100000
+Energy = 3
+Variance = 0
+Accepted configs = 55274@
+\end{lstlisting}
+So the numerical energy, using the analytical expression of the kinetic energy, is exactly 3! The variance is exactly zero as well, which is what we would expect from this test. Also note the number of accepted configurations. The algorithm for an optimal step length, given in equation \ref{eq:step_length_algo}, gives roughly 50\% accepted configurations. 
 \section{Results}\label{section:results}
 
 \FloatBarrier
