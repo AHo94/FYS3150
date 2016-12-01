@@ -12,7 +12,7 @@ using namespace std;
 ofstream ofile_global;
 
 double TrialWavefunc_T1(vec3 r1, vec3 r2, double alpha, double omega){
-    // Function that calculates the trial wave function when r_12 -> 0
+    // Function that calculates the first trial wave function
     return exp(-0.5*alpha*omega*(r1.lengthSquared() + r2.lengthSquared()));
 }
 
@@ -24,8 +24,9 @@ double TrialWavefunc_T2(vec3 r1, vec3 r2, double alpha, double beta, double omeg
 }
 
 double StepLength(vec3 r1, vec3 r2, double alpha, double omega, double r){
+    // Calculates the optimal step length based on the alpha value
     double vecSum = r1.length() + r2.length();
-    return (-(vecSum) + sqrt(pow(vecSum,2) - 2*log(0.5)*r*r/(alpha*omega)))/(2.0*r);
+    return (-(vecSum) + sqrt(pow(vecSum,2) - 2*log(0.5)/(alpha*omega)))/(2.0*r);
 }
 
 double LaplaceOperator(vec3 r1, vec3 r2, double alpha, double omega){
@@ -45,7 +46,7 @@ double LaplaceOperator(vec3 r1, vec3 r2, double alpha, double omega){
 }
 
 double LaplaceOperator_T2(vec3 r1, vec3 r2, double alpha, double beta, double omega){
-    // Function that calculates the Laplace operator numerically
+    // Function that calculates the Laplace operator numerically. Used for the second trial wave function
     double SecondDerivative = 0;
     double dr = 1e-5;
     double wavefunc =  TrialWavefunc_T2(r1, r2, alpha, beta, omega);
@@ -67,8 +68,7 @@ double LaplaceAnalytic(vec3 r1, vec3 r2, double alpha, double omega){
             - 0.5*(pow(AlphaOmega,2)*r2.lengthSquared() - 3*AlphaOmega);
 }
 
-void Metropolis_method(int MC_cycles, double omega, double alpha, double beta, double step_length2\
-                       , double *H_expect, int TrialFunc = 1){
+void Metropolis_method(int MC_cycles, double omega, double alpha, double beta, double *H_expect, int TrialFunc){
     // A function that uses the Metropolis method
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
     std::default_random_engine generator(seed);
@@ -86,36 +86,41 @@ void Metropolis_method(int MC_cycles, double omega, double alpha, double beta, d
     double omega2 = omega*omega;
 
     double step_length = StepLength(r1, r2, alpha, omega, distr(generator));
-    // Analytic expression as a comparison
     double r_12 = (r1-r2).length();
     double CoulombInt = 0;
     if (TrialFunc == 2){
         // Adds Coulomb interaction for second trial wave function
         CoulombInt = 1.0/r_12;
     }
+    // Analytic expressions as a comparison
     double E_an = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared())*(1-alpha*alpha) + 3*alpha*omega + CoulombInt;
     double E_an_T2 = E_an + 1.0/(2*pow(1+beta*r_12, 2))*(alpha*omega*r_12 - 1.0/(2*pow(1+beta*r_12, 2)) - 2.0/r_12 \
                                                          + 2.0*beta/(1+beta*r_12));
     int counter = 0;
 
     if (TrialFunc == 1){
-        double OldWavefuncSquared = pow(fabs(TrialWavefunc_T1(r1, r2, alpha, omega)), 2);
+        double OldWavefuncSquared = pow(TrialWavefunc_T1(r1, r2, alpha, omega), 2);
         for (int cycle=0; cycle<MC_cycles; cycle++){
             // Running Monte Carlo cycles
             vec3 r1_new(0,0,0);
             vec3 r2_new(0,0,0);
+            double s = distr(generator);
+            /*
             for (int j=0; j<3; j++){
-                r1_new[j] = r1[j] + step_length*distr(generator);
-                r2_new[j] = r2[j] + step_length*distr(generator);
+                r1_new[j] = r1[j] +s;// step_length*distr(generator);
+                r2_new[j] = r2[j] +s;// step_length*distr(generator);
             }
-            NewWavefuncSquared = pow(fabs(TrialWavefunc_T1(r1_new, r2_new, alpha, omega)), 2);
+            */
+            r1_new = r1 + s;
+            r2_new = r2 + s;
+            NewWavefuncSquared = pow(TrialWavefunc_T1(r1_new, r2_new, alpha, omega), 2);
             if (distrUniform(generator) <= NewWavefuncSquared/OldWavefuncSquared){
                 r1 = r1_new;
                 r2 = r2_new;
                 OldWavefuncSquared = NewWavefuncSquared;
                 counter += 1;
             }
-            step_length = StepLength(r1, r2, alpha, omega, distr(generator));
+            step_length = StepLength(r1, r2, alpha, omega, s);
             //E_local = LaplaceAnalytic(r1, r2, alpha, omega) + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
             E_local = LaplaceOperator(r1, r2, alpha, omega) + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
             EnergySum += E_local;
@@ -124,24 +129,28 @@ void Metropolis_method(int MC_cycles, double omega, double alpha, double beta, d
         }
     }
     else if(TrialFunc == 2){
-        double OldWavefuncSquared = pow(fabs(TrialWavefunc_T2(r1, r2, alpha, beta, omega)), 2);
+        double OldWavefuncSquared = pow(TrialWavefunc_T2(r1, r2, alpha, beta, omega), 2);
         for (int cycle=0; cycle<MC_cycles; cycle++){
             // Running Monte Carlo cycles
             vec3 r1_new(0,0,0);
             vec3 r2_new(0,0,0);
+            double s = distr(generator);
+            /*
             for (int j=0; j<3; j++){
-                 r1_new[j] = r1[j] + step_length*distr(generator);
-                 r2_new[j] = r2[j] + step_length*distr(generator);
+                 r1_new[j] = r1[j] +s;// step_length*distr(generator);
+                 r2_new[j] = r2[j] +s;// step_length*distr(generator);
             }
-            NewWavefuncSquared = pow(fabs(TrialWavefunc_T2(r1_new, r2_new, alpha,  beta, omega)), 2);
+            */
+            r1_new = r1 + s;
+            r2_new = r2 + s;
+            NewWavefuncSquared = pow(TrialWavefunc_T2(r1_new, r2_new, alpha,  beta, omega), 2);
             if (distrUniform(generator) <= NewWavefuncSquared/OldWavefuncSquared){
                 r1 = r1_new;
                 r2 = r2_new;
                 OldWavefuncSquared = NewWavefuncSquared;
                 counter += 1;
             }
-            //step_length = StepLength(r1, r2, alpha, omega, distr(generator));
-            //E_local = LaplaceAnalytic(r1, r2, alpha, omega) + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
+            step_length = StepLength(r1, r2, alpha, omega, s);
             r_12 = (r1-r2).length();
             E_local = LaplaceOperator_T2(r1, r2, alpha, beta, omega) + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared()) \
                     + 1.0/r_12;
@@ -160,7 +169,7 @@ void Metropolis_method(int MC_cycles, double omega, double alpha, double beta, d
     H_expect[2] = MeanDistance;
     cout << "E numeric = "<< H_expect[0]/(MC_cycles) << endl;
     if (TrialFunc == 1){cout << "E analytic = " << E_an << endl;}
-    else if (TrialFunc == 2){cout << "E analytic = " << E_an_T2 + 1.5 << endl;}
+    else if (TrialFunc == 2){cout << "E analytic = " << E_an_T2 << endl;}
     cout << "Variance = " << EnergySquaredSum/MC_cycles - EnergySum*EnergySum/MC_cycles/MC_cycles << endl;;
     cout << "Accepted configs = " << counter << endl;
 }
@@ -192,7 +201,7 @@ int main(int argc, char *argv[])
     alpha = 1;
     beta = 1;
     step_length = 1;
-    Metropolis_method(MC_cycles, omega, alpha, beta, step_length, H_expect, 1);
+    Metropolis_method(MC_cycles, omega, alpha, beta, H_expect, 2);
     /*
     ofile_global.open("Energy_Alpha_Mdistance.txt");
     initialize_outfile();
