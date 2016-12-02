@@ -147,13 +147,16 @@ We will once again, like in project 4, use the Metropolis algorithm to solve our
 \begin{itemize}
 \item \textbf{1)} Start the electrons at an arbitrary position. We let the electron start at the position $x,y,z \in [-1,1]$, which we get from a normal distribution.
 
-\item \textbf{2)} Give the electrons a new position determined by $\mathbf{R}' = \mathbf{R} + \delta\times r$, where $\mathbf{R} = (\mathbf{r}_1, \mathbf{r}_2, ..., \mathbf{r}_N)$, $r$ is a random number generated from a normal distribution $r\in [-1,1]$ and $\delta$ is a small step length. For this project we will consider $N=2$ electrons.
+\item \textbf{2)} Give the electrons a new position determined by $\mathbf{R}' = \mathbf{R} + \delta\times s$, where $\mathbf{R} = (\mathbf{r}_1, \mathbf{r}_2, ..., \mathbf{r}_N)$, $s$ is a random number generated from a normal distribution such that $s\in [-1,1]$ and $\delta$ is a small step length. Note that $\delta \times r$ is different for every component, e.g
+\begin{align*}
+\mathbf{r_1}' = (x_1 + \delta\times s_1, y_1 + \delta\times s_2, z_1 + \delta\times s_3)
+\end{align*} For this project we will consider $N=2$ electrons.
 
-\item \textbf{3)} Calculate $w = P(\mathbf{R}')/P(\mathbf{R}) = |\Psi(\mathbf{R}')|^2/|\Psi(\mathbf{R})|^2$, where $\Psi$ is the wave function we will consider (i.e the trial wave functions $\psi_{T1}$ and $\psi_{T2}$ mentioned previously). Pick a random number $s\in [0,1]$, also given from a normal distribution function. We now have to consider these two cases
+\item \textbf{3)} Calculate $w = P(\mathbf{R}')/P(\mathbf{R}) = |\Psi(\mathbf{R}')|^2/|\Psi(\mathbf{R})|^2$, where $\Psi$ is the wave function we will consider (i.e the trial wave functions $\psi_{T1}$ and $\psi_{T2}$ mentioned previously). Pick a random number $p\in [0,1]$, also given from a normal distribution function. We now have to consider these two cases
 
-\item \textbf{Case 1}: If $s <= w$, we accept this new position change and use the calculated $\mathbf{R}'$ to calculate the local energy. The system has now reached a lower energy state.
+\item \textbf{Case 1}: If $p <= w$, we accept this new position change and use the calculated $\mathbf{R}'$ to calculate the local energy. The system has now reached a lower energy state.
 
-\item \textbf{Case 2}: If $s > w$, we do not accept this new position and use the old position $\mathbf{R}$ to calculate the local energy.
+\item \textbf{Case 2}: If $p > w$, we do not accept this new position and use the old position $\mathbf{R}$ to calculate the local energy.
 
 \item \textbf{4)} Use the new or old position (depending on whatever case above hits) to calculate the local energy $E_L = \frac{1}{\Psi} H_0\Psi$. 
 \end{itemize}
@@ -174,22 +177,35 @@ We would like to find an algorithm that, for a given value of $\alpha$, uses an 
 
 Since we are looking at accepted moves, we will take a look at the equation
 \begin{align*}
-s = \frac{|\Psi(\mathbf{R'})|^2}{|\Psi(\mathbf{R})|^2}
+p = \frac{|\Psi(\mathbf{R'})|^2}{|\Psi(\mathbf{R})|^2}
 \end{align*}
-which was used to determine whether we accept a move or not in the Metropolis algorithm. We let $s = 0.5$, as we want roughly 50\% accepted moves. We then plug in the first trial wave function to determine an optimal $\delta$ for a given $\alpha$, which gives
+which was used to determine whether we accept a move or not in the Metropolis algorithm. The length $|\mathbf{r}_1'| = \mathbf{r}_1 + \delta \times s = r_1'$ is now
 \begin{align*}
-0.5 &= \frac{\exp\left[-\alpha \omega \big((r_1+r\delta)^2 + (r_2 + r\delta)^2\big)\right]}{\exp\left[-\alpha \omega(r_1^2+r_2^2) \right]} \\
-&= \frac{\exp\left[-\alpha \omega(r_1^2 + r_2^2 + 2r_1r\delta + 2r_2r\delta + 2(r\delta)^2)\right]}{\exp\left[-\alpha \omega(r_1^2+r_2^2) \right]}\\
-&= \exp\left[-2\alpha\omega r(r_1\delta + r_2\delta + r\delta^2) \right]
-\end{align*}
-Make sure not to confuse $r$ and $r_1, r_2$, as $r \in [-1,1]$ is given by the random distribution. Taking the logarithm on both sides gives
+r_1' = \sqrt{(x_1 + \delta s_1)^2 + (y_1 + \delta s_2)^2 + (z_1 + \delta s_3)^2}
+\end{align*} We let $p = 0.5$, as we want roughly 50\% accepted moves. We then plug in the first trial wave function to determine an optimal $\delta$ for a given $\alpha$, which gives
 \begin{align*}
-\ln(0.5) &= -2\alpha\omega r\left(\delta(r_1+r_2) + r\delta^2\right) \\
-\implies & r\delta^2 + \delta(r_1 + r_2) + \frac{\ln(0.5)}{2\alpha \omega r} = 0
+0.5 &= \frac{1}{\exp\left[-\alpha \omega(r_1^2+r_2^2) \right]} \big(\exp\big[-\alpha \omega \big((x_1 + \delta s_1)^2 + (y_1 + \delta s_2)^2  \\
+& + (z_1 + \delta s_3)^2 + (x_2 + \delta s_4)^2 + (y_2 + \delta s_5)^2 + (z_2 + \delta s_6)^2\big)\big]\big) \\
+&= \frac{1}{\exp[-\alpha \omega (r_1^2 + r_2^2)]}\big(\exp[-\alpha \omega\big(x_1^2 + y_1^2 + z_1^2 + 2\delta(x_1s_1 + y_1s_2 + z_1s_3) + \\
+& x_2^2 + y_2^2 + z_2^2 + 2\delta(x_2s_4 + y_2s_5 + z_2 s_6) +\delta^2(s_1^2 + s_2^2 + s_3^2 + s_4^2 + s_5^2 + s_6^2) \big)]  \big) \\
+&= \exp\big[-\alpha \omega\big(2\delta(x_1s_1 + y_1s_2 + z _1s_3 + x_2s_4 + y_2s_5 + z_2 s_6) \\
+& +\delta^2(s_1^2 + s_2^2 + s_3^2 + s_4^2 + s_5^2 + s_6^2) \big) \big]
 \end{align*}
-This is a second order equation for $\delta$. We require that $\delta$ is always positive, so when we solve this equation for $\delta$, we will have to only consider the positive part. Doing this results to
+where we have in the last line used  $x^2 + y^2 + z^2 = r^2$ for both $r_1$ and $r_2$, thus cancelling the denominator. Taking the logarithm on both sides gives
+\begin{align*}
+\ln(0.5) &= -\alpha \omega\big(2\delta(x_1s_1 + y_1s_2 + z _1s_3 + x_2s_4 + y_2s_5 + z_2 s_6) \\
+& +\delta^2(s_1^2 + s_2^2 + s_3^2 + s_4^2 + s_5^2 + s_6^2) \big) \\
+\implies & a\delta^2 + b\delta + c = 0
+\end{align*}
+where we have defined
+\begin{align*}
+a &= s_1^2 + s_2^2 + s_3^2 + s_4^2 + s_5^2 + s_6^2 \\
+b &= 2(x_1s_1 + y_1s_2 + z _1s_3 + x_2s_4 + y_2s_5 + z_2 s_6) \\
+c &= \frac{\ln(0.5)}{\alpha \omega}
+\end{align*}
+This is just a second order equation for $\delta$. We require that $\delta$ is always positive, so when we solve this equation for $\delta$, we will have to only consider the positive part. Doing this results to
 \begin{align}
-\delta = \frac{1}{2r}\left(-(r_1 + r_2) + \sqrt{(r_1+r_2)^2 - \frac{2\ln(0.5)}{\alpha \omega}}\right)
+\delta = \frac{1}{2a}(-b + \sqrt{b^2 - 4ac})
 \label{eq:step_length_algo}
 \end{align}
 Implementing this in the program \emph{should} result to roughly 50\% of the configurations being accepted. However, we will see that it is not always the case, but the number of accepted configurations will be relatively close to 50\%.
@@ -205,9 +221,26 @@ By implementing this term as its own function \texttt{LaplaceAnalytic}, we run t
 @Monte Carlo cycles = 100000
 Energy = 3
 Variance = 0
-Accepted configs = 55274@
+Accepted configs (percentage) = 0.62812@
 \end{lstlisting}
-So the numerical energy, using the analytical expression of the kinetic energy, is exactly 3! The variance is exactly zero as well, which is what we would expect from this test. Also note the number of accepted configurations. The algorithm for an optimal step length, given in equation \ref{eq:step_length_algo}, gives roughly 50\% accepted configurations. 
+So the numerical energy, using the analytical expression of the kinetic energy, is exactly 3! The variance is exactly zero as well, which is what we would expect from this test. Also note the number of accepted configurations. The algorithm for an optimal step length, given in equation \ref{eq:step_length_algo}, gives roughly 63\% accepted configurations. Not exactly perfect, but good enough.
+
+We can now also test, with the same values of $\alpha$ and $\omega$, if the numerical derivation of the kinetic term works. The discretized numerical second derivative is given as
+\begin{align*}
+\left(\frac{d^2f}{dx^2}\right) = \frac{f(x + \Delta x) + f(x - \Delta x) - 2f(x)}{\Delta x^2}
+\end{align*}
+The Laplace operator for all three dimensions is thus
+\begin{align*}
+\nabla^2 f = \displaystyle \sum_{i=1}^3 \frac{f(x_i + \Delta x) + f(x_i - \Delta x) - 2f(x_i)}{\Delta x^2} 
+\end{align*}
+where $i=1,2,3$ corresponds to the $x,y,z$ components and $\Delta x$ is the same for every direction. We let $\Delta x = 10^{-5}$ and running this for the first trial function gives
+\begin{lstlisting}
+@Monte Carlo cycles = 100000
+Energy = 3
+Variance = 3.45808e-011
+Accepted configs (percentage) = 0.62846@
+\end{lstlisting}
+The result is incredibly good. The energy is (almost) exactly 3 and the variance is very close to zero as well. We can therefore calculate the kinetic term of the local energy by using numerical derivation for any wave function. However, we will mostly use the analytical expressions of the local energy, as it uses less floating point operators and thus less CPU time.
 \section{Results}\label{section:results}
 
 \FloatBarrier
