@@ -37,6 +37,32 @@ class Plotter():
 			self.Variance[j] = float(data[j][3])
 			self.MeanDistance[j] = float(data[j][4])
 
+	def read_data_virial(self, filename_open):
+		""" Reads data and saves to variables. Specific for Virial problem """
+		filename = open(os.path.join(file_directory, filename_open), 'r')
+		i = 0
+		data = []
+		for line in filename:
+			data_set = line.split()
+			if i != 0:
+				data.append(data_set)
+			i += 1
+		filename.close()
+
+		self.N = len(data)
+		self.alpha = np.zeros(self.N)
+		self.beta = np.zeros(self.N)
+		self.omega = np.zeros(self.N)
+
+		self.KineticExpect = np.zeros(self.N)
+		self.PotentialExpect = np.zeros(self.N)
+
+		for j in range(0, self.N):
+			self.alpha[j] = float(data[j][0])
+			self.beta[j] = float(data[j][1])
+			self.omega[j] = float(data[j][-1])
+			self.KineticExpect[j] = float(data[j][2])
+			self.PotentialExpect[j] = float(data[j][4])
 
 	def plot_energy_alpha(self):
 		" Function used to plot the energy and variance as a function of alpha for different omegas "
@@ -148,8 +174,27 @@ class Plotter():
 		else:
 			plt.show()
 
+	def Virial_plotting(self):
+		self.read_data_virial("Virial_data.txt")
+		fig1 = plt.figure()
+		plt.plot(self.omega, self.KineticExpect/self.PotentialExpect)
+		plt.xlabel(r'$\omega$')
+		plt.ylabel(r'$\langle T \rangle/\langle V \rangle$')
+		plt.title(r'Plot of $\langle T \rangle/\langle V \rangle$ as a function of $\omega$')
 
+		self.read_data_virial("Virial_NoCoulomb_data.txt")
+		fig2 = plt.figure()
+		plt.plot(self.omega, self.KineticExpect/self.PotentialExpect)
+		plt.xlabel(r'$\omega$')
+		plt.ylabel(r'$\langle T \rangle/\langle V \rangle$')
+		plt.title(r'Plot of $\langle T \rangle/\langle V \rangle$ as a function of $\omega$. No Coulomb interaction')
+		if self.savefile == True:
+			fig1.savefig('../Plots/Virial_Plot.pdf')
+			fig2.savefig('../plots/Virial_Plot_NoCoulombInt.pdf')
+		else:
+			plt.show()
 ## Comment out the functions to plot what you want
 solver = Plotter(False)
 #solver.plot_energy_alpha()
-solver.Find_Optimal_AlphaBeta()
+#solver.Find_Optimal_AlphaBeta()
+solver.Virial_plotting()
