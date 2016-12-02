@@ -166,9 +166,11 @@ class Plotter():
 		MinIndex = np.where(self.Energy == EnergyMinimum)[0][0]
 		MinAlpha = self.alpha[MinIndex]
 		MinBeta = self.beta[MinIndex]
+		StdEnergy = np.sqrt(self.Variance[MinIndex])
 		print 'Lowest energy = ', EnergyMinimum
 		print 'Optimal Alpha value = ', MinAlpha
 		print 'Optimal Beta value = ', MinBeta
+		print 'Standard deviation = ', StdEnergy
 		if self.savefile == True:
 			fig1.savefig('../Plots/OptimalAlphaBeta_3DPlot.pdf')
 		else:
