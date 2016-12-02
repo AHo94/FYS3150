@@ -209,6 +209,13 @@ This is just a second order equation for $\delta$. We require that $\delta$ is a
 \label{eq:step_length_algo}
 \end{align}
 Implementing this in the program \emph{should} result to roughly 50\% of the configurations being accepted. However, we will see that it is not always the case, but the number of accepted configurations will be relatively close to 50\%.
+
+\subsection*{Results from project 2}
+It is a good idea to note down some relations from project 2, since we will compare a lot of our results with that project. Previously, we found that an electron in a harmonic oscillator potential had the energy
+\begin{align*}
+E_{nl} = \hbar \omega \left(2n + l + \frac{3}{2} \right)
+\end{align*}
+Using natural units we have $\hbar = 1$. We also neglect the angular movements, so $l = 0$ and in the ground state, we let the quantum number $n=0$. This energy does not take into account center of mass energy $E_{cm}$. Because of this, we will have to add $E_{cm} = 1.5$ to $E_{nl}$ when we compare our results.
 \section{Implementation} \label{section:implement}
 Like in the previous projects, I will do all the calculations in C++ and plot the results in Python.
 
