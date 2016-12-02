@@ -14,8 +14,6 @@ public:
     void Metropolis_T2(int MC_cycles, double alpha, double beta, double omega);
     void Write_file(double alpha, double omega);
 
-    Wavefunctions WaveInstance;
-
 private:
     double EnergyExpectation;
     double EnergyExpectationSquared;

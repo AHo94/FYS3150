@@ -32,6 +32,7 @@ double Metropolis_Quantum::LaplaceAnalytic(vec3 r1, vec3 r2, double alpha, doubl
 double Metropolis_Quantum::LaplaceOperator(vec3 r1, vec3 r2, double alpha, double omega)
 {
     // Function that calculates the Laplace operator numerically
+    /*
     double SecondDerivative = 0;
     double dr = 1e-5;
     double wavefunc = WaveInstance.Wavefunction_T1(r1, r2, alpha, omega);
@@ -44,6 +45,7 @@ double Metropolis_Quantum::LaplaceOperator(vec3 r1, vec3 r2, double alpha, doubl
                 2*wavefunc + WaveInstance.Wavefunction_T1(r1, r2-rchange, alpha, omega));
     }
     return 0.5*SecondDerivative/(wavefunc*(dr*dr));
+    */
 }
 
 void Metropolis_Quantum::Metropolis_T1(int MC_cycles, double alpha, double omega, int Analytic){
@@ -75,6 +77,7 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, double alpha, double omega
 
     int counter = 0;
     // Runs the Monte Carlo cycles
+    /*
     double OldWavefuncSquared = pow(WaveInstance.Wavefunction_T1(r1, r2, alpha, omega), 2);
     for (int cycle=0; cycle<MC_cycles; cycle++){
         // Running Monte Carlo cycles
@@ -115,7 +118,7 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, double alpha, double omega
     cout << "Variance = " << EnergyExpectationSquared/MC_cycles - \
             EnergyExpectation*EnergyExpectation/MC_cycles/MC_cycles << endl;;
     cout << "Accepted configs = " << (double)counter/MC_cycles << endl;
-
+    */
 }
 
 
