@@ -6,9 +6,7 @@
 #include <sstream>
 #include <string>
 #include <iomanip>
-#include <time.h>
 #include "vec3.h"
-#include "metropolis_quantum.h"
 using namespace std;
 
 ofstream ofile_global;
@@ -32,7 +30,7 @@ double StepLength(vec3 r1, vec3 r2, double alpha, double omega, double *s){
         a += s[i]*s[i];
     }
     double b = 2*(r1[0]*s[0] + r1[1]*s[1] + r1[2]*s[2] + r2[0]*s[3] + r2[1]*s[4] + r2[2]*s[5]);
-    double c = log(0.5)/(alpha*omega);
+    double c = log(0.3)/(alpha*omega);
     return (-b + sqrt(b*b - 4*a*c))/(2*a);
 }
 
@@ -76,12 +74,18 @@ double LaplaceAnalytic(vec3 r1, vec3 r2, double alpha, double omega){
 }
 
 void Metropolis_method_T1(int MC_cycles, double omega, double alpha, double *ExpectationValues\
-                       , int Analytic = 0){
+                       , int CoulombInt, int Analytic = 0){
     /* Function that solves the Metropolis method for the first trial function.
      * Argument "Analytic" is set to zero by default. Acts like an optional argument.
      * If Analytic = 1, function uses analytic Laplace operator.
      * If Analytic = 0 (or an arbitrary number), uses numerical Laplace operator.
     */
+    if (CoulombInt != 0 && CoulombInt != 1){
+        cout << "CoulombInt not set properly. Currently = " << CoulombInt << endl;
+        cout << "Try: CoulombInt = 0 or 1" << endl;
+        exit(1);
+    }
+
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
     std::default_random_engine generator(seed);
     std::uniform_real_distribution<double> distrUniform(0, 1.0);
@@ -124,16 +128,18 @@ void Metropolis_method_T1(int MC_cycles, double omega, double alpha, double *Exp
             counter += 1;
         }
         step_length = StepLength(r1, r2, alpha, omega, rDistr);
+        r_12 = (r1-r2).length();
         if (Analytic == 1){
-            E_local = LaplaceAnalytic(r1, r2, alpha, omega) + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
+            E_local = LaplaceAnalytic(r1, r2, alpha, omega) + \
+                    0.5*omega2*(r1.lengthSquared() + r2.lengthSquared()) + CoulombInt*(1/r_12);
         }
         else{
             E_local = LaplaceOperator(r1, r2, alpha, omega) + \
-                    0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
+                    0.5*omega2*(r1.lengthSquared() + r2.lengthSquared()) + CoulombInt*(1/r_12);
         }
         EnergySum += E_local;
         EnergySquaredSum += E_local*E_local;
-        MeanDistance += (r1-r2).length();
+        MeanDistance += r_12;
     }
 
     // Adding the energies and mean distance in their arrays
@@ -144,7 +150,7 @@ void Metropolis_method_T1(int MC_cycles, double omega, double alpha, double *Exp
     cout << "Energy = "<< ExpectationValues[0]/(MC_cycles) << endl;
     cout << "Variance = " << EnergySquaredSum/MC_cycles - EnergySum*EnergySum/MC_cycles/MC_cycles << endl;
     cout << "Accepted configs (percentage) = " <<(double)counter/MC_cycles << endl;
-    cout << "\n";
+
 }
 
 void Metropolis_method_T2(int MC_cycles, double omega, double alpha, double beta, double *ExpectationValues){
@@ -235,6 +241,7 @@ void Metropolis_Virial(int MC_cycles, double alpha, double beta, double omega, d
     double KineticSquaredSum = 0;
     double PotentialSum = 0;
     double PotentialSquaredSum = 0;
+    double MeanDistance = 0;
     double NewWavefuncSquared = 0;
     double r_12 = 0;
     double omega2 = omega*omega;
@@ -274,6 +281,7 @@ void Metropolis_Virial(int MC_cycles, double alpha, double beta, double omega, d
         KineticSquaredSum += E_kin*E_kin;
         PotentialSum += E_pot;
         PotentialSquaredSum += E_pot*E_pot;
+        MeanDistance += r_12;
     }
 
     // Adding the energies and mean distance in their arrays
@@ -281,11 +289,11 @@ void Metropolis_Virial(int MC_cycles, double alpha, double beta, double omega, d
     ExpectationValues[1] = KineticSquaredSum;
     ExpectationValues[2] = PotentialSum;
     ExpectationValues[3] = PotentialSquaredSum;
+    ExpectationValues[4] = MeanDistance;
     cout << "Monte Carlo cycles = " << MC_cycles << endl;
     cout << "Kinetic numeric = "<< ExpectationValues[0]/(MC_cycles) << endl;
     cout << "Potential numeric = "<< ExpectationValues[2]/(MC_cycles) << endl;
     cout << "Accepted configs (percentage) = " <<(double) counter/MC_cycles << endl;
-    cout << "\n" << endl;
 }
 
 
@@ -302,6 +310,22 @@ void write_file(int MC_cycles, double *ExpectationValues, double alpha, double b
     ofile_global << setw(15) << omega << endl;
 }
 
+void write_file_virial(int MC_cycles, double *ExpectationValues, double alpha, double beta, double omega){
+    // Writes out data to the output file. Function made specific for the parallellization part.
+    double Kinetic = ExpectationValues[0]/MC_cycles;
+    double KineticVariance = ExpectationValues[1]/MC_cycles - Kinetic*Kinetic;
+    double Potential = ExpectationValues[2]/MC_cycles;
+    double PotentialVariance = ExpectationValues[3]/MC_cycles - Potential*Potential;
+    double MeanDistance = ExpectationValues[4]/MC_cycles;
+    ofile_global << setw(15) << alpha;
+    ofile_global << setw(15) << beta;
+    ofile_global << setw(15) << Kinetic;
+    ofile_global << setw(15) << KineticVariance;
+    ofile_global << setw(15) << Potential;
+    ofile_global << setw(15) << PotentialVariance;
+    ofile_global << setw(15) << MeanDistance;
+    ofile_global << setw(15) << omega << endl;
+}
 void initialize_outfile(){
     ofile_global << setw(15) << "Alpha";
     ofile_global << setw(15) << "Beta";
@@ -311,17 +335,27 @@ void initialize_outfile(){
     ofile_global << setw(15) << "Omega" << endl;
 }
 
+void initialize_outfile_virial(){
+    ofile_global << setw(15) << "Alpha";
+    ofile_global << setw(15) << "Beta";
+    ofile_global << setw(15) << "Kinetic";
+    ofile_global << setw(15) << "Kin Variance";
+    ofile_global << setw(15) << "Potential";
+    ofile_global << setw(15) << "Pot Variance";
+    ofile_global << setw(15) << "Mean Distance";
+    ofile_global << setw(15) << "Omega" << endl;
+}
 int main(int argc, char *argv[])
 {
     double *ExpectationValues;
     ExpectationValues = new double [3];
-    int MC_cycles = 100000;
+    int MC_cycles = 200000;
     double omega, alpha, beta;
     omega = 1;
     alpha = 1;
     beta = 1;
-    Metropolis_method_T1(MC_cycles, omega, alpha, ExpectationValues);
-    Metropolis_method_T1(MC_cycles, omega, alpha, ExpectationValues, 1);
+    Metropolis_method_T1(MC_cycles, omega, alpha, ExpectationValues, 0);
+    //Metropolis_method_T1(MC_cycles, omega, alpha, ExpectationValues, 0, 1);
     //Metropolis_method_T2(MC_cycles, omega, alpha, beta, ExpectationValues);
 
 
@@ -345,40 +379,78 @@ int main(int argc, char *argv[])
         ofile_global.close();
     }
     */
-/*
-    ofile_global.open("Beta_test2.txt");
-    initialize_outfile();
-    for (double alphas = 0.8; alphas <= 1.3; alphas += 0.02){
-        for (double betas = 0.2; betas <= 1.3; betas += 0.02){
-            Metropolis_method_T2(MC_cycles, omega, alphas, betas, ExpectationValues);
-            write_file(MC_cycles, ExpectationValues, alphas, betas, omega);
+    /*
+    string filename_optimal = "Optimal_AlphaBeta_omega_";
+    for (int i=0; i<3; i++){
+        string fileout = filename_optimal;
+        stringstream stream;
+        stream << fixed << setprecision(2) << omegas[i];
+        string argument = stream.str();
+        fileout.append(argument);
+        fileout.append(".txt");
+        ofile_global.open(fileout);
+        initialize_outfile();
+        for (double alphas = 0.8; alphas <= 1.3; alphas += 0.02){
+            for (double betas = 0.2; betas <= 1.3; betas += 0.02){
+                Metropolis_method_T2(MC_cycles, omega, alphas, betas, ExpectationValues);
+                write_file(MC_cycles, ExpectationValues, alphas, betas, omega);
+            }
         }
+        ofile_global.close();
+    }
+
+    double AlphaOptimal = 1.06;
+    double BetaOptimal = 0.56;
+    ofile_global.open("Optimal_Energy_SecondTrialWaveFunc.txt");
+    initialize_outfile();
+    for (int i=0; i<3; i++){
+        Metropolis_method_T2(MC_cycles, omegas[i], AlphaOptimal, BetaOptimal, ExpectationValues);
+        write_file(MC_cycles, ExpectationValues, AlphaOptimal, BetaOptimal, omegas[i]);
+    }
+    ofile_global.close();
+
+    ofile_global.open("Optimal_Energy_FirstTrialWaveFunc.txt");
+    initialize_outfile();
+    for (int i=0; i<3; i++){
+        Metropolis_method_T1(MC_cycles, omegas[i], AlphaOptimal, ExpectationValues, 1);
+        write_file(MC_cycles, ExpectationValues, AlphaOptimal, BetaOptimal, omegas[i]);
     }
     ofile_global.close();
     */
 
-    double *VirialExpect = new double[4];
-    double AlphaOptimal = 1.06;
-    double BetaOptimal = 0.56;
-    Metropolis_Virial(MC_cycles, AlphaOptimal, BetaOptimal, omega, VirialExpect, 0);
     /*
-    string filename2 = "Virial_omega_";
-    for (int i=0; i<3; i++){
-        string fileout2 = filename2;
-        stringstream stream;
-        stream << fixed << setprecision(2) << omegas[i];
-        string argument = stream.str();
-        fileout2.append(argument);
-        fileout2.append(".txt");
-        ofile_global.open(fileout2);
+    double *VirialExpect = new double[5];
 
-        Metropolis_Virial(MC_cycles, AlphaOptimal, BetaOptimal, omegas[i], VirialExpect, 0);
-        write_file(MC_cycles, VirialExpect, AlphaOptimal, BetaOptimal, omegas[i]);
+    // New omegas
+    int N_omegas = 50;
+    double *omegas2 = new double[N_omegas];
+    double omega_step = (1.0-0.01)/(N_omegas-1);
+    for (int i=0; i<N_omegas; i++){
+        omegas2[i] = 0.01 + i*omega_step;
     }
+    string filename2 = "Virial_data.txt";
+    ofile_global.open(filename2);
+    initialize_outfile_virial();
+    for (int i=0; i<N_omegas; i++){
+        Metropolis_Virial(MC_cycles, AlphaOptimal, BetaOptimal, omegas2[i], VirialExpect, 1);
+        write_file_virial(MC_cycles, VirialExpect, AlphaOptimal, BetaOptimal, omegas2[i]);
+    }
+    ofile_global.close();
+
+    string filename3 = "Virial_NoCoulomb_data.txt";
+    ofile_global.open(filename3);
+    initialize_outfile_virial();
+    for (int i=0; i<N_omegas; i++){
+        Metropolis_Virial(MC_cycles, AlphaOptimal, BetaOptimal, omegas2[i], VirialExpect, 0);
+        write_file_virial(MC_cycles, VirialExpect, AlphaOptimal, BetaOptimal, omegas2[i]);
+    }
+    ofile_global.close();
     */
+    /*
     cout << "CLASS TEST" << endl;
     Metropolis_Quantum MSolver;
     MSolver.Metropolis_T1(MC_cycles, alpha, omega);
     MSolver.Metropolis_T1(MC_cycles, alpha, omega, 1);
+    */
     return 0;
 }
