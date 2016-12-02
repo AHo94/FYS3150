@@ -1,8 +1,13 @@
 #include "wavefunctions.h"
-
-Wavefunctions::Wavefunctions()
+#include <iostream>
+Wavefunctions::Wavefunctions(int WaveFuncChoice):
+FuncFactor(WaveFuncChoice)
 {
-
+    if (FuncFactor != 0 && FuncFactor != 1){
+        std::cout << "Instance call value invalid. Current value = " << FuncFactor << std::endl;
+        std::cout << "Try value: 0 or 1" << std::endl;;
+        exit(1);
+    }
 }
 
 double Wavefunctions::Wavefunction_T1(vec3 r1, vec3 r2, double alpha, double omega)
