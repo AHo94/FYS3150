@@ -29,31 +29,36 @@ double Metropolis_Quantum::LaplaceAnalytic(vec3 r1, vec3 r2, double alpha, doubl
             - 0.5*(pow(AlphaOmega,2)*r2.lengthSquared() - 3*AlphaOmega);
 }
 
-double Metropolis_Quantum::LaplaceOperator(vec3 r1, vec3 r2, double alpha, double omega)
+double Metropolis_Quantum::LaplaceOperator(Wavefunctions &WaveFunc, vec3 r1, vec3 r2, double alpha, double omega)
 {
     // Function that calculates the Laplace operator numerically
-    /*
     double SecondDerivative = 0;
     double dr = 1e-5;
-    double wavefunc = WaveInstance.Wavefunction_T1(r1, r2, alpha, omega);
+    double wavefunc = WaveFunc(r1, r2, omega, alpha);
     for (int i=0; i<3; i++){
         vec3 rchange(0,0,0);
         rchange[i] = dr;
-        SecondDerivative -= (WaveInstance.Wavefunction_T1(r1+rchange, r2, alpha, omega) -\
-                2*wavefunc + WaveInstance.Wavefunction_T1(r1-rchange, r2, alpha, omega));
-        SecondDerivative -= (WaveInstance.Wavefunction_T1(r1, r2+rchange, alpha, omega) -\
-                2*wavefunc + WaveInstance.Wavefunction_T1(r1, r2-rchange, alpha, omega));
+        SecondDerivative -= (WaveFunc(r1+rchange, r2 , omega, alpha) -\
+                2*wavefunc + WaveFunc(r1-rchange, r2, omega, alpha));
+        SecondDerivative -= (WaveFunc(r1, r2+rchange, omega, alpha) -\
+                2*wavefunc + WaveFunc(r1, r2-rchange, omega, alpha));
     }
     return 0.5*SecondDerivative/(wavefunc*(dr*dr));
-    */
+
 }
 
-void Metropolis_Quantum::Metropolis_T1(int MC_cycles, double alpha, double omega, int Analytic){
+void Metropolis_Quantum::Metropolis_T1(int MC_cycles, Wavefunctions &WaveFunc, double alpha,
+                                       double omega, int CoulombInt, int Analytic){
     /* Function that solves the Metropolis method for the first trial function.
     * Argument "Analytic" is set to zero by default. Acts like an optional argument.
     * If Analytic = 1, function uses analytic Laplace operator.
     * If Analytic = 0 (or an arbitrary number), uses numerical Laplace operator.
     */
+    if (CoulombInt != 0 && CoulombInt != 1){
+        cout << "CoulombInt not set properly. Currently = " << CoulombInt << endl;
+        cout << "Try: CoulombInt = 0 or 1" << endl;
+        exit(1);
+    }
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
     std::default_random_engine generator(seed);
     std::uniform_real_distribution<double> distrUniform(0, 1.0);
@@ -62,6 +67,7 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, double alpha, double omega
     vec3 r1(distr(generator),distr(generator),distr(generator));
     vec3 r2(distr(generator),distr(generator),distr(generator));
 
+    double beta = 0;
     double E_local = 0;
     double EnergySum = 0;
     double EnergySquaredSum = 0;
@@ -77,8 +83,8 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, double alpha, double omega
 
     int counter = 0;
     // Runs the Monte Carlo cycles
-    /*
-    double OldWavefuncSquared = pow(WaveInstance.Wavefunction_T1(r1, r2, alpha, omega), 2);
+
+    double OldWavefuncSquared = pow(WaveFunc(r1, r2, omega, alpha), 2);
     for (int cycle=0; cycle<MC_cycles; cycle++){
         // Running Monte Carlo cycles
         vec3 r1_new(0,0,0);
@@ -89,7 +95,7 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, double alpha, double omega
             r1_new[j] = r1[j] +step_length*rDistr[j];
             r2_new[j] = r2[j] +step_length*rDistr[j+3];
         }
-        NewWavefuncSquared = pow(WaveInstance.Wavefunction_T1(r1_new, r2_new, alpha, omega), 2);
+        NewWavefuncSquared = pow(WaveFunc(r1_new, r2_new, omega, alpha), 2);
         if (distrUniform(generator) <= NewWavefuncSquared/OldWavefuncSquared){
             r1 = r1_new;
             r2 = r2_new;
@@ -101,7 +107,7 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, double alpha, double omega
             E_local = LaplaceAnalytic(r1, r2, alpha, omega) + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
         }
         else{
-            E_local = LaplaceOperator(r1, r2, alpha, omega) + \
+            E_local = LaplaceOperator(WaveFunc, r1, r2, alpha, beta, omega) + \
             0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
         }
         EnergySum += E_local;
@@ -118,7 +124,76 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, double alpha, double omega
     cout << "Variance = " << EnergyExpectationSquared/MC_cycles - \
             EnergyExpectation*EnergyExpectation/MC_cycles/MC_cycles << endl;;
     cout << "Accepted configs = " << (double)counter/MC_cycles << endl;
-    */
+
+}
+
+void Metropolis_Quantum::Metropolis_T2(int MC_cycles, Wavefunctions &WaveFunc, double alpha, double beta, double omega)
+{
+    // Function that solves the Metropolis method for the second trial wave function.
+
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
+    std::default_random_engine generator(seed);
+    std::uniform_real_distribution<double> distrUniform(0, 1.0);
+    std::uniform_real_distribution<double> distr(-1.0, 1.0);
+    // Random initial starting position for both electrons
+    vec3 r1(distr(generator),distr(generator),distr(generator));
+    vec3 r2(distr(generator),distr(generator),distr(generator));
+
+    double E_local = 0;
+    double EnergySum = 0;
+    double EnergySquaredSum = 0;
+    double MeanDistance = 0;
+    double NewWavefuncSquared = 0;
+    double r_12 = 0;
+    double omega2 = omega*omega;
+
+    double *rDistr = new double[6];
+    for (int i=0; i<6; i++){
+        rDistr[i] = distr(generator);
+    }
+    double step_length = CalculateStepLength(r1, r2, alpha, omega, rDistr);
+
+    int counter = 0;
+    double OldWavefuncSquared = pow(WaveFunc(r1, r2, omega, alpha, beta), 2);
+    for (int cycle=0; cycle<MC_cycles; cycle++){
+        // Running Monte Carlo cycles
+        vec3 r1_new(0,0,0);
+        vec3 r2_new(0,0,0);
+        for (int j=0; j<3; j++){
+            rDistr[j] = distr(generator);
+            rDistr[j+3] = distr(generator);
+            r1_new[j] = r1[j] +step_length*rDistr[j];
+            r2_new[j] = r2[j] +step_length*rDistr[j+3];
+        }
+
+        NewWavefuncSquared = pow(WaveFunc(r1_new, r2_new, omega, alpha,  beta), 2);
+        if (distrUniform(generator) <= NewWavefuncSquared/OldWavefuncSquared){
+            r1 = r1_new;
+            r2 = r2_new;
+            OldWavefuncSquared = NewWavefuncSquared;
+            counter += 1;
+        }
+        step_length = CalculateStepLength(r1, r2, alpha, omega, rDistr);
+        r_12 = (r1-r2).length();
+        E_local = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared())*(1-alpha*alpha) + 3*alpha*omega + 1/r_12\
+                + (1/(2*(1+beta*r_12)*(1+beta*r_12)))*(alpha*omega*r_12 - 1/(2*(1+beta*r_12)*(1+beta*r_12))\
+                - 2/r_12 + 2*beta/(1+beta*r_12));
+
+        EnergySum += E_local;
+        EnergySquaredSum += E_local*E_local;
+        MeanDistance += r_12;
+    }
+    // Adding the energies and mean distance in their arrays
+
+    // Adding the energies and mean distance in their arrays
+    EnergyExpectation = EnergySum;
+    EnergyExpectationSquared = EnergySquaredSum;
+    MeanDistanceExpectation = MeanDistance;
+    cout << "Monte Carlo cycles = " << MC_cycles << endl;
+    cout << "Energy = "<< EnergyExpectation/(MC_cycles) << endl;
+    cout << "Variance = " << EnergyExpectationSquared/MC_cycles - \
+            EnergyExpectation*EnergyExpectation/MC_cycles/MC_cycles << endl;;
+    cout << "Accepted configs = " << (double)counter/MC_cycles << endl;
 }
 
 
