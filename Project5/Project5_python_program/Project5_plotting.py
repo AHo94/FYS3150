@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import os
 # Change directory based based on work place, i.e home or at UiO computer.
 file_directory = '../build-Project5_cpp_program-Desktop_Qt_5_7_0_MinGW_32bit-Debug'
@@ -21,21 +22,25 @@ class Plotter():
 			i += 1
 		filename.close()
 
-		N = len(data)
+		self.N = len(data)
 		self.omega = float(data[0][-1])
-		self.Energy = np.zeros(N)
-		self.alpha = np.zeros(N)
-		self.Variance = np.zeros(N)
-		self.Energy_Exact = 3*self.omega*np.ones(N)
-		self.MeanDistance = np.zeros(N)
-		for j in range(0, N):
+		self.Energy = np.zeros(self.N)
+		self.alpha = np.zeros(self.N)
+		self.beta = np.zeros(self.N)
+		self.Variance = np.zeros(self.N)
+		self.Energy_Exact = 3*self.omega*np.ones(self.N)
+		self.MeanDistance = np.zeros(self.N)
+		for j in range(0, self.N):
 			self.alpha[j] = float(data[j][0])
-			self.Energy[j] = float(data[j][1])
-			self.Variance[j] = float(data[j][2])
-			self.MeanDistance[j] = float(data[j][3])
+			self.beta[j] = float(data[j][1])
+			self.Energy[j] = float(data[j][2])
+			self.Variance[j] = float(data[j][3])
+			self.MeanDistance[j] = float(data[j][4])
 
 
 	def plot_energy_alpha(self):
+		" Function used to plot the energy and variance as a function of alpha for different omegas "
+		# Plots for omega = 0.01
 		self.read_data("Energy_Alpha_Mdistance_omega_0.01.txt")
 		fig1 = plt.figure()
 		plt.plot(self.alpha, self.Energy)
@@ -58,6 +63,7 @@ class Plotter():
 		plt.ylabel(r'$\sigma_E$')
 		plt.title(r'Plot of the variance $\sigma_E$ as a function of $\alpha$ with $\omega$ = %.2f' %(self.omega))
 
+		# Plots for omega = 0.5
 		self.read_data("Energy_Alpha_Mdistance_omega_0.50.txt")
 		fig4 = plt.figure()
 		plt.plot(self.alpha, self.Energy)
@@ -74,13 +80,13 @@ class Plotter():
 		plt.ylabel(r'$r_{12}$')
 		plt.title(r'Plot of the mean distance $r_{12}$ as a function of $\alpha$ with $\omega$ = %.2f.' %(self.omega))
 
-
 		fig6 = plt.figure()
 		plt.plot(self.alpha, self.Variance)
 		plt.xlabel(r'$\alpha$')
 		plt.ylabel(r'$\sigma_E$')
 		plt.title(r'Plot of the variance $\sigma_E$ as a function of $\alpha$ with $\omega$ = %.2f' %(self.omega))
 
+		# Plots for omega = 1
 		self.read_data("Energy_Alpha_Mdistance_omega_1.00.txt")
 		fig7 = plt.figure()
 		plt.plot(self.alpha, self.Energy)
@@ -117,24 +123,33 @@ class Plotter():
 		else:
 			plt.show()
 
-	def testplot(self):
-		self.read_data("Testing.txt")
+	def Find_Optimal_AlphaBeta(self):
 		fig1 = plt.figure()
-		plt.plot(self.alpha, self.Energy)
-		plt.hold("on")
-		plt.plot(self.alpha, self.Energy_Exact)
-		plt.xlabel(r'$\alpha$')
-		plt.ylabel(r'$\langle H \rangle$')
-		plt.title(r'Plot of the $\langle H \rangle$ as a function of $\alpha$ with $\omega$ = %.2f. Using $\psi_{T_1}$' %(self.omega))
-		plt.legend(['Numerical value','Exact'])
+		self.read_data("Beta_test2.txt")
+		ax = fig1.add_subplot(111, projection='3d')
+		x = np.linspace(np.amin(self.alpha), np.amax(self.alpha), self.N)
+		y = np.linspace(np.amin(self.beta), np.amax(self.beta), self.N)
+		Alpha,Beta = np.meshgrid(x,y)
+		ax.plot_surface(Alpha, Beta, self.Energy)
+		ax.set_xlabel(r'$\alpha$')
+		ax.set_ylabel(r'$\beta$')
+		ax.set_zlabel(r'$\langle E \rangle$')
 
-		fig2 = plt.figure()
-		plt.plot(self.alpha, self.MeanDistance)
-		plt.xlabel(r'$\alpha$')
-		plt.ylabel(r'$r_{12}$')
-		plt.title(r'Plot of the mean distance $r_{12}$ as a function of $\alpha$ with $\omega$ = %.2f' %(self.omega))
-		plt.show()
+		# Find optimal alpha and beta for the lowest energy
+		EnergyMinimum = np.amin(self.Energy)
+		MinIndex = np.where(self.Energy == EnergyMinimum)[0][0]
+		MinAlpha = self.alpha[MinIndex]
+		MinBeta = self.beta[MinIndex]
+		print 'Lowest energy = ', EnergyMinimum
+		print 'Optimal Alpha value = ', MinAlpha
+		print 'Optimal Beta value = ', MinBeta
+		if self.savefile == True:
+			fig1.savefig('../Plots/OptimalAlphaBeta_3DPlot.pdf')
+		else:
+			plt.show()
+
+
 ## Comment out the functions to plot what you want
 solver = Plotter(False)
-solver.plot_energy_alpha()
-#solver.testplot()
+#solver.plot_energy_alpha()
+solver.Find_Optimal_AlphaBeta()
