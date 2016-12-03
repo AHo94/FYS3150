@@ -42,6 +42,9 @@
 # Profiles from QT
 *.pro.user
 
+# Random c++ file
+.Io6680
+
 # Remove makefiles
 *Makefile.Debug
 *Makefile.Release
