@@ -4,9 +4,6 @@ using namespace std;
 
 Metropolis_Quantum::Metropolis_Quantum()
 {
-    EnergyExpectation = 0;
-    EnergyExpectationSquared = 0;
-    MeanDistanceExpectation = 0;
 }
 
 double Metropolis_Quantum::CalculateStepLength(vec3 r1, vec3 r2, double alpha, double omega, double *s){
@@ -117,6 +114,7 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, Wavefunctions &WaveFunc, d
     ExpectationValues[0] = EnergySum;
     ExpectationValues[1] = EnergySquaredSum;
     ExpectationValues[2] = MeanDistance;
+    ExpectationValues[3] = counter;
     /*
     cout << "Monte Carlo cycles = " << MC_cycles << endl;
     cout << "Energy = "<< EnergyExpectation/(MC_cycles) << endl;
@@ -187,6 +185,7 @@ void Metropolis_Quantum::Metropolis_T2(int MC_cycles, Wavefunctions &WaveFunc, d
     ExpectationValues[0] = EnergySum;
     ExpectationValues[1] = EnergySquaredSum;
     ExpectationValues[2] = MeanDistance;
+    ExpectationValues[3] = counter;
 
     /*
     cout << "Monte Carlo cycles = " << MC_cycles << endl;
@@ -195,6 +194,88 @@ void Metropolis_Quantum::Metropolis_T2(int MC_cycles, Wavefunctions &WaveFunc, d
             EnergyExpectation*EnergyExpectation/MC_cycles/MC_cycles << endl;;
     cout << "Accepted configs = " << (double)counter/MC_cycles << endl;
     */
+}
+
+void Metropolis_Quantum::Metropolis_Virial(int MC_cycles, Wavefunctions &WaveFunc, double *ExpectationValues
+                                           , double alpha, double beta, double omega, int CoulombInt)
+{
+    if (CoulombInt != 1 && CoulombInt != 0){
+        cout << "CoulombInt = " << CoulombInt << endl;
+        cout << "Invalid value, try CoulombInt = 1 or CoulombInt = 0" << endl;
+        exit(1);
+    }
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
+    std::default_random_engine generator(seed);
+    std::uniform_real_distribution<double> distrUniform(0, 1.0);
+    std::uniform_real_distribution<double> distr(-1.0, 1.0);
+    // Random initial starting position for both electrons
+    vec3 r1(distr(generator),distr(generator),distr(generator));
+    vec3 r2(distr(generator),distr(generator),distr(generator));
+    double E_pot = 0;
+    double E_tot = 0;
+    double KineticSum = 0;
+    double KineticSquaredSum = 0;
+    double PotentialSum = 0;
+    double PotentialSquaredSum = 0;
+    double MeanDistance = 0;
+    double NewWavefuncSquared = 0;
+    double r_12 = 0;
+    double omega2 = omega*omega;
+
+    double *rDistr = new double[6];
+    for (int i=0; i<6; i++){
+        rDistr[i] = distr(generator);
+    }
+    double step_length = CalculateStepLength(r1, r2, alpha, omega, rDistr);
+
+    int counter = 0;
+    double OldWavefuncSquared = pow(WaveFunc(r1, r2, alpha, beta, omega), 2);
+    for (int cycle=0; cycle<MC_cycles; cycle++){
+        // Running Monte Carlo cycles
+        vec3 r1_new(0,0,0);
+        vec3 r2_new(0,0,0);
+        for (int j=0; j<3; j++){
+            rDistr[j] = distr(generator);
+            rDistr[j+3] = distr(generator);
+            r1_new[j] = r1[j] +step_length*rDistr[j];
+            r2_new[j] = r2[j] +step_length*rDistr[j+3];
+        }
+
+        NewWavefuncSquared = pow(WaveFunc(r1_new, r2_new, alpha,  beta, omega), 2);
+        if (distrUniform(generator) <= NewWavefuncSquared/OldWavefuncSquared){
+            r1 = r1_new;
+            r2 = r2_new;
+            OldWavefuncSquared = NewWavefuncSquared;
+            counter += 1;
+        }
+        step_length = CalculateStepLength(r1, r2, alpha, omega, rDistr);
+        r_12 = (r1-r2).length();
+
+        E_tot = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared())*(1-alpha*alpha) + 3*alpha*omega \
+                + CoulombInt*(1.0/r_12)\
+                + (1/(2*(1+beta*r_12)*(1+beta*r_12)))*(alpha*omega*r_12 - 1/(2*(1+beta*r_12)*(1+beta*r_12))\
+                - 2/r_12 + 2*beta/(1+beta*r_12));
+        E_pot = + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared()) + CoulombInt*(1.0/r_12);
+
+        KineticSum += E_tot;
+        KineticSquaredSum += E_tot*E_tot;
+        PotentialSum += E_pot;
+        PotentialSquaredSum += E_pot*E_pot;
+        MeanDistance += r_12;
+    }
+
+    // Adding the energies and mean distance in their arrays
+    ExpectationValues[0] = KineticSum - PotentialSum;
+    ExpectationValues[1] = KineticSquaredSum - PotentialSquaredSum;
+    ExpectationValues[2] = PotentialSum;
+    ExpectationValues[3] = PotentialSquaredSum;
+    ExpectationValues[4] = MeanDistance;
+    ExpectationValues[5] = counter;
+
+    cout << "Monte Carlo cycles = " << MC_cycles << endl;
+    cout << "Kinetic numeric = "<< ExpectationValues[0]/(MC_cycles) << endl;
+    cout << "Potential numeric = "<< ExpectationValues[2]/(MC_cycles) << endl;
+    cout << "Accepted configs (percentage) = " <<(double) counter/MC_cycles << endl;
 }
 
 
