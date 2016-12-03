@@ -1,8 +1,7 @@
 #include "metropolis_quantum.h"
-#include <chrono>
-#include <random>
 #include <iostream>
 using namespace std;
+
 Metropolis_Quantum::Metropolis_Quantum()
 {
     EnergyExpectation = 0;
@@ -44,7 +43,6 @@ double Metropolis_Quantum::LaplaceOperator(Wavefunctions &WaveFunc, vec3 r1, vec
                 2*wavefunc + WaveFunc(r1, r2-rchange, omega, alpha));
     }
     return 0.5*SecondDerivative/(wavefunc*(dr*dr));
-
 }
 
 void Metropolis_Quantum::Metropolis_T1(int MC_cycles, Wavefunctions &WaveFunc, double alpha,
@@ -67,7 +65,6 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, Wavefunctions &WaveFunc, d
     vec3 r1(distr(generator),distr(generator),distr(generator));
     vec3 r2(distr(generator),distr(generator),distr(generator));
 
-    double beta = 0;
     double E_local = 0;
     double EnergySum = 0;
     double EnergySquaredSum = 0;
@@ -107,7 +104,7 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, Wavefunctions &WaveFunc, d
             E_local = LaplaceAnalytic(r1, r2, alpha, omega) + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
         }
         else{
-            E_local = LaplaceOperator(WaveFunc, r1, r2, alpha, beta, omega) + \
+            E_local = LaplaceOperator(WaveFunc, r1, r2, alpha, omega) + \
             0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
         }
         EnergySum += E_local;
@@ -184,8 +181,6 @@ void Metropolis_Quantum::Metropolis_T2(int MC_cycles, Wavefunctions &WaveFunc, d
         MeanDistance += r_12;
     }
     // Adding the energies and mean distance in their arrays
-
-    // Adding the energies and mean distance in their arrays
     EnergyExpectation = EnergySum;
     EnergyExpectationSquared = EnergySquaredSum;
     MeanDistanceExpectation = MeanDistance;
@@ -195,5 +190,29 @@ void Metropolis_Quantum::Metropolis_T2(int MC_cycles, Wavefunctions &WaveFunc, d
             EnergyExpectation*EnergyExpectation/MC_cycles/MC_cycles << endl;;
     cout << "Accepted configs = " << (double)counter/MC_cycles << endl;
 }
+
+void Metropolis_Quantum::Write_file(int MC_cycles, string filename, double omega, double alpha, double beta)
+{
+    // Writes out data to the output file. Function made specific for the parallellization part.
+    /*
+    if(!ofile_global.good()) {
+        ofile_global(filename.c_str(), ofstream::out);
+        if(!ofile_global.good()) {
+            cout << "Error opening file " << filename << ". Aborting!" << endl;
+            exit(1);
+        }
+    }
+    */
+    double Energy = EnergyExpectation/MC_cycles;
+    double Variance = EnergyExpectationSquared/MC_cycles - Energy*Energy;
+    double MeanDistance = MeanDistanceExpectation/MC_cycles;
+    ofile_global << setw(15) << alpha;
+    ofile_global << setw(15) << beta;
+    ofile_global << setw(15) << Energy;
+    ofile_global << setw(15) << Variance;
+    ofile_global << setw(15) << MeanDistance;
+    ofile_global << setw(15) << omega << endl;
+}
+
 
 
