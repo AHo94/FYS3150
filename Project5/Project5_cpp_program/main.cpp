@@ -236,8 +236,6 @@ void Metropolis_Virial(int MC_cycles, double alpha, double beta, double omega, d
     // Random initial starting position for both electrons
     vec3 r1(distr(generator),distr(generator),distr(generator));
     vec3 r2(distr(generator),distr(generator),distr(generator));
-
-    double E_kin = 0;
     double E_pot = 0;
     double E_tot = 0;
     double KineticSum = 0;
@@ -397,20 +395,13 @@ void Find_Optimal_AlphaBeta(int MC_cycles, int N_omegas, double *omegas, double 
 
 int main(int argc, char *argv[])
 {
-    double *ExpectationValues;
-    ExpectationValues = new double [3];
+    double *ExpectValues;
+    ExpectValues = new double [4];
     int MC_cycles = 100000;
     double omega, alpha, beta;
     omega = 1;
     alpha = 1;
     beta = 1;
-    //Metropolis_method_T1(MC_cycles, omega, alpha, ExpectationValues, 0);
-    //Metropolis_method_T1(MC_cycles, omega, alpha, ExpectationValues, 0, 1);
-    //Metropolis_method_T2(MC_cycles, omega, alpha, beta, ExpectationValues);
-
-
-    string filename = "Energy_Alpha_Mdistance_omega_";
-    double omegas[] = {0.01, 0.5, 1};
     /*
     for (int i=0; i<3; i++){
         string fileout = filename;
@@ -451,8 +442,6 @@ int main(int argc, char *argv[])
     }
     */
 
-    double AlphaOptimal[] = {0.58, 0.98, 0.98};
-    double BetaOptimal[] = {0.2, 0.3, 0.52};
     /*
     ofile_global.open("Optimal_Energy_SecondTrialWaveFunc.txt");
     initialize_outfile();
@@ -472,20 +461,11 @@ int main(int argc, char *argv[])
     */
 
 
-    double *VirialExpect = new double[5];
-
-    // New omegas
-    int N_omegas = 50;
-    double *omegas2 = new double[N_omegas];
-    double omega_step = (1.0-0.01)/(N_omegas-1);
-    for (int i=0; i<N_omegas; i++){
-        omegas2[i] = 0.01 + i*omega_step;
-    }
-
+    /*
     double *OptimalAlphas = new double[N_omegas];
     double *OptimalBetas = new double[N_omegas];
     //Find_Optimal_AlphaBeta(MC_cycles, N_omegas, omegas2, OptimalAlphas, OptimalBetas);
-    /*
+
     for (int i=0; i<N_omegas; i++){
         cout << "Alpha = " << OptimalAlphas[i] << endl;
         cout <<"Beta = " << OptimalBetas[i] << endl;
@@ -535,8 +515,171 @@ int main(int argc, char *argv[])
 
     cout << "CLASS TEST" << endl;
     Wavefunctions FirstTrialFunc(0);
+    Wavefunctions SecondTrialFunc(1);
     Metropolis_Quantum MSolver;
-    MSolver.Metropolis_T1(MC_cycles, FirstTrialFunc, alpha, omega, 0, 1);
 
+    // Testing the algorithm
+    MSolver.Metropolis_T1(MC_cycles, FirstTrialFunc, ExpectValues, alpha, omega, 0, 1);
+    cout << "Monte Carlo cycles = " << MC_cycles << endl;
+    cout << "Kinetic numeric = "<< ExpectValues[0]/(MC_cycles) << endl;
+    cout << "Variance = "<< ExpectValues[1]/(MC_cycles) - ExpectValues[0]*ExpectValues[0]/MC_cycles/MC_cycles << endl;
+    cout << "Accepted configs (percentage) = " << ExpectValues[3]/MC_cycles << endl;
+
+    MSolver.Metropolis_T1(MC_cycles, FirstTrialFunc, ExpectValues, alpha, omega, 0, 0);
+    cout << "Monte Carlo cycles = " << MC_cycles << endl;
+    cout << "Kinetic numeric = "<< ExpectValues[0]/(MC_cycles) << endl;
+    cout << "Variance = "<< ExpectValues[1]/(MC_cycles) - ExpectValues[0]*ExpectValues[0]/MC_cycles/MC_cycles << endl;
+    cout << "Accepted configs (percentage) = " << ExpectValues[3]/MC_cycles << endl;
+    /*
+    // Find optimal alpha
+    string filename = "Energy_Alpha_Mdistance_omega_";
+    double omegas[] = {0.01, 0.5, 1};
+    for (int i=0; i<3; i++){
+        string fileout = filename;
+        stringstream stream;
+        stream << fixed << setprecision(2) << omegas[i];
+        string argument = stream.str();
+        fileout.append(argument);
+        fileout.append(".txt");
+        ofile_global.open(fileout);
+        initialize_outfile();
+        for (double alphas = 0.5; alphas<=1.5; alphas +=0.02){
+            MSolver.Metropolis_T1(MC_cycles, FirstTrialFunc, ExpectationValues, alphas, omegas[i], 0, 1);
+            write_file(MC_cycles, ExpectationValues, alphas, beta, omegas[i]);
+        }
+        ofile_global.close();
+    }
+
+    // Find optimal alpha, beta
+    string filename_optimal = "Optimal_AlphaBeta_omega_";
+    for (int i=0; i<3; i++){
+        string fileout = filename_optimal;
+        stringstream stream;
+        stream << fixed << setprecision(2) << omegas[i];
+        string argument = stream.str();
+        fileout.append(argument);
+        fileout.append(".txt");
+        ofile_global.open(fileout);
+        initialize_outfile();
+        for (double alphas = 0.5; alphas <= 1.0; alphas += 0.02){
+            for (double betas = 0.2; betas <= 0.7; betas += 0.02){
+                MSolver.Metropolis_T2(MC_cycles, SecondTrialFunc, ExpectationValues, alphas, betas, omegas[i]);
+                write_file(MC_cycles, ExpectationValues, alphas, betas, omegas[i]);
+            }
+        }
+        ofile_global.close();
+    }
+
+    // Use optimal alpha, beta
+    double AlphaOptimal[] = {0.58, 0.98, 0.98};
+    double BetaOptimal[] = {0.2, 0.3, 0.52};
+    ofile_global.open("Optimal_Energy_SecondTrialWaveFunc.txt");
+    initialize_outfile();
+    for (int i=0; i<3; i++){
+        MSolver.Metropolis_T2(MC_cycles, SecondTrialFunc, ExpectationValues, AlphaOptimal[i], BetaOptimal[i], omegas[i]);
+        write_file(MC_cycles, ExpectationValues, AlphaOptimal[i], BetaOptimal[i], omegas[i]);
+    }
+    ofile_global.close();
+
+    ofile_global.open("Optimal_Energy_FirstTrialWaveFunc.txt");
+    initialize_outfile();
+    for (int i=0; i<3; i++){
+        MSolver.Metropolis_T2(MC_cycles, FirstTrialFunc, ExpectationValues, AlphaOptimal[i], BetaOptimal[i], omegas[i]);
+        write_file(MC_cycles, ExpectationValues, AlphaOptimal[i], BetaOptimal[i], omegas[i]);
+    }
+    ofile_global.close();
+    */
+    // Virial test
+
+    double AlphaOptimal[] = {0.58, 0.98, 0.98};
+    double BetaOptimal[] = {0.2, 0.36, 0.48};
+    double *VirialExpect = new double[6];
+    // New omegas
+    int N_omegas = 50;
+    double *omegas2 = new double[N_omegas];
+    double omega_step = (1.0-0.01)/(N_omegas-1);
+    for (int i=0; i<N_omegas; i++){
+        omegas2[i] = 0.01 + i*omega_step;
+    }
+
+    string filename2 = "Virial_data_V";
+    for (int j=0; j<3; j++){
+        string fileout = filename2;
+        stringstream stream;
+        stream << fixed << j;
+        string argument = stream.str();
+        fileout.append(argument);
+        fileout.append(".txt");
+        ofile_global.open(fileout);
+
+        initialize_outfile_virial();
+        for (int i=0; i<N_omegas; i++){
+            MSolver.Metropolis_Virial(MC_cycles, SecondTrialFunc, VirialExpect,\
+                                      AlphaOptimal[j], BetaOptimal[j], omegas2[i], 1);
+            write_file_virial(MC_cycles, VirialExpect, AlphaOptimal[j], BetaOptimal[j], omegas2[i]);
+        }
+        ofile_global.close();
+    }
+
+    string filename3 = "Virial_NoCoulomb_data_V";
+    for (int j=0; j<3; j++){
+        string fileout = filename3;
+        stringstream stream;
+        stream << fixed << j;
+        string argument = stream.str();
+        fileout.append(argument);
+        fileout.append(".txt");
+        ofile_global.open(fileout);
+
+        initialize_outfile_virial();
+        for (int i=0; i<N_omegas; i++){
+            MSolver.Metropolis_Virial(MC_cycles, SecondTrialFunc, VirialExpect,\
+                                      AlphaOptimal[j], BetaOptimal[j], omegas2[i], 0);
+            write_file_virial(MC_cycles, VirialExpect, AlphaOptimal[j], BetaOptimal[j], omegas2[i]);
+        }
+
+        ofile_global.close();
+    }
+
+    /*
+    string filename2 = "Virial_data_V";
+    //ofile_global.open(filename2);
+    for (int j=0; j<3; j++){
+
+        string fileout = filename2;
+        stringstream stream;
+        stream << fixed << j;
+        string argument = stream.str();
+        fileout.append(argument);
+        fileout.append(".txt");
+        ofile_global.open(fileout);
+
+        initialize_outfile_virial();
+        for (int i=0; i<N_omegas; i++){
+            Metropolis_Virial(MC_cycles, AlphaOptimal[j], BetaOptimal[j], omegas2[i], VirialExpect, 1);
+            write_file_virial(MC_cycles, VirialExpect, AlphaOptimal[j], BetaOptimal[j], omegas2[i]);
+        }
+        ofile_global.close();
+    }
+    string filename3 = "Virial_NoCoulomb_data_V";
+    //ofile_global.open(filename3);
+    for (int j=0; j<3; j++){
+        string fileout = filename3;
+        stringstream stream;
+        stream << fixed << j;
+        string argument = stream.str();
+        fileout.append(argument);
+        fileout.append(".txt");
+        ofile_global.open(fileout);
+
+        initialize_outfile_virial();
+        for (int i=0; i<N_omegas; i++){
+            Metropolis_Virial(MC_cycles, AlphaOptimal[j], BetaOptimal[j], omegas2[i], VirialExpect, 0);
+            write_file_virial(MC_cycles, VirialExpect, AlphaOptimal[j], BetaOptimal[j], omegas2[i]);
+        }
+
+        ofile_global.close();
+    }
+    */
     return 0;
 }
