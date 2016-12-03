@@ -45,7 +45,7 @@ double Metropolis_Quantum::LaplaceOperator(Wavefunctions &WaveFunc, vec3 r1, vec
     return 0.5*SecondDerivative/(wavefunc*(dr*dr));
 }
 
-void Metropolis_Quantum::Metropolis_T1(int MC_cycles, Wavefunctions &WaveFunc, double alpha,
+void Metropolis_Quantum::Metropolis_T1(int MC_cycles, Wavefunctions &WaveFunc, double *ExpectationValues, double alpha,
                                        double omega, int CoulombInt, int Analytic){
     /* Function that solves the Metropolis method for the first trial function.
     * Argument "Analytic" is set to zero by default. Acts like an optional argument.
@@ -113,15 +113,21 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, Wavefunctions &WaveFunc, d
     }
 
     // Adding the energies and mean distance in their arrays
+    /*
     EnergyExpectation = EnergySum;
     EnergyExpectationSquared = EnergySquaredSum;
     MeanDistanceExpectation = MeanDistance;
+    */
+    ExpectationValues[0] = EnergySum;
+    ExpectationValues[1] = EnergySquaredSum;
+    ExpectationValues[2] = MeanDistance;
+    /*
     cout << "Monte Carlo cycles = " << MC_cycles << endl;
     cout << "Energy = "<< EnergyExpectation/(MC_cycles) << endl;
     cout << "Variance = " << EnergyExpectationSquared/MC_cycles - \
             EnergyExpectation*EnergyExpectation/MC_cycles/MC_cycles << endl;;
     cout << "Accepted configs = " << (double)counter/MC_cycles << endl;
-
+    */
 }
 
 void Metropolis_Quantum::Metropolis_T2(int MC_cycles, Wavefunctions &WaveFunc, double alpha, double beta, double omega)
@@ -181,37 +187,21 @@ void Metropolis_Quantum::Metropolis_T2(int MC_cycles, Wavefunctions &WaveFunc, d
         MeanDistance += r_12;
     }
     // Adding the energies and mean distance in their arrays
-    EnergyExpectation = EnergySum;
-    EnergyExpectationSquared = EnergySquaredSum;
-    MeanDistanceExpectation = MeanDistance;
+    //EnergyExpectation = EnergySum;
+    //EnergyExpectationSquared = EnergySquaredSum;
+    //MeanDistanceExpectation = MeanDistance;
+    /*
+    ExpectationValues[0] = EnergySum;
+    ExpectationValues[1] = EnergySquaredSum;
+    ExpectationValues[2] = MeanDistance;
+    */
+    /*
     cout << "Monte Carlo cycles = " << MC_cycles << endl;
     cout << "Energy = "<< EnergyExpectation/(MC_cycles) << endl;
     cout << "Variance = " << EnergyExpectationSquared/MC_cycles - \
             EnergyExpectation*EnergyExpectation/MC_cycles/MC_cycles << endl;;
     cout << "Accepted configs = " << (double)counter/MC_cycles << endl;
-}
-
-void Metropolis_Quantum::Write_file(int MC_cycles, string filename, double omega, double alpha, double beta)
-{
-    // Writes out data to the output file. Function made specific for the parallellization part.
-    /*
-    if(!ofile_global.good()) {
-        ofile_global(filename.c_str(), ofstream::out);
-        if(!ofile_global.good()) {
-            cout << "Error opening file " << filename << ". Aborting!" << endl;
-            exit(1);
-        }
-    }
     */
-    double Energy = EnergyExpectation/MC_cycles;
-    double Variance = EnergyExpectationSquared/MC_cycles - Energy*Energy;
-    double MeanDistance = MeanDistanceExpectation/MC_cycles;
-    ofile_global << setw(15) << alpha;
-    ofile_global << setw(15) << beta;
-    ofile_global << setw(15) << Energy;
-    ofile_global << setw(15) << Variance;
-    ofile_global << setw(15) << MeanDistance;
-    ofile_global << setw(15) << omega << endl;
 }
 
 
