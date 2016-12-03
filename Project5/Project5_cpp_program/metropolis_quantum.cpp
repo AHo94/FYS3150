@@ -113,11 +113,7 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, Wavefunctions &WaveFunc, d
     }
 
     // Adding the energies and mean distance in their arrays
-    /*
-    EnergyExpectation = EnergySum;
-    EnergyExpectationSquared = EnergySquaredSum;
-    MeanDistanceExpectation = MeanDistance;
-    */
+
     ExpectationValues[0] = EnergySum;
     ExpectationValues[1] = EnergySquaredSum;
     ExpectationValues[2] = MeanDistance;
@@ -130,7 +126,8 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, Wavefunctions &WaveFunc, d
     */
 }
 
-void Metropolis_Quantum::Metropolis_T2(int MC_cycles, Wavefunctions &WaveFunc, double alpha, double beta, double omega)
+void Metropolis_Quantum::Metropolis_T2(int MC_cycles, Wavefunctions &WaveFunc, double *ExpectationValues
+                                       , double alpha, double beta, double omega)
 {
     // Function that solves the Metropolis method for the second trial wave function.
 
@@ -186,15 +183,11 @@ void Metropolis_Quantum::Metropolis_T2(int MC_cycles, Wavefunctions &WaveFunc, d
         EnergySquaredSum += E_local*E_local;
         MeanDistance += r_12;
     }
-    // Adding the energies and mean distance in their arrays
-    //EnergyExpectation = EnergySum;
-    //EnergyExpectationSquared = EnergySquaredSum;
-    //MeanDistanceExpectation = MeanDistance;
-    /*
+
     ExpectationValues[0] = EnergySum;
     ExpectationValues[1] = EnergySquaredSum;
     ExpectationValues[2] = MeanDistance;
-    */
+
     /*
     cout << "Monte Carlo cycles = " << MC_cycles << endl;
     cout << "Energy = "<< EnergyExpectation/(MC_cycles) << endl;
