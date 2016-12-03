@@ -43,7 +43,7 @@
 *.pro.user
 
 # Random c++ file
-.Io6680
+*.Io6680
 
 # Remove makefiles
 *Makefile.Debug
