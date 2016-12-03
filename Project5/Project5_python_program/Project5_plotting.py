@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import os
 # Change directory based based on work place, i.e home or at UiO computer.
-file_directory = '../build-Project5_cpp_program-Desktop_Qt_5_7_0_MinGW_32bit-Debug'
+file_directory = '../build-Project5_cpp_program-Desktop_Qt_5_7_0_MinGW_32bit-Release'
 #file_directory = '../build-Project5_cpp_program-Desktop_Qt_5_7_0_GCC_64bit-Debug'
 
 class Plotter():
@@ -50,16 +50,14 @@ class Plotter():
 		filename.close()
 
 		self.N = len(data)
-		self.alpha = np.zeros(self.N)
-		self.beta = np.zeros(self.N)
+		self.alpha = float(data[0][0])
+		self.beta = float(data[0][1])
 		self.omega = np.zeros(self.N)
 
 		self.KineticExpect = np.zeros(self.N)
 		self.PotentialExpect = np.zeros(self.N)
 
 		for j in range(0, self.N):
-			self.alpha[j] = float(data[j][0])
-			self.beta[j] = float(data[j][1])
 			self.omega[j] = float(data[j][-1])
 			self.KineticExpect[j] = float(data[j][2])
 			self.PotentialExpect[j] = float(data[j][4])
@@ -148,10 +146,26 @@ class Plotter():
 			fig9.savefig('../Plots/Variance_alpha_plot_omega1.pdf')
 		else:
 			plt.show()
+		"""
+		fig10 = plt.figure()
+		ax1 = plt.subplot(111)
+		self.read_data("Energy_Alpha_Mdistance_omega_0.01.txt")
+		ax1.plot(self.alpha, self.MeanDistance, label=r'$\omega = %.2f$' %self.omega)
+		plt.hold("on")
+		self.read_data("Energy_Alpha_Mdistance_omega_0.50.txt")
+		ax1.plot(self.alpha, self.MeanDistance, label=r'$\omega = %.2f$' %self.omega)
+		self.read_data("Energy_Alpha_Mdistance_omega_1.00.txt")
+		ax1.plot(self.alpha, self.MeanDistance, label=r'$\omega = %.2f$' %self.omega)
+		plt.xlabel(r'$\alpha$')
+		plt.ylabel(r'$\langle H \rangle$')
+		plt.title(r'Plot of the $\langle H \rangle$ as a function of $\alpha$ with $\omega$ = %.2f. Using $\psi_{T_1}$')
+		ax1.legend(loc='upper center', bbox_to_anchor=(0.5,0.5), ncol=1, fancybox=True)
+		plt.show()
+		"""
 
 	def Find_Optimal_AlphaBeta(self):
 		fig1 = plt.figure()
-		self.read_data("Beta_test2.txt")
+		self.read_data("Optimal_AlphaBeta_omega_1.00.txt")
 		ax = fig1.add_subplot(111, projection='3d')
 		x = np.linspace(np.amin(self.alpha), np.amax(self.alpha), self.N)
 		y = np.linspace(np.amin(self.beta), np.amax(self.beta), self.N)
@@ -167,29 +181,71 @@ class Plotter():
 		MinAlpha = self.alpha[MinIndex]
 		MinBeta = self.beta[MinIndex]
 		StdEnergy = np.sqrt(self.Variance[MinIndex])
+		print 'For omega = ', self.omega
 		print 'Lowest energy = ', EnergyMinimum
 		print 'Optimal Alpha value = ', MinAlpha
 		print 'Optimal Beta value = ', MinBeta
 		print 'Standard deviation = ', StdEnergy
+		print ''
+
+		self.read_data("Optimal_AlphaBeta_omega_0.50.txt")
+		EnergyMinimum = np.amin(self.Energy)
+		MinIndex = np.where(self.Energy == EnergyMinimum)[0][0]
+		MinAlpha = self.alpha[MinIndex]
+		MinBeta = self.beta[MinIndex]
+		StdEnergy = np.sqrt(self.Variance[MinIndex])
+		print 'For omega = ', self.omega
+		print 'Lowest energy = ', EnergyMinimum
+		print 'Optimal Alpha value = ', MinAlpha
+		print 'Optimal Beta value = ', MinBeta
+		print 'Standard deviation = ', StdEnergy
+		print ''
+
+		self.read_data("Optimal_AlphaBeta_omega_0.01.txt")
+		EnergyMinimum = np.amin(self.Energy)
+		MinIndex = np.where(self.Energy == EnergyMinimum)[0][0]
+		MinAlpha = self.alpha[MinIndex]
+		MinBeta = self.beta[MinIndex]
+		StdEnergy = np.sqrt(self.Variance[MinIndex])
+		print 'For omega = ', self.omega
+		print 'Lowest energy = ', EnergyMinimum
+		print 'Optimal Alpha value = ', MinAlpha
+		print 'Optimal Beta value = ', MinBeta
+		print 'Standard deviation = ', StdEnergy
+
 		if self.savefile == True:
 			fig1.savefig('../Plots/OptimalAlphaBeta_3DPlot.pdf')
 		else:
 			plt.show()
 
 	def Virial_plotting(self):
-		self.read_data_virial("Virial_data.txt")
+		self.read_data_virial("Virial_data_V0.txt")
 		fig1 = plt.figure()
-		plt.plot(self.omega, self.KineticExpect/self.PotentialExpect)
+		ax = plt.subplot(111)
+		ax.plot(self.omega, self.KineticExpect/self.PotentialExpect, label=r'$\alpha = %.1f, \beta = %.1f$'%(self.alpha, self.beta))
+		plt.hold("on")
+		self.read_data_virial("Virial_data_V1.txt")
+		ax.plot(self.omega, self.KineticExpect/self.PotentialExpect, label=r'$\alpha = %.1f, \beta = %.1f$'%(self.alpha, self.beta))
+		self.read_data_virial("Virial_data_V2.txt")
+		ax.plot(self.omega, self.KineticExpect/self.PotentialExpect, label=r'$\alpha = %.1f, \beta = %.1f$'%(self.alpha, self.beta))
 		plt.xlabel(r'$\omega$')
 		plt.ylabel(r'$\langle T \rangle/\langle V \rangle$')
 		plt.title(r'Plot of $\langle T \rangle/\langle V \rangle$ as a function of $\omega$')
+		ax.legend(loc='upper center', bbox_to_anchor=(0.6,0.3), ncol=1, fancybox=True)
 
-		self.read_data_virial("Virial_NoCoulomb_data.txt")
 		fig2 = plt.figure()
-		plt.plot(self.omega, self.KineticExpect/self.PotentialExpect)
+		ax1 = plt.subplot(111)
+		self.read_data_virial("Virial_NoCoulomb_data_V0.txt")
+		ax1.plot(self.omega, self.KineticExpect/self.PotentialExpect, label=r'$\alpha = %.1f, \beta = %.1f$'%(self.alpha, self.beta))
+		self.read_data_virial("Virial_NoCoulomb_data_V1.txt")
+		ax1.plot(self.omega, self.KineticExpect/self.PotentialExpect, label=r'$\alpha = %.1f, \beta = %.1f$'%(self.alpha, self.beta))
+		self.read_data_virial("Virial_NoCoulomb_data_V2.txt")
+		ax1.plot(self.omega, self.KineticExpect/self.PotentialExpect, label=r'$\alpha = %.1f, \beta = %.1f$'%(self.alpha, self.beta))
 		plt.xlabel(r'$\omega$')
 		plt.ylabel(r'$\langle T \rangle/\langle V \rangle$')
 		plt.title(r'Plot of $\langle T \rangle/\langle V \rangle$ as a function of $\omega$. No Coulomb interaction')
+		ax1.legend(loc='upper center', bbox_to_anchor=(0.5,0.5), ncol=1, fancybox=True)
+
 		if self.savefile == True:
 			fig1.savefig('../Plots/Virial_Plot.pdf')
 			fig2.savefig('../plots/Virial_Plot_NoCoulombInt.pdf')
