@@ -7,6 +7,8 @@
 #include <string>
 #include <iomanip>
 #include "vec3.h"
+#include "metropolis_quantum.h"
+#include "wavefunctions.h"
 using namespace std;
 
 ofstream ofile_global;
@@ -30,7 +32,7 @@ double StepLength(vec3 r1, vec3 r2, double alpha, double omega, double *s){
         a += s[i]*s[i];
     }
     double b = 2*(r1[0]*s[0] + r1[1]*s[1] + r1[2]*s[2] + r2[0]*s[3] + r2[1]*s[4] + r2[2]*s[5]);
-    double c = log(0.3)/(alpha*omega);
+    double c = log(0.5)/(alpha*omega);
     return (-b + sqrt(b*b - 4*a*c))/(2*a);
 }
 
@@ -237,6 +239,7 @@ void Metropolis_Virial(int MC_cycles, double alpha, double beta, double omega, d
 
     double E_kin = 0;
     double E_pot = 0;
+    double E_tot = 0;
     double KineticSum = 0;
     double KineticSquaredSum = 0;
     double PotentialSum = 0;
@@ -274,19 +277,23 @@ void Metropolis_Virial(int MC_cycles, double alpha, double beta, double omega, d
         }
         step_length = StepLength(r1, r2, alpha, omega, rDistr);
         r_12 = (r1-r2).length();
-        E_kin = LaplaceOperator_T2(r1, r2, alpha, beta, omega);
+        //E_kin = LaplaceOperator_T2(r1, r2, alpha, beta, omega);
+        E_tot = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared())*(1-alpha*alpha) + 3*alpha*omega \
+                + CoulombInt*(1.0/r_12)\
+                + (1/(2*(1+beta*r_12)*(1+beta*r_12)))*(alpha*omega*r_12 - 1/(2*(1+beta*r_12)*(1+beta*r_12))\
+                - 2/r_12 + 2*beta/(1+beta*r_12));
         E_pot = + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared()) + CoulombInt*(1.0/r_12);
 
-        KineticSum += E_kin;
-        KineticSquaredSum += E_kin*E_kin;
+        KineticSum += E_tot;
+        KineticSquaredSum += E_tot*E_tot;
         PotentialSum += E_pot;
         PotentialSquaredSum += E_pot*E_pot;
         MeanDistance += r_12;
     }
 
     // Adding the energies and mean distance in their arrays
-    ExpectationValues[0] = KineticSum;
-    ExpectationValues[1] = KineticSquaredSum;
+    ExpectationValues[0] = KineticSum - PotentialSum;
+    ExpectationValues[1] = KineticSquaredSum - PotentialSquaredSum;
     ExpectationValues[2] = PotentialSum;
     ExpectationValues[3] = PotentialSquaredSum;
     ExpectationValues[4] = MeanDistance;
@@ -345,16 +352,59 @@ void initialize_outfile_virial(){
     ofile_global << setw(15) << "Mean Distance";
     ofile_global << setw(15) << "Omega" << endl;
 }
+
+void Find_Optimal_AlphaBeta(int MC_cycles, int N_omegas, double *omegas, double *OptimalAlphas, double *OptimalBetas){
+    double *ExpectationValues;
+    ExpectationValues = new double [3];
+
+    double alpha_max = 1.0;
+    double beta_max = 0.7;
+    double alpha_min = 0.5;
+    double beta_min = 0.2;
+    double StepSize = 0.02;
+
+    int N_size = (int)((alpha_max - alpha_min)/(StepSize))*((beta_max-beta_min)/(StepSize));
+
+    double *MinEnergies = new double[N_size+1];
+    double *AlphasCalc = new double[N_size+1];
+    double *BetasCalc = new double[N_size+1];
+    int indexMin = 0;
+    double minimum = 0;
+    int indexCounter = 0;
+    for (int i=0; i<N_omegas; i++){
+        for (double alphas = 0.5; alphas <= 1.0; alphas += 0.02){
+            for (double betas = 0.2; betas <= 0.7; betas += 0.02){
+                Metropolis_method_T2(MC_cycles, omegas[i], alphas, betas, ExpectationValues);
+                MinEnergies[indexCounter] = ExpectationValues[0]/MC_cycles;
+                AlphasCalc[indexCounter] = alphas;
+                BetasCalc[indexCounter] = betas;
+                indexCounter += 1;
+            }
+        }
+        indexCounter = 0;
+        minimum = MinEnergies[0];
+        for (int j=1; j<N_size; j++){
+            if (MinEnergies[j] < minimum){
+                minimum = MinEnergies[j];
+                indexMin = j;
+            }
+        }
+        OptimalAlphas[i] = AlphasCalc[indexMin];
+        OptimalBetas[i] = BetasCalc[indexMin];
+        indexMin = 0;
+    }
+}
+
 int main(int argc, char *argv[])
 {
     double *ExpectationValues;
     ExpectationValues = new double [3];
-    int MC_cycles = 200000;
+    int MC_cycles = 100000;
     double omega, alpha, beta;
     omega = 1;
     alpha = 1;
     beta = 1;
-    Metropolis_method_T1(MC_cycles, omega, alpha, ExpectationValues, 0);
+    //Metropolis_method_T1(MC_cycles, omega, alpha, ExpectationValues, 0);
     //Metropolis_method_T1(MC_cycles, omega, alpha, ExpectationValues, 0, 1);
     //Metropolis_method_T2(MC_cycles, omega, alpha, beta, ExpectationValues);
 
@@ -372,13 +422,14 @@ int main(int argc, char *argv[])
         ofile_global.open(fileout);
 
         initialize_outfile();
-        for (double alphas = 0.5; alphas<=2.3; alphas +=0.1){
-            Metropolis_method_T1(MC_cycles, omegas[i], alphas, ExpectationValues);
+        for (double alphas = 0.5; alphas<=1.5; alphas +=0.02){
+            Metropolis_method_T1(MC_cycles, omegas[i], alphas, ExpectationValues, 0);
             write_file(MC_cycles, ExpectationValues, alphas, beta, omegas[i]);
         }
         ofile_global.close();
     }
     */
+
     /*
     string filename_optimal = "Optimal_AlphaBeta_omega_";
     for (int i=0; i<3; i++){
@@ -390,35 +441,37 @@ int main(int argc, char *argv[])
         fileout.append(".txt");
         ofile_global.open(fileout);
         initialize_outfile();
-        for (double alphas = 0.8; alphas <= 1.3; alphas += 0.02){
-            for (double betas = 0.2; betas <= 1.3; betas += 0.02){
-                Metropolis_method_T2(MC_cycles, omega, alphas, betas, ExpectationValues);
-                write_file(MC_cycles, ExpectationValues, alphas, betas, omega);
+        for (double alphas = 0.5; alphas <= 1.0; alphas += 0.02){
+            for (double betas = 0.2; betas <= 0.7; betas += 0.02){
+                Metropolis_method_T2(MC_cycles, omegas[i], alphas, betas, ExpectationValues);
+                write_file(MC_cycles, ExpectationValues, alphas, betas, omegas[i]);
             }
         }
         ofile_global.close();
     }
+    */
 
-    double AlphaOptimal = 1.06;
-    double BetaOptimal = 0.56;
+    double AlphaOptimal[] = {0.58, 0.98, 0.98};
+    double BetaOptimal[] = {0.2, 0.3, 0.52};
+    /*
     ofile_global.open("Optimal_Energy_SecondTrialWaveFunc.txt");
     initialize_outfile();
     for (int i=0; i<3; i++){
-        Metropolis_method_T2(MC_cycles, omegas[i], AlphaOptimal, BetaOptimal, ExpectationValues);
-        write_file(MC_cycles, ExpectationValues, AlphaOptimal, BetaOptimal, omegas[i]);
+        Metropolis_method_T2(MC_cycles, omegas[i], AlphaOptimal[i], BetaOptimal[i], ExpectationValues);
+        write_file(MC_cycles, ExpectationValues, AlphaOptimal[i], BetaOptimal[i], omegas[i]);
     }
     ofile_global.close();
 
     ofile_global.open("Optimal_Energy_FirstTrialWaveFunc.txt");
     initialize_outfile();
     for (int i=0; i<3; i++){
-        Metropolis_method_T1(MC_cycles, omegas[i], AlphaOptimal, ExpectationValues, 1);
-        write_file(MC_cycles, ExpectationValues, AlphaOptimal, BetaOptimal, omegas[i]);
+        Metropolis_method_T1(MC_cycles, omegas[i], AlphaOptimal[i], ExpectationValues, 1);
+        write_file(MC_cycles, ExpectationValues, AlphaOptimal[i], BetaOptimal[i], omegas[i]);
     }
     ofile_global.close();
     */
 
-    /*
+
     double *VirialExpect = new double[5];
 
     // New omegas
@@ -428,29 +481,62 @@ int main(int argc, char *argv[])
     for (int i=0; i<N_omegas; i++){
         omegas2[i] = 0.01 + i*omega_step;
     }
-    string filename2 = "Virial_data.txt";
-    ofile_global.open(filename2);
-    initialize_outfile_virial();
-    for (int i=0; i<N_omegas; i++){
-        Metropolis_Virial(MC_cycles, AlphaOptimal, BetaOptimal, omegas2[i], VirialExpect, 1);
-        write_file_virial(MC_cycles, VirialExpect, AlphaOptimal, BetaOptimal, omegas2[i]);
-    }
-    ofile_global.close();
 
-    string filename3 = "Virial_NoCoulomb_data.txt";
-    ofile_global.open(filename3);
-    initialize_outfile_virial();
+    double *OptimalAlphas = new double[N_omegas];
+    double *OptimalBetas = new double[N_omegas];
+    //Find_Optimal_AlphaBeta(MC_cycles, N_omegas, omegas2, OptimalAlphas, OptimalBetas);
+    /*
     for (int i=0; i<N_omegas; i++){
-        Metropolis_Virial(MC_cycles, AlphaOptimal, BetaOptimal, omegas2[i], VirialExpect, 0);
-        write_file_virial(MC_cycles, VirialExpect, AlphaOptimal, BetaOptimal, omegas2[i]);
+        cout << "Alpha = " << OptimalAlphas[i] << endl;
+        cout <<"Beta = " << OptimalBetas[i] << endl;
     }
-    ofile_global.close();
     */
     /*
-    cout << "CLASS TEST" << endl;
-    Metropolis_Quantum MSolver;
-    MSolver.Metropolis_T1(MC_cycles, alpha, omega);
-    MSolver.Metropolis_T1(MC_cycles, alpha, omega, 1);
+    string filename2 = "Virial_data_V";
+    //ofile_global.open(filename2);
+    for (int j=0; j<3; j++){
+
+        string fileout = filename2;
+        stringstream stream;
+        stream << fixed << j;
+        string argument = stream.str();
+        fileout.append(argument);
+        fileout.append(".txt");
+        ofile_global.open(fileout);
+
+        initialize_outfile_virial();
+        for (int i=0; i<N_omegas; i++){
+            Metropolis_Virial(MC_cycles, AlphaOptimal[j], BetaOptimal[j], omegas2[i], VirialExpect, 1);
+            write_file_virial(MC_cycles, VirialExpect, AlphaOptimal[j], BetaOptimal[j], omegas2[i]);
+        }
+        ofile_global.close();
+    }
+    string filename3 = "Virial_NoCoulomb_data_V";
+    //ofile_global.open(filename3);
+    for (int j=0; j<3; j++){
+        string fileout = filename3;
+        stringstream stream;
+        stream << fixed << j;
+        string argument = stream.str();
+        fileout.append(argument);
+        fileout.append(".txt");
+        ofile_global.open(fileout);
+
+        initialize_outfile_virial();
+        for (int i=0; i<N_omegas; i++){
+            Metropolis_Virial(MC_cycles, AlphaOptimal[j], BetaOptimal[j], omegas2[i], VirialExpect, 0);
+            write_file_virial(MC_cycles, VirialExpect, AlphaOptimal[j], BetaOptimal[j], omegas2[i]);
+        }
+
+        ofile_global.close();
+    }
     */
+
+
+    cout << "CLASS TEST" << endl;
+    Wavefunctions FirstTrialFunc(0);
+    Metropolis_Quantum MSolver;
+    MSolver.Metropolis_T1(MC_cycles, FirstTrialFunc, alpha, omega, 0, 1);
+
     return 0;
 }
