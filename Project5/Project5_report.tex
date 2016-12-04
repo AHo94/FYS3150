@@ -39,11 +39,14 @@ moredelim=**[is][\color{blue}]{@}{@}
 \tableofcontents
 \newpage
 \section{Introduction} \label{section:intro}
+In project 2, we studied the behaviour of two electrons interacting in a three dimensional harmonic oscillator potential. In that project, we had a look at the so called \emph{Eigenvalue problem} and used Jacobi's method to solve this problem. From that, we noted that Jacobi's method was not an optimal way to solve our quantum mechanical system, as it used a lot of CPU time to finish its calculations.
+
+For this project, we will revisit this three dimensional harmonic oscillator with two electrons. This time, we will use the Monte Carlo method known as the Metropolis algorithm, which we also used in project 4, to solve this quantum mechanical system.
 
 All relevant files used in this project can be found in the this GitHub page:
 \url{https://github.com/AHo94/FYS3150_Projects/tree/master/Project5}
 \section{Method} \label{section:method}
-\subsection{Analytical form for the trial wave function and local energy}
+\subsection{Analytical form for the trial wave functions and local energies}
 For this project, we will use natural units. That is $\hbar = c = e = m_e = 1$.
 We will consider two electrons in a quantum dot with a frequency $\hbar \omega = 1$. The Hamiltonian for these two electrons is
 \begin{align*}
@@ -164,7 +167,7 @@ By calculating the fraction $|\Psi(\mathbf{R}')|^2/|\Psi(\mathbf{R})|^2$, we eli
 \begin{align*}
 P(\mathbf{R}) = \frac{|\Psi(\mathbf{R})|^2}{\int |\Psi(\mathbf{R})|^2 d\mathbf{R}}
 \end{align*}
-which is similar to what we did in project 4. In project 4, by calculating $r<= e^{-\beta \delta E}$, we could skip the calculation of the partition function $Z$. 
+which is similar to what we did in project 4. In project 4, by calculating $p<= e^{-\beta \delta E}$, we could skip the calculation of the partition function $Z$. 
 
 Once again, by running this for $N_{mc}$ Monte Carlo cycles, we find the energy expectation value as
 \begin{align*}
@@ -219,16 +222,23 @@ Using natural units we have $\hbar = 1$. We also neglect the angular movements, 
 \section{Implementation} \label{section:implement}
 Like in the previous projects, I will do all the calculations in C++ and plot the results in Python.
 
-For this project, I will utilize the \texttt{vec3} class that we developed in project 3. This class will make it easier to keep track of all the components contained within the radius variable $\mathbf{r} = (x, y, z)$, as it contains methods to do certain vector calculations, e.g finding vector length and vector addition. 
+For this project, I have object oriented the whole program. The class\\ \texttt{Wavefunctions} initializes a so called \emph{functor}. The idea here is to create the wave functions as an object that acts as a (c++) function. This will make the program a lot more flexible, as we can choose whether we want to use the first or the second trial wave function.
+
+I have also made a class called \texttt{Metropolis\_quantum}. This class contains three different Metropolis solving functions. The first one uses the local energy $E_{L1}$ in the calculation, the second uses the local energy $E_{L2}$ and the final one is made specifically to test the virial problem.
+
+I have also used the class \texttt{vec3}, which we developed in project 3. This class will make it easier to keep track of all the components contained within the radius variable $\mathbf{r} = (x, y, z)$, as it contains methods to do certain vector calculations, e.g finding vector length and vector addition. 
+
+
 \subsubsection*{Testing the Metropolis algorithm}
 Before we proceed with the results, we should check if the Metropolis algorithm works as it should. When calculating the local energy, we should use a numerical approach to calculate the kinetic term $\nabla^2\psi$. However, we already have the analytical expression of the local energy $E_{L1}$, given in equation \ref{eq:Energy_T1}. From that, we also know which terms contributes to the kinetic energy. In fact, the kinetic energy is given in equation \ref{eq:Kinetic_psi1}, which we can use to test the Metropolis algorithm.
 
-By implementing this term as its own function \texttt{LaplaceAnalytic}, we run the program with the analytical kinetic energy. Using $10^5$ Monte Carlo cycles, $\alpha = 1$, $\omega = 1$ and no Coulomb interaction, the result is:
+By implementing this term as its own function \texttt{LaplaceAnalytic}, we run the program with the analytical kinetic energy. Using $10^6$ Monte Carlo cycles, $\alpha = 1$, $\omega = 1$ and no Coulomb interaction, the result is:
 \begin{lstlisting}
-@Monte Carlo cycles = 100000
-Energy = 3
+@Monte Monte Carlo cycles = 1000000
+Kinetic numeric = 3
 Variance = 0
-Accepted configs (percentage) = 0.62812@
+Accepted configs (percentage) = 0.62867
+Time elapsed: 1.576s@
 \end{lstlisting}
 So the numerical energy, using the analytical expression of the kinetic energy, is exactly 3! The variance is exactly zero as well, which is what we would expect from this test. Also note the number of accepted configurations. The algorithm for an optimal step length, given in equation \ref{eq:step_length_algo}, gives roughly 63\% accepted configurations. Not exactly perfect, but good enough.
 
@@ -242,16 +252,119 @@ The Laplace operator for all three dimensions is thus
 \end{align*}
 where $i=1,2,3$ corresponds to the $x,y,z$ components and $\Delta x$ is the same for every direction. We let $\Delta x = 10^{-5}$ and running this for the first trial function gives
 \begin{lstlisting}
-@Monte Carlo cycles = 100000
-Energy = 3
-Variance = 3.45808e-011
-Accepted configs (percentage) = 0.62846@
+@Monte Monte Carlo cycles = 1000000
+Kinetic numeric = 3
+Variance = 3.30573e-011
+Accepted configs (percentage) = 0.628217
+Time elapsed: 10.504s@
 \end{lstlisting}
-The result is incredibly good. The energy is (almost) exactly 3 and the variance is very close to zero as well. We can therefore calculate the kinetic term of the local energy by using numerical derivation for any wave function. However, we will mostly use the analytical expressions of the local energy, as it uses less floating point operators and thus less CPU time.
+The result is incredibly good. The energy is (almost) exactly 3 and the variance is very close to zero as well. We can therefore calculate the kinetic term of the local energy by using numerical derivation for any wave function.
+
+However, we should also note down the time it took for the Metropolis algorithm to compute the energy expectation value. The Metropolis algorithm was almost 10 times faster if were were to use the exact analytical expression of the kinetic term instead of calculating it numerically. Because of this, we will use the analytical expressions of the local energies to save CPU time. Also, we should really appreciate the computation speed of the Metropolis algorithm. If we look back to project 2, the Jacobi's method often times used more than  5 minutes to calculate the energies.
+
 \section{Results}\label{section:results}
+\subsection{The first trial wave function}
+
+Let us not plot the energy (expectation value) and variance as a function of of the variational parameter $\alpha$. We can use these determine the optimal value of $\alpha$, which we can use to compare with our results from project 2. One thing to note is that the optimal variational parameter may be different for different frequencies $\omega$.
+
+Plots of the energy and variance, as a function of $\alpha$, using $\omega = 1$, can be found in figure \ref{fig:Energy_alpha_omega1} and \ref{fig:Variance_alpha_omega1} respectively. We can see that both of them has a minimum, but oddly enough at different values of $\alpha$. We would expect that the energy should be at its minimum when $\alpha = 1$ or smaller. However, the plot in figure \ref{fig:Energy_alpha_omega1} says that it is not quite the case. The minimum is shifted to a slightly larger $\alpha$ value, where the minimum is now at $\alpha = 1.08$.
+
+However, if we look at the plot of variance in \ref{fig:Variance_alpha_omega1}, we see that the minimum is at $\alpha = 1$. Also note that the variance here is exactly zero, which also means that the standard deviation is also zero. Because of this, the calculated energy at $\alpha = 1$ is exact, i.e there are no errors here. On the other hand, if we look at table (\ref{table:AlphaMinimum_omega1}) \footnote{Full data set, for this case, can be found at \url{https://github.com/AHo94/FYS3150_Projects/blob/master/Project5/build-Project5_cpp_program-Desktop_Qt_5_7_0_MinGW_32bit-Release/Energy_Alpha_Mdistance_omega_1.00.txt}}, the calculated minimum at $\alpha=1.08$ has a variance of $\sigma_E^2 = 0.0196079$, or $\sigma_E = 0.14002$, which means that the calculated energy at $\alpha = 1.08$ has a small margin of error which also means that it may not actually be the minimum. We can therefore safely say that the optimal value of the variational parameter, using the first trial wave function at $\omega = 1$ is $\alpha = 1$.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{Plots/Energy_alpha_plot_omega1.pdf}
+\caption{Plot of the Energy as a function of $\alpha$ with $\omega = 1$.}
+\label{fig:Energy_alpha_omega1}
+\end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{Plots/Variance_alpha_plot_omega1.pdf}
+\caption{Plot of the variance as a function of $\alpha$ with $\omega = 1$.}
+\label{fig:Variance_alpha_omega1}
+\end{figure}
+
+\begin{table}
+\begin{center}
+	\begin{tabular}{| l | l | l |}
+	\hline 
+	$\alpha$ & Energy & Variance \\ \hline
+	0.98 & 3.00541 & 0.0013228 \\
+	1 & 3 & 0 \\
+	1.02 & 2.9957 & 0.00130505 \\
+	1.04 & 2.99328 & 0.00504903 \\
+	1.06 & 2.99118 & 0.0112062 \\
+	1.08 & 2.99027 & 0.0196079 \\
+	1.1 & 2.99322 & 0.0293394 \\
+	1.12 & 2.99256 & 0.0423141 \\
+	1.14 & 2.99289 & 0.0572603 \\
+	1.16 & 3.00114 & 0.0713725 \\ \hline
+	\end{tabular}
+\caption{The energy, variance and $\alpha$ values near the minimum point.}
+\end{center}
+\label{table:AlphaMinimum_omega1}
+\end{table}
+We obtain similar results for the cases with $\omega = 0.5$ and $\omega = 0.01$. The energy, for both cases, are also not at its minimum when $\alpha = 1$, but shifted to a slightly larger $\alpha$ value. However, the variance is once again zero (almost zero for $\omega = 0.01$) when $\alpha = 1$, so we can also safely say that the optimal variational parameter is $\alpha = 1$ for both cases. The plots of these can be found in the appendix.
+
+Now that we have found the optimal variational parameter, we can use it to calculate the mean distance $r_{12}$ between the two electrons at the energy minimum. Using the frequency values $\omega = 0.01, 0.5, 1$, the calculated mean distance is found in the output below.
+\begin{lstlisting}
+@Omega = 0.01
+Mean distance = 16.5251
+Omega = 0.5
+Mean distance = 2.34729
+Omega = 1
+Mean distance = 1.65877@
+\end{lstlisting}
+Let us quickly go back to project 2, where we used the analogy where two electrons are bound by a spring. The electrons now oscillate back and forth due to the oscillation of the spring. 
+
+For smaller frequencies, we can imagine that the spring is not very stiff, which means that the electrons can be drawn further apart before they get pulled back in by the spring. Because they can be further apart, the average distance between these two electrons will therefore be larger, which is exactly what we see from the computed results above.
+
+For larger frequencies, we imagine that the spring is a lot stiffer, so the electrons cannot be drawn as far apart. The average distance is thus smaller when we have larger frequencies. This also agrees with the computed value above. 
+
+The results of the mean distance gives the same physical interpretation as the one from project 2 of our three dimensional harmonic oscillator. The difference here is that we use the Metropolis algorithm in this project, whereas we used the Jacobi's method in project 2. So far, we have seen that the former is a lot faster than the latter algorithm. 
+\FloatBarrier
+\subsection{The second trial wave function}
+\subsubsection{Optimal $\alpha$ and $\beta$ parameters}
+Like the first trial wave function, we would like to find the optimal value of the variational parameters $\alpha$ and $\beta$. 
+\FloatBarrier
+
+\subsection{Testing the virial theorem}
+We now want to test the virial theorem with the optimal values of $\alpha$ and $\beta$ that we found in the previous  task. The virial theorem states that the expectation of the total kinetic value is proportional to the expectation value of the total potential energy, i.e $\langle T \rangle \propto \langle V \rangle$. If we consider a pure harmonic oscillator potential, the virial theorem states
+\begin{align*}
+\langle T \rangle = \langle V \rangle
+\end{align*}
+
+\section{Conclusion}\label{section:conclusion}
 
 \FloatBarrier
-\section{Conclusion}\label{section:conclusion}
+\section{Appendix}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{Plots/Energy_alpha_plot_omega05.pdf}
+\caption{Plot of the Energy as a function of $\alpha$ with $\omega = 0.5$.}
+\label{fig:Energy_alpha_omega05}
+
+\end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{Plots/Variance_alpha_plot_omega05.pdf}
+\caption{Plot of the variance as a function of $\alpha$ with $\omega = 0.5$.}
+\label{fig:Variance_alpha_omega05}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{Plots/Energy_alpha_plot_omega001.pdf}
+\caption{Plot of the Energy as a function of $\alpha$ with $\omega = 0.01$.}
+\label{fig:Energy_alpha_omega001}
+\end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{Plots/Variance_alpha_plot_omega001.pdf}
+\caption{Plot of the variance as a function of $\alpha$ with $\omega = 0.01$.}
+\label{fig:Variance_alpha_omega001}
+\end{figure}
+
 
 \FloatBarrier
 \begin{thebibliography}{1}
