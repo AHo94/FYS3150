@@ -213,6 +213,7 @@ void Metropolis_Quantum::Metropolis_Virial(int MC_cycles, Wavefunctions &WaveFun
     vec3 r2(distr(generator),distr(generator),distr(generator));
     double E_pot = 0;
     double E_tot = 0;
+    double E_L1 = 0;
     double KineticSum = 0;
     double KineticSquaredSum = 0;
     double PotentialSum = 0;
@@ -221,6 +222,7 @@ void Metropolis_Quantum::Metropolis_Virial(int MC_cycles, Wavefunctions &WaveFun
     double NewWavefuncSquared = 0;
     double r_12 = 0;
     double omega2 = omega*omega;
+    double alpha2 = alpha*alpha;
 
     double *rDistr = new double[6];
     for (int i=0; i<6; i++){
@@ -229,7 +231,7 @@ void Metropolis_Quantum::Metropolis_Virial(int MC_cycles, Wavefunctions &WaveFun
     double step_length = CalculateStepLength(r1, r2, alpha, omega, rDistr);
 
     int counter = 0;
-    double OldWavefuncSquared = pow(WaveFunc(r1, r2, alpha, beta, omega), 2);
+    double OldWavefuncSquared = pow(WaveFunc(r1, r2, omega, alpha, beta), 2);
     for (int cycle=0; cycle<MC_cycles; cycle++){
         // Running Monte Carlo cycles
         vec3 r1_new(0,0,0);
@@ -241,7 +243,7 @@ void Metropolis_Quantum::Metropolis_Virial(int MC_cycles, Wavefunctions &WaveFun
             r2_new[j] = r2[j] +step_length*rDistr[j+3];
         }
 
-        NewWavefuncSquared = pow(WaveFunc(r1_new, r2_new, alpha,  beta, omega), 2);
+        NewWavefuncSquared = pow(WaveFunc(r1_new, r2_new, omega, alpha,  beta), 2);
         if (distrUniform(generator) <= NewWavefuncSquared/OldWavefuncSquared){
             r1 = r1_new;
             r2 = r2_new;
@@ -250,13 +252,17 @@ void Metropolis_Quantum::Metropolis_Virial(int MC_cycles, Wavefunctions &WaveFun
         }
         step_length = CalculateStepLength(r1, r2, alpha, omega, rDistr);
         r_12 = (r1-r2).length();
-
+        E_L1 = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared())*(1-alpha2) + 3*alpha*omega + CoulombInt*(1.0/r_12);
+        E_tot = E_L1 + (1.0/(2*pow(1+beta*r_12,2)))*(alpha*omega*r_12 - 1.0/(2*pow(1+beta*r_12,2)) \
+                                                     -2.0/r_12 + 2*beta/(1+beta*r_12));
+        E_pot = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared()) + CoulombInt*(1.0/r_12);
+        /*
         E_tot = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared())*(1-alpha*alpha) + 3*alpha*omega \
                 + CoulombInt*(1.0/r_12)\
                 + (1/(2*(1+beta*r_12)*(1+beta*r_12)))*(alpha*omega*r_12 - 1/(2*(1+beta*r_12)*(1+beta*r_12))\
                 - 2/r_12 + 2*beta/(1+beta*r_12));
         E_pot = + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared()) + CoulombInt*(1.0/r_12);
-
+        */
         KineticSum += E_tot;
         KineticSquaredSum += E_tot*E_tot;
         PotentialSum += E_pot;
