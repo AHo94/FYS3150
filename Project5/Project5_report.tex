@@ -81,11 +81,15 @@ The total energy for these two electrons, when we consider the ground state, is 
 
 %% Add stuff for unperturbed case
 
-We will now consider two trial functions given as
-\begin{align*}
-\psi_{T_1} &= C \exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right) \\
+We will now consider these two trial wave functions given as
+\begin{align}
+\psi_{T_1} &= C \exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right)
+\label{eq:First_TrialFunc}
+\end{align}
+\begin{align}
 \psi_{T_2} &= C \exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right)\exp\left(\frac{r_{12}}{2(1+\beta r_{12})}\right)
-\end{align*}
+\label{eq:Second_TrialFunc}
+\end{align}
 where $r_{12} = \sqrt{r_1 - r_2}$ and $\alpha$ and $\beta$ are variational parameters. The second exponential in the $\psi_{T_2}$ is known as the Jastrow factor, which is there because it gives the lowest possible energy for the system, while reducing the amount of variational parameters.
 
 Let us find the energy of the first trial function. First, we should rewrite the Hamiltonian in spherical coordinates. Our system does not depend on the radial coordinates, so the $\nabla$ operator, for electron $i$ in spherical coordinates, becomes
@@ -265,7 +269,7 @@ However, we should also note down the time it took for the Metropolis algorithm 
 \section{Results}\label{section:results}
 \subsection{The first trial wave function}
 
-Let us not plot the energy (expectation value) and variance as a function of of the variational parameter $\alpha$. We can use these determine the optimal value of $\alpha$, which we can use to compare with our results from project 2. One thing to note is that the optimal variational parameter may be different for different frequencies $\omega$.
+Let us now plot the energy (expectation value) and variance as a function of of the variational parameter $\alpha$. We can use these determine the optimal value of $\alpha$, which we can use to compare with our results from project 2. One thing to note is that the optimal variational parameter may be different for different frequencies $\omega$.
 
 Plots of the energy and variance, as a function of $\alpha$, using $\omega = 1$, can be found in figure \ref{fig:Energy_alpha_omega1} and \ref{fig:Variance_alpha_omega1} respectively. We can see that both of them has a minimum, but oddly enough at different values of $\alpha$. We would expect that the energy should be at its minimum when $\alpha = 1$ or smaller. However, the plot in figure \ref{fig:Energy_alpha_omega1} says that it is not quite the case. The minimum is shifted to a slightly larger $\alpha$ value, where the minimum is now at $\alpha = 1.08$.
 
@@ -321,11 +325,43 @@ For smaller frequencies, we can imagine that the spring is not very stiff, which
 
 For larger frequencies, we imagine that the spring is a lot stiffer, so the electrons cannot be drawn as far apart. The average distance is thus smaller when we have larger frequencies. This also agrees with the computed value above. 
 
-The results of the mean distance gives the same physical interpretation as the one from project 2 of our three dimensional harmonic oscillator. The difference here is that we use the Metropolis algorithm in this project, whereas we used the Jacobi's method in project 2. So far, we have seen that the former is a lot faster than the latter algorithm. 
+The results of the mean distance gives the same physical interpretation as the one from project 2 of our three dimensional harmonic oscillator. The difference here is that we use the Metropolis algorithm in this project, whereas we used the Jacobi's method in project 2. So far, we have seen that the former is a lot faster than the latter algorithm.
+
+Let us also have a look at the number of accepted configurations for every $\alpha$ value we computed. From the previous section, we noted that the algorithm that is used to determine an optimal step length $\delta$ resulted to roughly 60 \% accepted configurations. Ideally, we would like to have 50\% accepted configurations, but 60\% should be good enough. Figure \ref{fig:AcceptedConfigs} shows a plot of the number of accepted configurations (percentage of the total number of Monte Carlo cycles) as a function of $\alpha$. We see that the number of accepted configurations is roughly 62.7\%  for every frequency.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{Plots/AcceptedConfigs.pdf}
+\caption{Number of accepted confugrations for each different Metropolis run. The number of accepted configurations is in percentage of the total number of Monte Carlo cycles.}
+\label{fig:AcceptedConfigs}
+\end{figure}
+
+  
 \FloatBarrier
 \subsection{The second trial wave function}
-\subsubsection{Optimal $\alpha$ and $\beta$ parameters}
-Like the first trial wave function, we would like to find the optimal value of the variational parameters $\alpha$ and $\beta$. 
+We will now consider the second trial wave function given in  \ref{eq:Second_TrialFunc}. Let us first find the optimal variational parameters of both $\alpha$ and $\beta$. To do so, we can simply run the Metropolis algorithm as a for loop of different $\alpha$ and $\beta$ values. It should, again, be noted that the optimal parameters may be different for different frequencies.
+
+Running this for different values of $\alpha$ and $\beta$ gives a lot of data in the output file. I have therefore used Python to find the optimal value of both the variational parameters. The strategy is to find the energy minimum in the array of energies. With the energy minimum, we can find which array element that corresponds to this energy minimum. Once we have the array element index, we can use that to find the corresponding $\alpha$ and $\beta$ values in their respective arrays.
+
+\begin{lstlisting}
+@For omega =  1.0
+Lowest energy =  3.72737
+Optimal Alpha value =  0.98
+Optimal Beta value =  0.52
+Standard deviation =  0.112554875505
+
+For omega =  0.5
+Lowest energy =  1.99883
+Optimal Alpha value =  0.98
+Optimal Beta value =  0.36
+Standard deviation =  0.0721291203329
+
+For omega =  0.01
+Lowest energy =  0.0859782
+Optimal Alpha value =  0.6
+Optimal Beta value =  0.2
+Standard deviation =  0.0171850807388@
+\end{lstlisting}
 \FloatBarrier
 
 \subsection{Testing the virial theorem}
@@ -333,7 +369,7 @@ We now want to test the virial theorem with the optimal values of $\alpha$ and $
 \begin{align*}
 \langle T \rangle = \langle V \rangle
 \end{align*}
-
+We will use our optimal results of the variational parameters, for $\omega = 0.01$, $\omega = 0.5$ and $\omega=1$, to compute the expectation values of the kinetic and potential energy in the frequency range $\omega \in [0.01, 1]$. \footnote{I was not sure if the task was to calculate an optimal $\alpha$ and $\beta$ for every single frequency in this range or just use the optimal variational parameters to compute our results for $\omega \in [0.01, 1]$. I went ahead and did the latter choice, as calculating an optimal variational parameter for every frequency would take a lot of CPU time.}
 \section{Conclusion}\label{section:conclusion}
 
 \FloatBarrier
