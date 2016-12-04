@@ -123,6 +123,7 @@ int main()
     Metropolis_Quantum MSolver;
 
     // Testing the algorithm with laplace operators
+    /*
     start = clock();
     MSolver.Metropolis_T1(MC_cycles, FirstTrialFunc, ExpectValues, alpha, omega, 0, 1);
     cout << "Monte Carlo cycles = " << MC_cycles << endl;
@@ -140,6 +141,7 @@ int main()
     cout << "Accepted configs (percentage) = " << ExpectValues[3]/MC_cycles << endl;
     finish = clock();
     cout << "Time elapsed: " << ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
+    */
     //
     /*
     ofile_global.open("Stability_check.txt");
@@ -179,7 +181,7 @@ int main()
        cout << "Mean distance = " << ExpectValues[2]/MC_cycles << endl;
     }
     */
-    /*
+
     // Find optimal alpha, beta
     string filename_optimal = "Optimal_AlphaBeta_omega_";
     for (int i=0; i<3; i++){
@@ -199,7 +201,7 @@ int main()
         }
         ofile_global.close();
     }
-
+    /*
     // Use optimal alpha, beta
     double AlphaOptimal[] = {0.58, 0.98, 0.98};
     double BetaOptimal[] = {0.2, 0.3, 0.52};
