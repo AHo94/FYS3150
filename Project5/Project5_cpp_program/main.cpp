@@ -22,7 +22,8 @@ void write_file(int MC_cycles, double *ExpectationValues, double alpha, double b
     ofile_global << setw(15) << Energy;
     ofile_global << setw(15) << Variance;
     ofile_global << setw(15) << MeanDistance;
-    ofile_global << setw(15) << omega << endl;
+    ofile_global << setw(15) << omega;
+    ofile_global << setw(15) << ExpectationValues[3]/MC_cycles << endl;
 }
 
 void write_file_virial(int MC_cycles, double *ExpectationValues, double alpha, double beta, double omega){
@@ -39,7 +40,8 @@ void write_file_virial(int MC_cycles, double *ExpectationValues, double alpha, d
     ofile_global << setw(15) << Potential;
     ofile_global << setw(15) << PotentialVariance;
     ofile_global << setw(15) << MeanDistance;
-    ofile_global << setw(15) << omega << endl;
+    ofile_global << setw(15) << omega;
+    ofile_global << setw(15) << ExpectationValues[5]/MC_cycles << endl;
 }
 void initialize_outfile(){
     ofile_global << setw(15) << "Alpha";
@@ -47,7 +49,8 @@ void initialize_outfile(){
     ofile_global << setw(15) << "Energy";
     ofile_global << setw(15) << "Variance";
     ofile_global << setw(15) << "Mean Distance";
-    ofile_global << setw(15) << "Omega" << endl;
+    ofile_global << setw(15) << "Omega";
+    ofile_global << setw(15) << " Accepted configs (%)" << endl;
 }
 
 void initialize_outfile_virial(){
@@ -58,7 +61,8 @@ void initialize_outfile_virial(){
     ofile_global << setw(15) << "Potential";
     ofile_global << setw(15) << "Pot Variance";
     ofile_global << setw(15) << "Mean Distance";
-    ofile_global << setw(15) << "Omega" << endl;
+    ofile_global << setw(15) << "Omega ";
+    ofile_global << setw(15) << " Accepted configs (%)" << endl;
 }
 
 void Find_Optimal_AlphaBeta(int MC_cycles, int N_omegas, double *omegas, double *OptimalAlphas, double *OptimalBetas){
@@ -107,18 +111,16 @@ int main()
 {
     double *ExpectValues;
     ExpectValues = new double [4];
-    int MC_cycles = 100000;
+    int MC_cycles = 1000000;
     double omega, alpha, beta;
     omega = 1;
     alpha = 1;
     beta = 1;
-
-    cout << "CLASS TEST" << endl;
     Wavefunctions FirstTrialFunc(0);
     Wavefunctions SecondTrialFunc(1);
     Metropolis_Quantum MSolver;
 
-    // Testing the algorithm
+    // Testing the algorithm with laplace operators
     /*
     MSolver.Metropolis_T1(MC_cycles, FirstTrialFunc, ExpectValues, alpha, omega, 0, 1);
     cout << "Monte Carlo cycles = " << MC_cycles << endl;
@@ -131,7 +133,16 @@ int main()
     cout << "Kinetic numeric = "<< ExpectValues[0]/(MC_cycles) << endl;
     cout << "Variance = "<< ExpectValues[1]/(MC_cycles) - ExpectValues[0]*ExpectValues[0]/MC_cycles/MC_cycles << endl;
     cout << "Accepted configs (percentage) = " << ExpectValues[3]/MC_cycles << endl;
-
+    */
+    //
+    ofile_global.open("Stability_check.txt");
+    initialize_outfile();
+    for (int MCruns = 10000; MCruns<= MC_cycles; MCruns*=2){
+        MSolver.Metropolis_T1(MCruns, FirstTrialFunc, ExpectValues, alpha, omega, 0);
+        write_file(MCruns, ExpectValues, alpha, beta, omega);
+    }
+    ofile_global.close();
+    /*
     // Find optimal alpha
     string filename = "Energy_Alpha_Mdistance_omega_";
     double omegas[] = {0.01, 0.5, 1};
@@ -145,12 +156,13 @@ int main()
         ofile_global.open(fileout);
         initialize_outfile();
         for (double alphas = 0.5; alphas<=1.5; alphas +=0.02){
-            MSolver.Metropolis_T1(MC_cycles, FirstTrialFunc, ExpectationValues, alphas, omegas[i], 0, 1);
-            write_file(MC_cycles, ExpectationValues, alphas, beta, omegas[i]);
+            MSolver.Metropolis_T1(MC_cycles, FirstTrialFunc, ExpectValues, alphas, omegas[i], 1);
+            write_file(MC_cycles, ExpectValues, alphas, beta, omegas[i]);
         }
         ofile_global.close();
     }
-
+    */
+    /*
     // Find optimal alpha, beta
     string filename_optimal = "Optimal_AlphaBeta_omega_";
     for (int i=0; i<3; i++){
@@ -164,8 +176,8 @@ int main()
         initialize_outfile();
         for (double alphas = 0.5; alphas <= 1.0; alphas += 0.02){
             for (double betas = 0.2; betas <= 0.7; betas += 0.02){
-                MSolver.Metropolis_T2(MC_cycles, SecondTrialFunc, ExpectationValues, alphas, betas, omegas[i]);
-                write_file(MC_cycles, ExpectationValues, alphas, betas, omegas[i]);
+                MSolver.Metropolis_T2(MC_cycles, SecondTrialFunc, ExpectValues, alphas, betas, omegas[i]);
+                write_file(MC_cycles, ExpectValues, alphas, betas, omegas[i]);
             }
         }
         ofile_global.close();
@@ -177,16 +189,16 @@ int main()
     ofile_global.open("Optimal_Energy_SecondTrialWaveFunc.txt");
     initialize_outfile();
     for (int i=0; i<3; i++){
-        MSolver.Metropolis_T2(MC_cycles, SecondTrialFunc, ExpectationValues, AlphaOptimal[i], BetaOptimal[i], omegas[i]);
-        write_file(MC_cycles, ExpectationValues, AlphaOptimal[i], BetaOptimal[i], omegas[i]);
+        MSolver.Metropolis_T2(MC_cycles, SecondTrialFunc, ExpectValues, AlphaOptimal[i], BetaOptimal[i], omegas[i]);
+        write_file(MC_cycles, ExpectValues, AlphaOptimal[i], BetaOptimal[i], omegas[i]);
     }
     ofile_global.close();
 
     ofile_global.open("Optimal_Energy_FirstTrialWaveFunc.txt");
     initialize_outfile();
     for (int i=0; i<3; i++){
-        MSolver.Metropolis_T2(MC_cycles, FirstTrialFunc, ExpectationValues, AlphaOptimal[i], BetaOptimal[i], omegas[i]);
-        write_file(MC_cycles, ExpectationValues, AlphaOptimal[i], BetaOptimal[i], omegas[i]);
+        MSolver.Metropolis_T2(MC_cycles, FirstTrialFunc, ExpectValues, AlphaOptimal[i], BetaOptimal[i], omegas[i]);
+        write_file(MC_cycles, ExpectValues, AlphaOptimal[i], BetaOptimal[i], omegas[i]);
     }
     ofile_global.close();
     */
@@ -202,7 +214,7 @@ int main()
     for (int i=0; i<N_omegas; i++){
         omegas2[i] = 0.01 + i*omega_step;
     }
-
+    /*
     string filename2 = "Virial_data_V";
     for (int j=0; j<3; j++){
         string fileout = filename2;
@@ -241,5 +253,6 @@ int main()
 
         ofile_global.close();
     }
+    */
     return 0;
 }
