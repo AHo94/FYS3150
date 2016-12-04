@@ -110,18 +110,11 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, Wavefunctions &WaveFunc, d
     }
 
     // Adding the energies and mean distance in their arrays
-
     ExpectationValues[0] = EnergySum;
     ExpectationValues[1] = EnergySquaredSum;
     ExpectationValues[2] = MeanDistance;
     ExpectationValues[3] = counter;
-    /*
-    cout << "Monte Carlo cycles = " << MC_cycles << endl;
-    cout << "Energy = "<< EnergyExpectation/(MC_cycles) << endl;
-    cout << "Variance = " << EnergyExpectationSquared/MC_cycles - \
-            EnergyExpectation*EnergyExpectation/MC_cycles/MC_cycles << endl;;
-    cout << "Accepted configs = " << (double)counter/MC_cycles << endl;
-    */
+
 }
 
 void Metropolis_Quantum::Metropolis_T2(int MC_cycles, Wavefunctions &WaveFunc, double *ExpectationValues
@@ -144,6 +137,7 @@ void Metropolis_Quantum::Metropolis_T2(int MC_cycles, Wavefunctions &WaveFunc, d
     double NewWavefuncSquared = 0;
     double r_12 = 0;
     double omega2 = omega*omega;
+    double alpha2 = alpha*alpha;
 
     double *rDistr = new double[6];
     for (int i=0; i<6; i++){
@@ -173,7 +167,7 @@ void Metropolis_Quantum::Metropolis_T2(int MC_cycles, Wavefunctions &WaveFunc, d
         }
         step_length = CalculateStepLength(r1, r2, alpha, omega, rDistr);
         r_12 = (r1-r2).length();
-        E_local = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared())*(1-alpha*alpha) + 3*alpha*omega + 1/r_12\
+        E_local = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared())*(1-alpha2) + 3*alpha*omega + 1/r_12\
                 + (1/(2*(1+beta*r_12)*(1+beta*r_12)))*(alpha*omega*r_12 - 1/(2*(1+beta*r_12)*(1+beta*r_12))\
                 - 2/r_12 + 2*beta/(1+beta*r_12));
 
@@ -181,19 +175,11 @@ void Metropolis_Quantum::Metropolis_T2(int MC_cycles, Wavefunctions &WaveFunc, d
         EnergySquaredSum += E_local*E_local;
         MeanDistance += r_12;
     }
-
+    // Saving calculated values to an array
     ExpectationValues[0] = EnergySum;
     ExpectationValues[1] = EnergySquaredSum;
     ExpectationValues[2] = MeanDistance;
     ExpectationValues[3] = counter;
-
-    /*
-    cout << "Monte Carlo cycles = " << MC_cycles << endl;
-    cout << "Energy = "<< EnergyExpectation/(MC_cycles) << endl;
-    cout << "Variance = " << EnergyExpectationSquared/MC_cycles - \
-            EnergyExpectation*EnergyExpectation/MC_cycles/MC_cycles << endl;;
-    cout << "Accepted configs = " << (double)counter/MC_cycles << endl;
-    */
 }
 
 void Metropolis_Quantum::Metropolis_Virial(int MC_cycles, Wavefunctions &WaveFunc, double *ExpectationValues
@@ -213,7 +199,6 @@ void Metropolis_Quantum::Metropolis_Virial(int MC_cycles, Wavefunctions &WaveFun
     vec3 r2(distr(generator),distr(generator),distr(generator));
     double E_pot = 0;
     double E_tot = 0;
-    double E_L1 = 0;
     double KineticSum = 0;
     double KineticSquaredSum = 0;
     double PotentialSum = 0;
@@ -252,17 +237,12 @@ void Metropolis_Quantum::Metropolis_Virial(int MC_cycles, Wavefunctions &WaveFun
         }
         step_length = CalculateStepLength(r1, r2, alpha, omega, rDistr);
         r_12 = (r1-r2).length();
-        E_L1 = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared())*(1-alpha2) + 3*alpha*omega + CoulombInt*(1.0/r_12);
-        E_tot = E_L1 + (1.0/(2*pow(1+beta*r_12,2)))*(alpha*omega*r_12 - 1.0/(2*pow(1+beta*r_12,2)) \
-                                                     -2.0/r_12 + 2*beta/(1+beta*r_12));
-        E_pot = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared()) + CoulombInt*(1.0/r_12);
-        /*
-        E_tot = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared())*(1-alpha*alpha) + 3*alpha*omega \
+        E_tot = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared())*(1-alpha2) + 3*alpha*omega \
                 + CoulombInt*(1.0/r_12)\
                 + (1/(2*(1+beta*r_12)*(1+beta*r_12)))*(alpha*omega*r_12 - 1/(2*(1+beta*r_12)*(1+beta*r_12))\
                 - 2/r_12 + 2*beta/(1+beta*r_12));
         E_pot = + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared()) + CoulombInt*(1.0/r_12);
-        */
+
         KineticSum += E_tot;
         KineticSquaredSum += E_tot*E_tot;
         PotentialSum += E_pot;
@@ -277,11 +257,6 @@ void Metropolis_Quantum::Metropolis_Virial(int MC_cycles, Wavefunctions &WaveFun
     ExpectationValues[3] = PotentialSquaredSum;
     ExpectationValues[4] = MeanDistance;
     ExpectationValues[5] = counter;
-
-    cout << "Monte Carlo cycles = " << MC_cycles << endl;
-    cout << "Kinetic numeric = "<< ExpectationValues[0]/(MC_cycles) << endl;
-    cout << "Potential numeric = "<< ExpectationValues[2]/(MC_cycles) << endl;
-    cout << "Accepted configs (percentage) = " <<(double) counter/MC_cycles << endl;
 }
 
 
