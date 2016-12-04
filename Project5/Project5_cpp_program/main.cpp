@@ -13,6 +13,33 @@ using namespace std;
 
 ofstream ofile_global;
 
+
+double Wavefunction_T1(vec3 r1, vec3 r2, double alpha, double omega)
+{
+    // Function for first trial wavefunction
+    return exp(-0.5*alpha*omega*(r1.lengthSquared() + r2.lengthSquared()));
+}
+
+double TrialWavefunc_T2(vec3 r1, vec3 r2, double alpha, double beta, double omega)
+{
+    // Function for the second trial wavefunction
+    double r_12 = (r1-r2).length();
+    double Wavefunc1 = Wavefunction_T1(r1, r2, alpha, omega);
+    return Wavefunc1*exp(r_12/(2*(1+beta*r_12)));
+}
+
+double StepLength(vec3 r1, vec3 r2, double alpha, double omega, double *s){
+    // Calculate step length
+    double a = 0;
+    for (int i = 0; i<6; i++){
+        a += s[i]*s[i];
+    }
+    double b = 2*(r1[0]*s[0] + r1[1]*s[1] + r1[2]*s[2] + r2[0]*s[3] + r2[1]*s[4] + r2[2]*s[5]);
+    double c = log(0.5)/(alpha*omega);
+    return (-b + sqrt(b*b - 4*a*c))/(2*a);
+}
+
+
 void Metropolis_Virial(int MC_cycles, double alpha, double beta, double omega, double *ExpectationValues,
                        int CoulombInt=1){
     if (CoulombInt != 1 && CoulombInt != 0){
@@ -81,6 +108,7 @@ void Metropolis_Virial(int MC_cycles, double alpha, double beta, double omega, d
     }
 
     // Adding the energies and mean distance in their arrays
+    cout << TrialWavefunc_T2(r1, r2, alpha, beta, omega) << endl;
     ExpectationValues[0] = KineticSum - PotentialSum;
     ExpectationValues[1] = KineticSquaredSum - PotentialSquaredSum;
     ExpectationValues[2] = PotentialSum;
@@ -163,7 +191,7 @@ void Find_Optimal_AlphaBeta(int MC_cycles, int N_omegas, double *omegas, double 
     for (int i=0; i<N_omegas; i++){
         for (double alphas = 0.5; alphas <= 1.0; alphas += 0.02){
             for (double betas = 0.2; betas <= 0.7; betas += 0.02){
-                Metropolis_method_T2(MC_cycles, omegas[i], alphas, betas, ExpectationValues);
+//                Metropolis_method_T2(MC_cycles, omegas[i], alphas, betas, ExpectationValues);
                 MinEnergies[indexCounter] = ExpectationValues[0]/MC_cycles;
                 AlphasCalc[indexCounter] = alphas;
                 BetasCalc[indexCounter] = betas;
@@ -184,7 +212,96 @@ void Find_Optimal_AlphaBeta(int MC_cycles, int N_omegas, double *omegas, double 
     }
 }
 
-int main(int argc, char *argv[])
+void Metropolis_Virial2(int MC_cycles, Wavefunctions &WaveFunc, double *ExpectationValues
+                                           , double alpha, double beta, double omega, int CoulombInt)
+{
+    if (CoulombInt != 1 && CoulombInt != 0){
+        cout << "CoulombInt = " << CoulombInt << endl;
+        cout << "Invalid value, try CoulombInt = 1 or CoulombInt = 0" << endl;
+        exit(1);
+    }
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
+    std::default_random_engine generator(seed);
+    std::uniform_real_distribution<double> distrUniform(0, 1.0);
+    std::uniform_real_distribution<double> distr(-1.0, 1.0);
+    // Random initial starting position for both electrons
+    vec3 r1(distr(generator),distr(generator),distr(generator));
+    vec3 r2(distr(generator),distr(generator),distr(generator));
+    double E_pot = 0;
+    double E_tot = 0;
+    double E_L1 = 0;
+    double KineticSum = 0;
+    double KineticSquaredSum = 0;
+    double PotentialSum = 0;
+    double PotentialSquaredSum = 0;
+    double MeanDistance = 0;
+    double NewWavefuncSquared = 0;
+    double r_12 = 0;
+    double omega2 = omega*omega;
+    double alpha2 = alpha*alpha;
+
+    double *rDistr = new double[6];
+    for (int i=0; i<6; i++){
+        rDistr[i] = distr(generator);
+    }
+    double step_length = StepLength(r1, r2, alpha, omega, rDistr);
+
+    int counter = 0;
+    double OldWavefuncSquared = pow(WaveFunc(r1, r2, omega, alpha, beta), 2);
+    for (int cycle=0; cycle<MC_cycles; cycle++){
+        // Running Monte Carlo cycles
+        vec3 r1_new(0,0,0);
+        vec3 r2_new(0,0,0);
+        for (int j=0; j<3; j++){
+            rDistr[j] = distr(generator);
+            rDistr[j+3] = distr(generator);
+            r1_new[j] = r1[j] +step_length*rDistr[j];
+            r2_new[j] = r2[j] +step_length*rDistr[j+3];
+        }
+        NewWavefuncSquared = pow(WaveFunc(r1_new, r2_new, omega, alpha,  beta), 2);
+        if (distrUniform(generator) <= NewWavefuncSquared/OldWavefuncSquared){
+            r1 = r1_new;
+            r2 = r2_new;
+            OldWavefuncSquared = NewWavefuncSquared;
+            counter += 1;
+        }
+        step_length = StepLength(r1, r2, alpha, omega, rDistr);
+        r_12 = (r1-r2).length();
+        E_L1 = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared())*(1-alpha2) + 3*alpha*omega + CoulombInt*(1.0/r_12);
+        E_tot = E_L1 + (1.0/(2*pow(1+beta*r_12,2)))*(alpha*omega*r_12 - 1.0/(2*pow(1+beta*r_12,2)) \
+                                                     -2.0/r_12 + 2*beta/(1+beta*r_12));
+        E_pot = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared()) + CoulombInt*(1.0/r_12);
+        /*
+        E_tot = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared())*(1-alpha*alpha) + 3*alpha*omega \
+                + CoulombInt*(1.0/r_12)\
+                + (1/(2*(1+beta*r_12)*(1+beta*r_12)))*(alpha*omega*r_12 - 1/(2*(1+beta*r_12)*(1+beta*r_12))\
+                - 2/r_12 + 2*beta/(1+beta*r_12));
+        E_pot = + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared()) + CoulombInt*(1.0/r_12);
+        */
+        KineticSum += E_tot;
+        KineticSquaredSum += E_tot*E_tot;
+        PotentialSum += E_pot;
+        PotentialSquaredSum += E_pot*E_pot;
+        MeanDistance += r_12;
+    }
+
+    // Adding the energies and mean distance in their arrays
+    //cout << WaveFunc(r1, r2, omega, alpha, beta) << endl;
+    ExpectationValues[0] = KineticSum - PotentialSum;
+    ExpectationValues[1] = KineticSquaredSum - PotentialSquaredSum;
+    ExpectationValues[2] = PotentialSum;
+    ExpectationValues[3] = PotentialSquaredSum;
+    ExpectationValues[4] = MeanDistance;
+    ExpectationValues[5] = counter;
+
+    cout << "Monte Carlo cycles = " << MC_cycles << endl;
+    cout << "Kinetic numeric = "<< ExpectationValues[0]/(MC_cycles) << endl;
+    cout << "Potential numeric = "<< ExpectationValues[2]/(MC_cycles) << endl;
+    cout << "Accepted configs (percentage) = " <<(double) counter/MC_cycles << endl;
+}
+
+
+int main()
 {
     double *ExpectValues;
     ExpectValues = new double [4];
@@ -200,6 +317,7 @@ int main(int argc, char *argv[])
     Metropolis_Quantum MSolver;
 
     // Testing the algorithm
+    /*
     MSolver.Metropolis_T1(MC_cycles, FirstTrialFunc, ExpectValues, alpha, omega, 0, 1);
     cout << "Monte Carlo cycles = " << MC_cycles << endl;
     cout << "Kinetic numeric = "<< ExpectValues[0]/(MC_cycles) << endl;
@@ -211,7 +329,7 @@ int main(int argc, char *argv[])
     cout << "Kinetic numeric = "<< ExpectValues[0]/(MC_cycles) << endl;
     cout << "Variance = "<< ExpectValues[1]/(MC_cycles) - ExpectValues[0]*ExpectValues[0]/MC_cycles/MC_cycles << endl;
     cout << "Accepted configs (percentage) = " << ExpectValues[3]/MC_cycles << endl;
-    /*
+
     // Find optimal alpha
     string filename = "Energy_Alpha_Mdistance_omega_";
     double omegas[] = {0.01, 0.5, 1};
