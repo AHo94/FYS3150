@@ -28,7 +28,6 @@ class Plotter():
 		self.alpha = np.zeros(self.N)
 		self.beta = np.zeros(self.N)
 		self.Variance = np.zeros(self.N)
-		self.Energy_Exact = 3*self.omega*np.ones(self.N)
 		self.MeanDistance = np.zeros(self.N)
 		self.AcceptedConfigs = np.zeros(self.N)
 		for j in range(0, self.N):
@@ -70,18 +69,10 @@ class Plotter():
 		self.read_data("Energy_Alpha_Mdistance_omega_0.01.txt")
 		fig1 = plt.figure()
 		plt.plot(self.alpha, self.Energy)
-		#plt.hold("on")
-		#plt.plot(self.alpha, self.Energy_Exact)
 		plt.xlabel(r'$\alpha$')
 		plt.ylabel(r'$\langle H \rangle$')
 		plt.title(r'Plot of the $\langle H \rangle$ as a function of $\alpha$ with $\omega$ = %.2f. Using $\psi_{T_1}$' %(self.omega))
 		plt.legend(['Numerical value','Exact'])
-
-		fig2 = plt.figure()
-		plt.plot(self.alpha, self.MeanDistance)
-		plt.xlabel(r'$\alpha$')
-		plt.ylabel(r'$r_{12}$')
-		plt.title(r'Plot of the mean distance $r_{12}$ as a function of $\alpha$ with $\omega$ = %.2f' %(self.omega))
 
 		fig3 = plt.figure()
 		plt.plot(self.alpha, self.Variance)
@@ -89,22 +80,14 @@ class Plotter():
 		plt.ylabel(r'$\sigma_E$')
 		plt.title(r'Plot of the variance $\sigma_E$ as a function of $\alpha$ with $\omega$ = %.2f' %(self.omega))
 
-		# Plots for omega = 0.5
+		### Plots for omega = 0.5
 		self.read_data("Energy_Alpha_Mdistance_omega_0.50.txt")
 		fig4 = plt.figure()
 		plt.plot(self.alpha, self.Energy)
-		#plt.hold("on")
-		#plt.plot(self.alpha, self.Energy_Exact)
 		plt.xlabel(r'$\alpha$')
 		plt.ylabel(r'$\langle H \rangle$')
 		plt.title(r'Plot of the $\langle H \rangle$ as a function of $\alpha$ with $\omega$ = %.2f. Using $\psi_{T_1}$' %(self.omega))
 		plt.legend(['Numerical value','Exact'])
-
-		fig5 = plt.figure()
-		plt.plot(self.alpha, self.MeanDistance)
-		plt.xlabel(r'$\alpha$')
-		plt.ylabel(r'$r_{12}$')
-		plt.title(r'Plot of the mean distance $r_{12}$ as a function of $\alpha$ with $\omega$ = %.2f.' %(self.omega))
 
 		fig6 = plt.figure()
 		plt.plot(self.alpha, self.Variance)
@@ -112,22 +95,14 @@ class Plotter():
 		plt.ylabel(r'$\sigma_E$')
 		plt.title(r'Plot of the variance $\sigma_E$ as a function of $\alpha$ with $\omega$ = %.2f' %(self.omega))
 
-		# Plots for omega = 1
+		### Plots for omega = 1
 		self.read_data("Energy_Alpha_Mdistance_omega_1.00.txt")
 		fig7 = plt.figure()
 		plt.plot(self.alpha, self.Energy)
-		#plt.hold("on")
-		#plt.plot(self.alpha, self.Energy_Exact)
 		plt.xlabel(r'$\alpha$')
 		plt.ylabel(r'$\langle H \rangle$')
 		plt.title(r'Plot of the $\langle H \rangle$ as a function of $\alpha$ with $\omega$ = %.2f. Using $\psi_{T_1}$' %(self.omega))
 		plt.legend(['Numerical value','Exact'])
-
-		fig8 = plt.figure()
-		plt.plot(self.alpha, self.MeanDistance)
-		plt.xlabel(r'$\alpha$')
-		plt.ylabel(r'$r_{12}$')
-		plt.title(r'Plot of the mean distance $r_{12}$ as a function of $\alpha$ with $\omega$ = %.2f' %(self.omega))
 
 		fig9 = plt.figure()
 		plt.plot(self.alpha, self.Variance)
@@ -135,7 +110,7 @@ class Plotter():
 		plt.ylabel(r'$\sigma_E$')
 		plt.title(r'Plot of the variance $\sigma_E$ as a function of $\alpha$ with $\omega$ = %.2f' %(self.omega))
 
-		# Plots accepted configs
+		### Plots accepted configs
 		fig10 = plt.figure()
 		ax1 = plt.subplot(111)
 		self.read_data("Energy_Alpha_Mdistance_omega_0.01.txt")
@@ -152,15 +127,12 @@ class Plotter():
 		
 		if self.savefile == True:
 			fig1.savefig('../Plots/Energy_alpha_plot_omega001.pdf')
-			fig2.savefig('../Plots/MeanDistance_alpha_plot_omega001.pdf')
 			fig3.savefig('../Plots/Variance_alpha_plot_omega001.pdf')
 
 			fig4.savefig('../Plots/Energy_alpha_plot_omega05.pdf')
-			fig5.savefig('../Plots/MeanDistance_alpha_plot_omega05.pdf')
 			fig6.savefig('../Plots/Variance_alpha_plot_omega05.pdf')
 
 			fig7.savefig('../Plots/Energy_alpha_plot_omega1.pdf')
-			fig8.savefig('../Plots/MeanDistance_alpha_plot_omega1.pdf')
 			fig9.savefig('../Plots/Variance_alpha_plot_omega1.pdf')
 
 			fig10.savefig('../Plots/AcceptedConfigs.pdf')
@@ -224,6 +196,7 @@ class Plotter():
 			plt.show()
 
 	def Virial_plotting(self):
+		""" Function made to plot for the virial problem """
 		self.read_data_virial("Virial_data_V0.txt")
 		fig1 = plt.figure()
 		ax = plt.subplot(111)
