@@ -223,8 +223,8 @@ int main()
     */
     // Virial test
 
-    double AlphaOptimal[] = {0.58, 0.98, 0.98};
-    double BetaOptimal[] = {0.2, 0.36, 0.48};
+    double AlphaOptimal[] = {0.6, 0.98, 0.98};
+    double BetaOptimal[] = {0.2, 0.36, 0.52};
     double *VirialExpect = new double[6];
     // New omegas
     int N_omegas = 50;
