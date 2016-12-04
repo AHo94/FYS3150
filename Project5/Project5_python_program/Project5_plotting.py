@@ -258,6 +258,6 @@ class Plotter():
 			plt.show()
 ## Comment out the functions to plot what you want
 solver = Plotter(True)
-solver.plot_energy_alpha()
-#solver.Find_Optimal_AlphaBeta()
+#solver.plot_energy_alpha()
+solver.Find_Optimal_AlphaBeta()
 #solver.Virial_plotting()
