@@ -20,7 +20,6 @@ double Wavefunctions::Wavefunction_T2(vec3 r1, vec3 r2, double alpha, double bet
 {
     // Function for the second trial wavefunction
     double r_12 = (r1-r2).length();
-    //double Wavefunc1 = Wavefunction_T1(r1, r2, alpha, omega);
-    double Wavefunc1 = exp(-0.5*alpha*omega*(r1.lengthSquared() + r2.lengthSquared()));
+    double Wavefunc1 = Wavefunction_T1(r1, r2, alpha, omega);
     return Wavefunc1*exp(r_12/(2*(1+beta*r_12)));
 }
