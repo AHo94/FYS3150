@@ -80,12 +80,28 @@ The total energy for these two electrons, when we consider the ground state, is 
 \end{align*}
 
 %% Add stuff for unperturbed case
+The unperturbed wave function for the ground state of the two electron system is given as
+\begin{align}
+\Phi (\mathbf{r}_1, \mathbf{r}_2) = C\exp(-\omega(r_1^2 + r_2^2)/2)
+\label{eq:Unpertubed_groundstate_wavefunc}
+\end{align}
+where $r_i = \sqrt{x_i^2 + y_i^2 + z_i^2}$. This wave function is symmetric when $r_1 \leftrightarrow -r_1$ and $r_2 \leftrightarrow -r_2$. Let us consider the trial wave function
+\begin{align}
+\psi_T(\mathbf{r}_1, \mathbf{r}_2) = \frac{1}{\sqrt{2}}\left(\psi_a(\mathbf{r}_1)\psi_b(\mathbf{r}_2)- \psi_a(\mathbf{r}_2)\psi_b(\mathbf{r}_1)  \right) 
+\label{eq:Pauli-TrialFunc}
+\end{align}
+when we plug the wave function, given in \ref{eq:Unpertubed_groundstate_wavefunc}, into the trial Wave function in \ref{eq:Pauli-TrialFunc}, the result would be
+\begin{align*}
+\psi_T(\mathbf{r}_1, \mathbf{r}_2) = 0
+\end{align*}
+By Paulis principle, two electrons (or fermions) cannot be in same quantum state simultaneously. In order to allow such a trial wave function to exist, we will have to introduce spin statistics to the fermions. The fermions needs to be in different spin states if such a trial wave function is allowed to exist. The spin states an electron can be in is $s\pm 1/2$, and if our two electrons have different spins, the total spin of the system will therefore be zero.
 
-We will now consider these two trial wave functions given as
+Because of this, the Hamiltonian will not depend on the spin, and we can therefore drop the spin dependence. From this, we can use the ansatz that our first trial wave function can take the form 
 \begin{align}
 \psi_{T_1} &= C \exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right)
 \label{eq:First_TrialFunc}
 \end{align}
+We can also make another ansatz, which gives us our second trial wave function
 \begin{align}
 \psi_{T_2} &= C \exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right)\exp\left(\frac{r_{12}}{2(1+\beta r_{12})}\right)
 \label{eq:Second_TrialFunc}
@@ -215,9 +231,9 @@ This is just a second order equation for $\delta$. We require that $\delta$ is a
 \delta = \frac{1}{2a}(-b + \sqrt{b^2 - 4ac})
 \label{eq:step_length_algo}
 \end{align}
-Implementing this in the program \emph{should} result to roughly 50\% of the configurations being accepted. However, we will see that it is not always the case, but the number of accepted configurations will be relatively close to 50\%.
+Implementing this in the program \emph{should} ideally result to roughly 50\% of the configurations being accepted. However, this will not be the case. We will see that the the number of accepted configurations will float around 65\% for most cases. This is a little far away from the 50\% we wanted, but it should suffice.
 
-\subsection*{Results from project 2}
+\subsection{Results from project 2}
 It is a good idea to note down some relations from project 2, since we will compare a lot of our results with that project. Previously, we found that an electron in a harmonic oscillator potential had the energy
 \begin{align*}
 E_{nl} = \hbar \omega \left(2n + l + \frac{3}{2} \right)
@@ -233,7 +249,7 @@ I have also made a class called \texttt{Metropolis\_quantum}. This class contain
 I have also used the class \texttt{vec3}, which we developed in project 3. This class will make it easier to keep track of all the components contained within the radius variable $\mathbf{r} = (x, y, z)$, as it contains methods to do certain vector calculations, e.g finding vector length and vector addition. 
 
 
-\subsubsection*{Testing the Metropolis algorithm}
+\subsection{Testing the Metropolis algorithm}
 Before we proceed with the results, we should check if the Metropolis algorithm works as it should. When calculating the local energy, we should use a numerical approach to calculate the kinetic term $\nabla^2\psi$. However, we already have the analytical expression of the local energy $E_{L1}$, given in equation \ref{eq:Energy_T1}. From that, we also know which terms contributes to the kinetic energy. In fact, the kinetic energy is given in equation \ref{eq:Kinetic_psi1}, which we can use to test the Metropolis algorithm.
 
 By implementing this term as its own function \texttt{LaplaceAnalytic}, we run the program with the analytical kinetic energy. Using $10^6$ Monte Carlo cycles, $\alpha = 1$, $\omega = 1$ and no Coulomb interaction, the result is:
@@ -268,7 +284,8 @@ However, we should also note down the time it took for the Metropolis algorithm 
 
 \section{Results}\label{section:results}
 \subsection{The first trial wave function}
-
+We will first consider the first trial wave function given in \ref{eq:First_TrialFunc}.
+\subsubsection{Finding the optimal $\alpha$}
 Let us now plot the energy (expectation value) and variance as a function of of the variational parameter $\alpha$. We can use these determine the optimal value of $\alpha$, which we can use to compare with our results from project 2. One thing to note is that the optimal variational parameter may be different for different frequencies $\omega$.
 
 Plots of the energy and variance, as a function of $\alpha$, using $\omega = 1$, can be found in figure \ref{fig:Energy_alpha_omega1} and \ref{fig:Variance_alpha_omega1} respectively. We can see that both of them has a minimum, but oddly enough at different values of $\alpha$. We would expect that the energy should be at its minimum when $\alpha = 1$ or smaller. However, the plot in figure \ref{fig:Energy_alpha_omega1} says that it is not quite the case. The minimum is shifted to a slightly larger $\alpha$ value, where the minimum is now at $\alpha = 1.08$.
@@ -309,7 +326,8 @@ However, if we look at the plot of variance in \ref{fig:Variance_alpha_omega1}, 
 \label{table:AlphaMinimum_omega1}
 \end{table}
 We obtain similar results for the cases with $\omega = 0.5$ and $\omega = 0.01$. The energy, for both cases, are also not at its minimum when $\alpha = 1$, but shifted to a slightly larger $\alpha$ value. However, the variance is once again zero (almost zero for $\omega = 0.01$) when $\alpha = 1$, so we can also safely say that the optimal variational parameter is $\alpha = 1$ for both cases. The plots of these can be found in the appendix.
-
+\FloatBarrier
+\subsubsection{The mean distance}
 Now that we have found the optimal variational parameter, we can use it to calculate the mean distance $r_{12}$ between the two electrons at the energy minimum. Using the frequency values $\omega = 0.01, 0.5, 1$, the calculated mean distance is found in the output below.
 \begin{lstlisting}
 @Omega = 0.01
@@ -339,10 +357,12 @@ Let us also have a look at the number of accepted configurations for every $\alp
   
 \FloatBarrier
 \subsection{The second trial wave function}
+\subsubsection{Finding the optimal variational parameters}
 We will now consider the second trial wave function given in  \ref{eq:Second_TrialFunc}. Let us first find the optimal variational parameters of both $\alpha$ and $\beta$. To do so, we can simply run the Metropolis algorithm as a for loop of different $\alpha$ and $\beta$ values. It should, again, be noted that the optimal parameters may be different for different frequencies.
 
 Running this for different values of $\alpha$ and $\beta$ gives a lot of data in the output file. I have therefore used Python to find the optimal value of both the variational parameters. The strategy is to find the energy minimum in the array of energies. With the energy minimum, we can find which array element that corresponds to this energy minimum. Once we have the array element index, we can use that to find the corresponding $\alpha$ and $\beta$ values in their respective arrays.
 
+The output below shows the optimal values of $\alpha$ and $\beta$, as well as the lowest energy and the standard deviation, when we do our calculation. The variational parameters will then be manually set back into C++ to do the remaining tasks. 
 \begin{lstlisting}
 @For omega =  1.0
 Lowest energy =  3.72737
@@ -362,8 +382,45 @@ Optimal Alpha value =  0.6
 Optimal Beta value =  0.2
 Standard deviation =  0.0171850807388@
 \end{lstlisting}
+We can also plot how the energy evolves as we change the variational parameters. I will only plot the one for $\omega = 1$, as the other frequencies will give similar results. The plot can be found in \ref{fig:3DPlot_AlphaBeta_Optimal}.  One may think, when looking at the plot, that we have not quite reached the minimum energy. However, I have tested this multiple times for different ranges of $\alpha$ and $\beta$, and I can safely say that there is a minimum in that plot.
+\begin{figure}[h]
+\centering
+%\includegraphics[width=\linewidth]{Plots/OptimalAlphaBeta_3DPlot.pdf}
+\caption{3D plot of the energy expectation values as a function of $\alpha$ and $\beta$.}
+\label{fig:3DPlot_AlphaBeta_Optimal}
+\end{figure}
 \FloatBarrier
+\subsubsection{The Jastrow factor}
+We are also interested on how important the correlations are when we introduce the Jastrow factor. Using the optimal variational parameter values, we can calculate the energy, variance as well as the mean distance for the wave function, with and without the Jastrow factor. Table \ref{table:Non-Jastrow-Result} and \ref{table:Jastrow-Result} shows the computed values, with and without the Jastrow factor respectively.
 
+\begin{table}
+\begin{center}
+	\begin{tabular}{| l | l | l | l |}
+	\hline
+	 $\omega$ & Energy & Variance & Mean distance \\ \hline
+	 0.01 & 0.0860071 & 0.000287508 & 24.8372 \\
+	 0.5 & 1.99854 & 0.00217906 & 2.69878 \\
+	 1 & 3.7269 & 0.0125113 & 1.81991 \\ \hline
+	\end{tabular}
+\caption{Computed energy, variance and mean distance for different frequencies with the Jastrow factor.}
+\end{center}
+\label{table:Jastrow-Result}
+\end{table}
+
+\begin{table}
+\begin{center}
+	\begin{tabular}{| l | l | l | l |}
+	\hline
+	 $\omega$ & Energy & Variance & Mean distance \\ \hline
+	 0.01 & 0.0926694 & 0.00067256 & 21.94 \\
+	 0.5 & 2.01448 & 0.00246614 & 2.36761 \\
+	 1 & 3.75114 & 0.01486 & 1.67748 \\ \hline
+	\end{tabular}
+\caption{Computed energy, variance and mean distance for different frequencies without the Jastrow factor.}
+\end{center}
+\label{table:Non-Jastrow-Result}
+\end{table}
+\FloatBarrier
 \subsection{Testing the virial theorem}
 We now want to test the virial theorem with the optimal values of $\alpha$ and $\beta$ that we found in the previous  task. The virial theorem states that the expectation of the total kinetic value is proportional to the expectation value of the total potential energy, i.e $\langle T \rangle \propto \langle V \rangle$. If we consider a pure harmonic oscillator potential, the virial theorem states
 \begin{align*}
