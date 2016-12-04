@@ -6,6 +6,7 @@
 #include <sstream>
 #include <string>
 #include <iomanip>
+#include <time.h>
 #include "vec3.h"
 #include "metropolis_quantum.h"
 #include "wavefunctions.h"
@@ -109,6 +110,7 @@ void Find_Optimal_AlphaBeta(int MC_cycles, int N_omegas, double *omegas, double 
 
 int main()
 {
+    clock_t start, finish;
     double *ExpectValues;
     ExpectValues = new double [4];
     int MC_cycles = 1000000;
@@ -121,20 +123,25 @@ int main()
     Metropolis_Quantum MSolver;
 
     // Testing the algorithm with laplace operators
-    /*
+    start = clock();
     MSolver.Metropolis_T1(MC_cycles, FirstTrialFunc, ExpectValues, alpha, omega, 0, 1);
     cout << "Monte Carlo cycles = " << MC_cycles << endl;
     cout << "Kinetic numeric = "<< ExpectValues[0]/(MC_cycles) << endl;
     cout << "Variance = "<< ExpectValues[1]/(MC_cycles) - ExpectValues[0]*ExpectValues[0]/MC_cycles/MC_cycles << endl;
     cout << "Accepted configs (percentage) = " << ExpectValues[3]/MC_cycles << endl;
+    finish = clock();
+    cout << "Time elapsed: " << ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
 
+    start = clock();
     MSolver.Metropolis_T1(MC_cycles, FirstTrialFunc, ExpectValues, alpha, omega, 0, 0);
     cout << "Monte Carlo cycles = " << MC_cycles << endl;
     cout << "Kinetic numeric = "<< ExpectValues[0]/(MC_cycles) << endl;
     cout << "Variance = "<< ExpectValues[1]/(MC_cycles) - ExpectValues[0]*ExpectValues[0]/MC_cycles/MC_cycles << endl;
     cout << "Accepted configs (percentage) = " << ExpectValues[3]/MC_cycles << endl;
-    */
+    finish = clock();
+    cout << "Time elapsed: " << ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
     //
+    /*
     ofile_global.open("Stability_check.txt");
     initialize_outfile();
     for (int MCruns = 10000; MCruns<= MC_cycles; MCruns*=2){
@@ -142,10 +149,13 @@ int main()
         write_file(MCruns, ExpectValues, alpha, beta, omega);
     }
     ofile_global.close();
-    /*
+    */
+
+
     // Find optimal alpha
     string filename = "Energy_Alpha_Mdistance_omega_";
     double omegas[] = {0.01, 0.5, 1};
+    /*
     for (int i=0; i<3; i++){
         string fileout = filename;
         stringstream stream;
@@ -160,6 +170,13 @@ int main()
             write_file(MC_cycles, ExpectValues, alphas, beta, omegas[i]);
         }
         ofile_global.close();
+    }
+
+    // Calculate mean distance with optimal alpha
+    for (int i=0; i<3; i++){
+       MSolver.Metropolis_T1(MC_cycles, FirstTrialFunc, ExpectValues, 1, omegas[i], 1);
+       cout << "Omega = " << omegas[i] << endl;
+       cout << "Mean distance = " << ExpectValues[2]/MC_cycles << endl;
     }
     */
     /*
