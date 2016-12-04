@@ -23,19 +23,21 @@ class Plotter():
 		filename.close()
 
 		self.N = len(data)
-		self.omega = float(data[0][-1])
+		self.omega = float(data[0][-2])
 		self.Energy = np.zeros(self.N)
 		self.alpha = np.zeros(self.N)
 		self.beta = np.zeros(self.N)
 		self.Variance = np.zeros(self.N)
 		self.Energy_Exact = 3*self.omega*np.ones(self.N)
 		self.MeanDistance = np.zeros(self.N)
+		self.AcceptedConfigs = np.zeros(self.N)
 		for j in range(0, self.N):
 			self.alpha[j] = float(data[j][0])
 			self.beta[j] = float(data[j][1])
 			self.Energy[j] = float(data[j][2])
 			self.Variance[j] = float(data[j][3])
 			self.MeanDistance[j] = float(data[j][4])
+			self.AcceptedConfigs[j] = float(data[j][-1])
 
 	def read_data_virial(self, filename_open):
 		""" Reads data and saves to variables. Specific for Virial problem """
@@ -58,7 +60,7 @@ class Plotter():
 		self.PotentialExpect = np.zeros(self.N)
 
 		for j in range(0, self.N):
-			self.omega[j] = float(data[j][-1])
+			self.omega[j] = float(data[j][-2])
 			self.KineticExpect[j] = float(data[j][2])
 			self.PotentialExpect[j] = float(data[j][4])
 
@@ -68,8 +70,8 @@ class Plotter():
 		self.read_data("Energy_Alpha_Mdistance_omega_0.01.txt")
 		fig1 = plt.figure()
 		plt.plot(self.alpha, self.Energy)
-		plt.hold("on")
-		plt.plot(self.alpha, self.Energy_Exact)
+		#plt.hold("on")
+		#plt.plot(self.alpha, self.Energy_Exact)
 		plt.xlabel(r'$\alpha$')
 		plt.ylabel(r'$\langle H \rangle$')
 		plt.title(r'Plot of the $\langle H \rangle$ as a function of $\alpha$ with $\omega$ = %.2f. Using $\psi_{T_1}$' %(self.omega))
@@ -91,8 +93,8 @@ class Plotter():
 		self.read_data("Energy_Alpha_Mdistance_omega_0.50.txt")
 		fig4 = plt.figure()
 		plt.plot(self.alpha, self.Energy)
-		plt.hold("on")
-		plt.plot(self.alpha, self.Energy_Exact)
+		#plt.hold("on")
+		#plt.plot(self.alpha, self.Energy_Exact)
 		plt.xlabel(r'$\alpha$')
 		plt.ylabel(r'$\langle H \rangle$')
 		plt.title(r'Plot of the $\langle H \rangle$ as a function of $\alpha$ with $\omega$ = %.2f. Using $\psi_{T_1}$' %(self.omega))
@@ -114,8 +116,8 @@ class Plotter():
 		self.read_data("Energy_Alpha_Mdistance_omega_1.00.txt")
 		fig7 = plt.figure()
 		plt.plot(self.alpha, self.Energy)
-		plt.hold("on")
-		plt.plot(self.alpha, self.Energy_Exact)
+		#plt.hold("on")
+		#plt.plot(self.alpha, self.Energy_Exact)
 		plt.xlabel(r'$\alpha$')
 		plt.ylabel(r'$\langle H \rangle$')
 		plt.title(r'Plot of the $\langle H \rangle$ as a function of $\alpha$ with $\omega$ = %.2f. Using $\psi_{T_1}$' %(self.omega))
@@ -132,36 +134,39 @@ class Plotter():
 		plt.xlabel(r'$\alpha$')
 		plt.ylabel(r'$\sigma_E$')
 		plt.title(r'Plot of the variance $\sigma_E$ as a function of $\alpha$ with $\omega$ = %.2f' %(self.omega))
+
+		# Plots accepted configs
+		fig10 = plt.figure()
+		ax1 = plt.subplot(111)
+		self.read_data("Energy_Alpha_Mdistance_omega_0.01.txt")
+		ax1.plot(self.alpha, self.AcceptedConfigs, label=r'$\omega = %.2f$' %self.omega)
+		plt.hold("on")
+		self.read_data("Energy_Alpha_Mdistance_omega_0.50.txt")
+		ax1.plot(self.alpha, self.AcceptedConfigs, label=r'$\omega = %.2f$' %self.omega)
+		self.read_data("Energy_Alpha_Mdistance_omega_1.00.txt")
+		ax1.plot(self.alpha, self.AcceptedConfigs, label=r'$\omega = %.2f$' %self.omega)
+		plt.xlabel(r'$\alpha$')
+		plt.ylabel(r'Accepted configurations (in %)')
+		plt.title(r'Number of accepted configurations (in %) as a function of $\alpha$')
+		ax1.legend(loc='upper right', bbox_to_anchor=(1,1), ncol=1, fancybox=True)
+		
 		if self.savefile == True:
 			fig1.savefig('../Plots/Energy_alpha_plot_omega001.pdf')
 			fig2.savefig('../Plots/MeanDistance_alpha_plot_omega001.pdf')
 			fig3.savefig('../Plots/Variance_alpha_plot_omega001.pdf')
 
-			fig4.savefig('../Plots/Energy_alpha_plot.pdf_omega05')
+			fig4.savefig('../Plots/Energy_alpha_plot_omega05.pdf')
 			fig5.savefig('../Plots/MeanDistance_alpha_plot_omega05.pdf')
 			fig6.savefig('../Plots/Variance_alpha_plot_omega05.pdf')
 
-			fig7.savefig('../Plots/Energy_alpha_plot.pdf_omega1')
+			fig7.savefig('../Plots/Energy_alpha_plot_omega1.pdf')
 			fig8.savefig('../Plots/MeanDistance_alpha_plot_omega1.pdf')
 			fig9.savefig('../Plots/Variance_alpha_plot_omega1.pdf')
+
+			fig10.savefig('../Plots/AcceptedConfigs.pdf')
 		else:
 			plt.show()
-		"""
-		fig10 = plt.figure()
-		ax1 = plt.subplot(111)
-		self.read_data("Energy_Alpha_Mdistance_omega_0.01.txt")
-		ax1.plot(self.alpha, self.MeanDistance, label=r'$\omega = %.2f$' %self.omega)
-		plt.hold("on")
-		self.read_data("Energy_Alpha_Mdistance_omega_0.50.txt")
-		ax1.plot(self.alpha, self.MeanDistance, label=r'$\omega = %.2f$' %self.omega)
-		self.read_data("Energy_Alpha_Mdistance_omega_1.00.txt")
-		ax1.plot(self.alpha, self.MeanDistance, label=r'$\omega = %.2f$' %self.omega)
-		plt.xlabel(r'$\alpha$')
-		plt.ylabel(r'$\langle H \rangle$')
-		plt.title(r'Plot of the $\langle H \rangle$ as a function of $\alpha$ with $\omega$ = %.2f. Using $\psi_{T_1}$')
-		ax1.legend(loc='upper center', bbox_to_anchor=(0.5,0.5), ncol=1, fancybox=True)
-		plt.show()
-		"""
+		
 
 	def Find_Optimal_AlphaBeta(self):
 		fig1 = plt.figure()
@@ -252,7 +257,7 @@ class Plotter():
 		else:
 			plt.show()
 ## Comment out the functions to plot what you want
-solver = Plotter(False)
-#solver.plot_energy_alpha()
+solver = Plotter(True)
+solver.plot_energy_alpha()
 #solver.Find_Optimal_AlphaBeta()
-solver.Virial_plotting()
+#solver.Virial_plotting()
