@@ -43,15 +43,15 @@ double Metropolis_Quantum::LaplaceOperator(Wavefunctions &WaveFunc, vec3 r1, vec
 }
 
 void Metropolis_Quantum::Metropolis_T1(int MC_cycles, Wavefunctions &WaveFunc, double *ExpectationValues, double alpha,
-                                       double omega, int CoulombInt, int Analytic){
+                                       double omega, int ExactEne, int Analytic){
     /* Function that solves the Metropolis method for the first trial function.
     * Argument "Analytic" is set to zero by default. Acts like an optional argument.
     * If Analytic = 1, function uses analytic Laplace operator.
     * If Analytic = 0 (or an arbitrary number), uses numerical Laplace operator.
     */
-    if (CoulombInt != 0 && CoulombInt != 1){
-        cout << "CoulombInt not set properly. Currently = " << CoulombInt << endl;
-        cout << "Try: CoulombInt = 0 or 1" << endl;
+    if (ExactEne != 0 && ExactEne != 1){
+        cout << "ExactEne not set properly. Currently = " << ExactEne << endl;
+        cout << "Try: ExactEne = 0 or 1" << endl;
         exit(1);
     }
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
@@ -68,6 +68,7 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, Wavefunctions &WaveFunc, d
     double MeanDistance = 0;
     double NewWavefuncSquared = 0;
     double omega2 = omega*omega;
+    double alpha2 = alpha*alpha;
 
     double *rDistr = new double[6];
     for (int i=0; i<6; i++){
@@ -101,8 +102,13 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, Wavefunctions &WaveFunc, d
             E_local = LaplaceAnalytic(r1, r2, alpha, omega) + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
         }
         else{
-            E_local = LaplaceOperator(WaveFunc, r1, r2, alpha, omega) + \
-            0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
+            if (ExactEne == 1){
+                E_local = 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared())*(1-alpha2) + 3*alpha*omega;
+            }
+            else{
+                E_local = LaplaceOperator(WaveFunc, r1, r2, alpha, omega) + \
+                    0.5*omega2*(r1.lengthSquared() + r2.lengthSquared());
+            }
         }
         EnergySum += E_local;
         EnergySquaredSum += E_local*E_local;
