@@ -30,6 +30,11 @@ void write_file_virial(int MC_cycles, double *ExpectationValues, double alpha, d
     double KineticVariance = ExpectationValues[1]/MC_cycles - Kinetic*Kinetic;
     double Potential = ExpectationValues[2]/MC_cycles;
     double PotentialVariance = ExpectationValues[3]/MC_cycles - Potential*Potential;
+    //double Kinetic = ExpectationValues[0]/MC_cycles - ExpectationValues[2]/MC_cycles;
+    //double KineticSquared = ExpectationValues[1]/MC_cycles - ExpectationValues[3]/MC_cycles \
+                ;//- 2*Potential*Kinetic;
+    //double KineticVariance = KineticSquared - Kinetic*Kinetic;
+
     double MeanDistance = ExpectationValues[4]/MC_cycles;
     ofile_global << setw(15) << alpha;
     ofile_global << setw(15) << beta;
@@ -61,6 +66,12 @@ void initialize_outfile_virial(){
     ofile_global << setw(15) << "Mean Distance";
     ofile_global << setw(15) << "Omega ";
     ofile_global << setw(15) << " Accepted configs (%)" << endl;
+}
+
+void write_file_stability(int MC_cycles, double *energies, double *MCrange){
+    for (int i = 0; i<= MC_cycles; i++){
+        ofile_global << energies[i]  << endl;
+    }
 }
 
 int main()
@@ -98,16 +109,6 @@ int main()
     cout << "Time elapsed: " << ((finish-start)/(double)(CLOCKS_PER_SEC)) << "s" << endl;
     */
     //
-    /*
-    ofile_global.open("Stability_check.txt");
-    initialize_outfile();
-    for (int MCruns = 10000; MCruns<= MC_cycles; MCruns*=2){
-        MSolver.Metropolis_T1(MCruns, FirstTrialFunc, ExpectValues, alpha, omega, 0);
-        write_file(MCruns, ExpectValues, alpha, beta, omega);
-    }
-    ofile_global.close();
-    */
-
 
     // Find optimal alpha
     string filename = "Energy_Alpha_Mdistance_omega_";
@@ -128,7 +129,28 @@ int main()
         }
         ofile_global.close();
     }
+    */
+    // Testing stability 1
+    /*
+    string filename_stability = "Stability_test_MC_";
+    for (int MCrun = 100; MCrun <= 1000001; MCrun *=10){
+        string fileout = filename_stability;
+        stringstream stream;
+        stream << fixed  << MCrun;
+        string argument = stream.str();
+        fileout.append(argument);
+        fileout.append(".txt");
+        ofile_global.open(fileout);
+        initialize_outfile();
+        for (double alphas = 0.5; alphas<=1.5; alphas +=0.02){
+            MSolver.Metropolis_T1(MC_cycles, FirstTrialFunc, ExpectValues, alphas, 1, 1);
+            write_file(MC_cycles, ExpectValues, alphas, beta, 1);
+        }
+        ofile_global.close();
+    }
 
+    */
+    /*
     // Calculate mean distance with optimal alpha
     for (int i=0; i<3; i++){
        MSolver.Metropolis_T1(MC_cycles, FirstTrialFunc, ExpectValues, 1, omegas[i], 1);
@@ -136,7 +158,7 @@ int main()
        cout << "Mean distance = " << ExpectValues[2]/MC_cycles << endl;
     }
     */
-
+    /*
     // Find optimal alpha, beta
     string filename_optimal = "Optimal_AlphaBeta_omega_";
     for (int i=0; i<3; i++){
@@ -156,6 +178,7 @@ int main()
         }
         ofile_global.close();
     }
+    */
     /*
     // Use optimal alpha, beta
     double AlphaOptimal[] = {0.58, 0.98, 0.98};
@@ -228,5 +251,24 @@ int main()
         ofile_global.close();
     }
     */
+    // Testing stability 2, using virial problem
+    string filename_virial_stability = "Virial_stability_MC_";
+    for (int MCrun = 100; MCrun <= MC_cycles; MCrun *= 10){
+        string fileout = filename_virial_stability;
+        stringstream stream;
+        stream << fixed << MCrun;
+        string argument = stream.str();
+        fileout.append(argument);
+        fileout.append(".txt");
+        ofile_global.open(fileout);
+
+        initialize_outfile_virial();
+        for (int i=0; i<N_omegas; i++){
+            MSolver.Metropolis_Virial(MC_cycles, SecondTrialFunc, VirialExpect,\
+                                      0.98, 0.48, omegas2[i], 1);
+            write_file_virial(MC_cycles, VirialExpect, 0.98, 0.48, omegas2[i]);
+        }
+        ofile_global.close();
+    }
     return 0;
 }
