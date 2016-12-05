@@ -2,12 +2,8 @@
 #define METROPOLIS_QUANTUM_H
 #include "vec3.h"
 #include "wavefunctions.h"
-#include <fstream>
-#include <string>
 #include <chrono>
 #include <random>
-#include <iomanip>
-
 class Metropolis_Quantum
 {
 public:
