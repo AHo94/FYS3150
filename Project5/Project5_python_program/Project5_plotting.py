@@ -63,6 +63,28 @@ class Plotter():
 			self.KineticExpect[j] = float(data[j][2])
 			self.PotentialExpect[j] = float(data[j][4])
 
+	def stability_test(self):
+		self.read_data("Stability_test_MC_100.txt")
+		fig1 = plt.figure()
+		ax = plt.subplot(111)
+		ax.plot(self.alpha, self.Energy, label='$N_{MC}$ = 100')
+		plt.hold("on")
+		self.read_data("Stability_test_MC_1000.txt")
+		ax.plot(self.alpha, self.Energy, label='$N_{MC}$ = 1000')
+		self.read_data("Stability_test_MC_10000.txt")
+		ax.plot(self.alpha, self.Energy, label='$N_{MC}$ = 10000')
+		self.read_data("Stability_test_MC_100000.txt")
+		ax.plot(self.alpha, self.Energy, label='$N_{MC}$ = 100000')
+		self.read_data("Stability_test_MC_1000000.txt")
+		ax.plot(self.alpha, self.Energy, label='$N_{MC}$ = 1000000')
+		plt.xlabel(r'$\alpha$')
+		plt.ylabel(r'$\langle H \rangle$')
+		ax.legend(loc='upper right', bbox_to_anchor=(1,1), ncol=1, fancybox=True)
+		plt.title(r'Mean energy as a function of $\alpha$ with $\omega = 1$.'+' \n Running for different number of MC cycles.')
+		if self.savefile == True:
+			fig1.savefig('../Plots/Stability_check.pdf')
+		else:
+			plt.show()
 	def plot_energy_alpha(self):
 		" Function used to plot the energy and variance as a function of alpha for different omegas "
 		# Plots for omega = 0.01
@@ -224,13 +246,29 @@ class Plotter():
 		plt.title(r'Plot of $\langle T \rangle/\langle V \rangle$ as a function of $\omega$. No Coulomb interaction')
 		ax1.legend(loc='upper center', bbox_to_anchor=(0.5,0.5), ncol=1, fancybox=True)
 
+		fig3 = plt.figure()
+		ax2 = plt.subplot(111)
+		plt.hold("on")
+		self.read_data_virial("Virial_stability_MC_10000.txt")
+		ax2.plot(self.omega, self.KineticExpect/self.PotentialExpect, label=r'$N_{MC} = 10000$')
+		self.read_data_virial("Virial_stability_MC_100000.txt")
+		ax2.plot(self.omega, self.KineticExpect/self.PotentialExpect, label=r'$N_{MC} = 100000$')
+		self.read_data_virial("Virial_stability_MC_1000000.txt")
+		ax2.plot(self.omega, self.KineticExpect/self.PotentialExpect, label=r'$N_{MC} = 1000000$')
+		plt.xlabel(r'$\omega$')
+		plt.ylabel(r'$\langle T \rangle/\langle V \rangle$')
+		plt.title(r'Plot of $\langle T \rangle/\langle V \rangle$ as a function of $\omega$'+'\n Running for different Monte Carlo cycles.')
+		ax2.legend(loc='lower right', bbox_to_anchor=(1,0), ncol=1, fancybox=True)		
+		
 		if self.savefile == True:
 			fig1.savefig('../Plots/Virial_Plot.pdf')
 			fig2.savefig('../plots/Virial_Plot_NoCoulombInt.pdf')
+			fig3.savefig('../Plots/Virial_stability_test.pdf')
 		else:
 			plt.show()
 ## Comment out the functions to plot what you want
 solver = Plotter(True)
+#solver.stability_test()
 #solver.plot_energy_alpha()
 #solver.Find_Optimal_AlphaBeta()
 solver.Virial_plotting()
