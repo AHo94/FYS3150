@@ -41,7 +41,7 @@ moredelim=**[is][\color{blue}]{@}{@}
 \section{Introduction} \label{section:intro}
 In project 2, we studied the behaviour of two electrons interacting in a three dimensional harmonic oscillator potential. In that project, we had a look at the so called \emph{Eigenvalue problem} and used Jacobi's method to solve this problem. From that, we noted that Jacobi's method was not an optimal way to solve our quantum mechanical system, as it used a lot of CPU time to finish its calculations.
 
-For this project, we will revisit this three dimensional harmonic oscillator with two electrons. This time, we will use the Monte Carlo method known as the Metropolis algorithm, which we also used in project 4, to solve this quantum mechanical system.
+For this project, we will revisit this three dimensional harmonic oscillator with two electrons. This time, we will use a variational Monte Carlo method (VMC) method known as the Metropolis algorithm, which we also used in project 4, to solve this quantum mechanical system.
 
 All relevant files used in this project can be found in the this GitHub page:
 \url{https://github.com/AHo94/FYS3150_Projects/tree/master/Project5}
@@ -194,6 +194,8 @@ Once again, by running this for $N_{mc}$ Monte Carlo cycles, we find the energy 
 \langle E \rangle = \displaystyle \frac{1}{N_{mc}}\sum_i E_i
 \end{align*}
 where $E_i$ is all the energy samples calculated from the Metropolis algorithm. One can also find the expectation value of the mean distance at the energy minimum $r_{12} = |\mathbf{r}_1 - \mathbf{r}_2|$ in the same way.
+
+One of the main advantages of using variational Monte Carlo methods is that we can carry out our calculations using cartesian coordinates. If we look back to project 2, we had to define new variables in order to solve the eigenvalue problem.
 
 \subsection{Algorithm that determines the step length}
 We would like to find an algorithm that, for a given value of $\alpha$, uses an optimal value of the step length $\delta$. This should ideally result to roughly 50\% accepted moves in the metropolis algorithm. One can run the program multiple times to determine the step length. However, one can also find an analytical solution, which would automatize the optimal step length.
@@ -362,7 +364,7 @@ We will now consider the second trial wave function given in  \ref{eq:Second_Tri
 
 Running this for different values of $\alpha$ and $\beta$ gives a lot of data in the output file. I have therefore used Python to find the optimal value of both the variational parameters. The strategy is to find the energy minimum in the array of energies. With the energy minimum, we can find which array element that corresponds to this energy minimum. Once we have the array element index, we can use that to find the corresponding $\alpha$ and $\beta$ values in their respective arrays.
 
-The output below shows the optimal values of $\alpha$ and $\beta$, as well as the lowest energy and the standard deviation, when we do our calculation. The variational parameters will then be manually set back into C++ to do the remaining tasks. 
+The output below shows the optimal values of $\alpha$ and $\beta$, as well as the lowest energy and the standard deviation, when we do our calculation. These values were obtained when we ran with $10^6$ Monte Carlo cycles. The variational parameters will then be manually set back into C++ to do the remaining tasks. Table \ref{table:Optimal_AlphaBeta} shows the optimal $\alpha$ and $\beta$ values that we got from the output below.
 \begin{lstlisting}
 @For omega =  1.0
 Lowest energy =  3.72737
@@ -382,6 +384,21 @@ Optimal Alpha value =  0.6
 Optimal Beta value =  0.2
 Standard deviation =  0.0171850807388@
 \end{lstlisting}
+
+\begin{table}
+\begin{center}
+	\begin{tabular}{| l | l | l |}
+	\hline
+	 $\omega$ & $\alpha$ & $\beta$ \\ \hline
+	 0.01 & 0.6 & 0.2 \\
+	 0.5 & 0.98 & 0.36 \\
+	 1 & 0.98 & 0.52 \\ \hline
+	\end{tabular}
+\caption{Optimal values of $\alpha$ and $\beta$ for the different frequencies.}
+\end{center}
+\label{table:Optimal_AlphaBeta}
+\end{table}
+
 We can also plot how the energy evolves as we change the variational parameters. I will only plot the one for $\omega = 1$, as the other frequencies will give similar results. The plot can be found in \ref{fig:3DPlot_AlphaBeta_Optimal}.  One may think, when looking at the plot, that we have not quite reached the minimum energy. However, I have tested this multiple times for different ranges of $\alpha$ and $\beta$, and I can safely say that there is a minimum in that plot.
 \begin{figure}[h]
 \centering
@@ -389,6 +406,9 @@ We can also plot how the energy evolves as we change the variational parameters.
 \caption{3D plot of the energy expectation values as a function of $\alpha$ and $\beta$.}
 \label{fig:3DPlot_AlphaBeta_Optimal}
 \end{figure}
+
+
+
 \FloatBarrier
 \subsubsection{The Jastrow factor}
 We are also interested on how important the correlations are when we introduce the Jastrow factor. Using the optimal variational parameter values, we can calculate the energy, variance as well as the mean distance for the wave function, with and without the Jastrow factor. Table \ref{table:Non-Jastrow-Result} and \ref{table:Jastrow-Result} shows the computed values, with and without the Jastrow factor respectively.
@@ -420,13 +440,26 @@ We are also interested on how important the correlations are when we introduce t
 \end{center}
 \label{table:Non-Jastrow-Result}
 \end{table}
+We see from the tables that the energies, as well as the mean distance, is smaller once we introduce the Jastrow factor. 
+
 \FloatBarrier
 \subsection{Testing the virial theorem}
 We now want to test the virial theorem with the optimal values of $\alpha$ and $\beta$ that we found in the previous  task. The virial theorem states that the expectation of the total kinetic value is proportional to the expectation value of the total potential energy, i.e $\langle T \rangle \propto \langle V \rangle$. If we consider a pure harmonic oscillator potential, the virial theorem states
 \begin{align*}
 \langle T \rangle = \langle V \rangle
 \end{align*}
-We will use our optimal results of the variational parameters, for $\omega = 0.01$, $\omega = 0.5$ and $\omega=1$, to compute the expectation values of the kinetic and potential energy in the frequency range $\omega \in [0.01, 1]$. \footnote{I was not sure if the task was to calculate an optimal $\alpha$ and $\beta$ for every single frequency in this range or just use the optimal variational parameters to compute our results for $\omega \in [0.01, 1]$. I went ahead and did the latter choice, as calculating an optimal variational parameter for every frequency would take a lot of CPU time.}
+We will use our optimal results of the variational parameters, for $\omega = 0.01$, $\omega = 0.5$ and $\omega=1$, to compute the expectation values of the kinetic and potential energy in the frequency range $\omega \in [0.01, 1]$. \footnote{I was not sure if the task was to calculate an optimal $\alpha$ and $\beta$ for every single frequency in this range or just use the optimal variational parameters to compute our results for $\omega \in [0.01, 1]$. I went ahead and did the latter, as calculating an optimal variational parameter for every frequency would take a lot of CPU time.}
+
+Let us first consider the case where the electrons do not interact. In this case, we will have a pure harmonic oscillator system. Figure \ref{fig:Virial_NoCoulomb} shows the plot of $\langle T \rangle / \langle V \rangle$ as a function of $\omega$. We note that, for all different cases of optimal variational parameter, the ratio of the kinetic and potential energy is almost constant. However, since we have a pure harmonic oscillator, we would expect that $\langle T \rangle / \langle V \rangle = 1$, which is clearly not the case here. 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{Plots/Virial_Plot_NoCoulombInt.pdf}
+\caption{Plot of the ratio $\langle T \rangle / \langle V \rangle$ as a function of frequency $\omega$}
+\label{fig:Virial_NoCoulomb}
+\end{figure}
+
+
 \section{Conclusion}\label{section:conclusion}
 
 \FloatBarrier
