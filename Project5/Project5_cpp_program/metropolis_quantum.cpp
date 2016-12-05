@@ -120,7 +120,6 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, Wavefunctions &WaveFunc, d
     ExpectationValues[1] = EnergySquaredSum;
     ExpectationValues[2] = MeanDistance;
     ExpectationValues[3] = counter;
-
 }
 
 void Metropolis_Quantum::Metropolis_T2(int MC_cycles, Wavefunctions &WaveFunc, double *ExpectationValues
@@ -264,6 +263,4 @@ void Metropolis_Quantum::Metropolis_Virial(int MC_cycles, Wavefunctions &WaveFun
     ExpectationValues[4] = MeanDistance;
     ExpectationValues[5] = counter;
 }
-
-
 
