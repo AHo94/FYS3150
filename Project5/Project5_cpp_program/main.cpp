@@ -1,7 +1,4 @@
 #include <iostream>
-#include <chrono>   // Used to seed random generator based on the time
-#include <random>
-#include <cmath>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -64,48 +61,6 @@ void initialize_outfile_virial(){
     ofile_global << setw(15) << "Mean Distance";
     ofile_global << setw(15) << "Omega ";
     ofile_global << setw(15) << " Accepted configs (%)" << endl;
-}
-
-void Find_Optimal_AlphaBeta(int MC_cycles, int N_omegas, double *omegas, double *OptimalAlphas, double *OptimalBetas){
-    double *ExpectationValues;
-    ExpectationValues = new double [3];
-
-    double alpha_max = 1.0;
-    double beta_max = 0.7;
-    double alpha_min = 0.5;
-    double beta_min = 0.2;
-    double StepSize = 0.02;
-
-    int N_size = (int)((alpha_max - alpha_min)/(StepSize))*((beta_max-beta_min)/(StepSize));
-
-    double *MinEnergies = new double[N_size+1];
-    double *AlphasCalc = new double[N_size+1];
-    double *BetasCalc = new double[N_size+1];
-    int indexMin = 0;
-    double minimum = 0;
-    int indexCounter = 0;
-    for (int i=0; i<N_omegas; i++){
-        for (double alphas = 0.5; alphas <= 1.0; alphas += 0.02){
-            for (double betas = 0.2; betas <= 0.7; betas += 0.02){
-//                Metropolis_method_T2(MC_cycles, omegas[i], alphas, betas, ExpectationValues);
-                MinEnergies[indexCounter] = ExpectationValues[0]/MC_cycles;
-                AlphasCalc[indexCounter] = alphas;
-                BetasCalc[indexCounter] = betas;
-                indexCounter += 1;
-            }
-        }
-        indexCounter = 0;
-        minimum = MinEnergies[0];
-        for (int j=1; j<N_size; j++){
-            if (MinEnergies[j] < minimum){
-                minimum = MinEnergies[j];
-                indexMin = j;
-            }
-        }
-        OptimalAlphas[i] = AlphasCalc[indexMin];
-        OptimalBetas[i] = BetasCalc[indexMin];
-        indexMin = 0;
-    }
 }
 
 int main()
