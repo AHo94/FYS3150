@@ -469,7 +469,7 @@ Let us first consider the case where the electrons do not interact. In this case
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{Plots/Virial_Plot_NoCoulombInt.pdf}
-\caption{Plot of the ratio $\langle T \rangle / \langle V \rangle$ as a function of frequency $\omega$ with no Coulomb interaction}
+\caption{Plot of the ratio $\langle T \rangle / \langle V \rangle$ as a function of frequency $\omega$ with no Coulomb interaction.}
 \label{fig:Virial_NoCoulomb}
 \end{figure}
 
@@ -487,7 +487,7 @@ When the Coulomb force is weak and the electrons are slowly rolling down the pot
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{Plots/Virial_Plot.pdf}
-\caption{Plot of the ratio $\langle T \rangle / \langle V \rangle$ as a function of frequency $\omega$ with Coulomb interaction}
+\caption{Plot of the ratio $\langle T \rangle / \langle V \rangle$ as a function of frequency $\omega$ with Coulomb interaction.}
 \label{fig:Virial_Plot}
 \end{figure}
 
@@ -505,12 +505,16 @@ Let us once again look at the stability of the Metropolis algorithm. In this exa
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{Plots/Virial_stability_test.pdf}
-\caption{Stability test using the virial problem.}
+\caption{Stability test using the virial problem. Plot is using the case with $\alpha = 0.98$ and $\beta = 0.48$.}
 \label{fig:Stability_virial}
 \end{figure}
 \FloatBarrier
 \section{Conclusion}\label{section:conclusion}
+From the results, we saw that using the Metropolis algorithm (a variational Monte Carlo method) to compute our harmonic oscillator system gave incredibly stable, and also fairly precise, results. If we look back to project 2, we used Jacobi's method to solve this system. The results back then were also very good, but the computation time for Jacobi's method was/is significantly longer than the Metropolis algorithm.
 
+The physical results were fairly similar to project 2 as well. One example of this is the computed mean distance between the electrons. We knew that the electrons would be further apart when the frequency is smaller, and the results from this project agrees with what we observed in project 2. 
+
+Of course, like any Monte Carlo method, increasing the number of Monte Carlo cycles could possibly give even more stable results, compared to what we obtained. However, we saw that, even with a lower number of Monte Carlo cycles, the results were incredibly stable.  
 \FloatBarrier
 \section{Appendix}
 \begin{figure}[h]
