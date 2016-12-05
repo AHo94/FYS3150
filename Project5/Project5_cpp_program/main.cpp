@@ -253,7 +253,7 @@ int main()
     */
     // Testing stability 2, using virial problem
     string filename_virial_stability = "Virial_stability_MC_";
-    for (int MCrun = 100; MCrun <= MC_cycles; MCrun *= 10){
+    for (int MCrun = 10000; MCrun <= MC_cycles; MCrun *= 10){
         string fileout = filename_virial_stability;
         stringstream stream;
         stream << fixed << MCrun;
