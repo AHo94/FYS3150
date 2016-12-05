@@ -286,13 +286,13 @@ However, we should also note down the time it took for the Metropolis algorithm 
 
 \section{Results}\label{section:results}
 \subsection{The first trial wave function}
-We will first consider the first trial wave function given in \ref{eq:First_TrialFunc}.
+We will first consider the first trial wave function given in \ref{eq:First_TrialFunc}. 
 \subsubsection{Finding the optimal $\alpha$}
 Let us now plot the energy (expectation value) and variance as a function of of the variational parameter $\alpha$. We can use these determine the optimal value of $\alpha$, which we can use to compare with our results from project 2. One thing to note is that the optimal variational parameter may be different for different frequencies $\omega$.
 
 Plots of the energy and variance, as a function of $\alpha$, using $\omega = 1$, can be found in figure \ref{fig:Energy_alpha_omega1} and \ref{fig:Variance_alpha_omega1} respectively. We can see that both of them has a minimum, but oddly enough at different values of $\alpha$. We would expect that the energy should be at its minimum when $\alpha = 1$ or smaller. However, the plot in figure \ref{fig:Energy_alpha_omega1} says that it is not quite the case. The minimum is shifted to a slightly larger $\alpha$ value, where the minimum is now at $\alpha = 1.08$.
 
-However, if we look at the plot of variance in \ref{fig:Variance_alpha_omega1}, we see that the minimum is at $\alpha = 1$. Also note that the variance here is exactly zero, which also means that the standard deviation is also zero. Because of this, the calculated energy at $\alpha = 1$ is exact, i.e there are no errors here. On the other hand, if we look at table (\ref{table:AlphaMinimum_omega1}) \footnote{Full data set, for this case, can be found at \url{https://github.com/AHo94/FYS3150_Projects/blob/master/Project5/build-Project5_cpp_program-Desktop_Qt_5_7_0_MinGW_32bit-Release/Energy_Alpha_Mdistance_omega_1.00.txt}}, the calculated minimum at $\alpha=1.08$ has a variance of $\sigma_E^2 = 0.0196079$, or $\sigma_E = 0.14002$, which means that the calculated energy at $\alpha = 1.08$ has a small margin of error which also means that it may not actually be the minimum. We can therefore safely say that the optimal value of the variational parameter, using the first trial wave function at $\omega = 1$ is $\alpha = 1$.
+However, if we look at the plot of variance in \ref{fig:Variance_alpha_omega1}, we see that the minimum is at $\alpha = 1$. Also note that the variance here is exactly zero, which also means that the standard deviation is also zero. Because of this, the calculated energy at $\alpha = 1$ is exact, i.e there are no errors here. On the other hand, if we look at table \ref{table:AlphaMinimum_omega1} \footnote{Full data set, for this case, can be found at \url{https://github.com/AHo94/FYS3150_Projects/blob/master/Project5/build-Project5_cpp_program-Desktop_Qt_5_7_0_MinGW_32bit-Release/Energy_Alpha_Mdistance_omega_1.00.txt}}, the calculated minimum at $\alpha=1.08$ has a variance of $\sigma_E^2 = 0.0196079$, or $\sigma_E = 0.14002$, which means that the calculated energy at $\alpha = 1.08$ has a small margin of error which also means that it may not actually be the minimum. We can therefore safely say that the optimal value of the variational parameter, using the first trial wave function at $\omega = 1$ is $\alpha = 1$.
 
 \begin{figure}[h]
 \centering
@@ -324,21 +324,38 @@ However, if we look at the plot of variance in \ref{fig:Variance_alpha_omega1}, 
 	1.16 & 3.00114 & 0.0713725 \\ \hline
 	\end{tabular}
 \caption{The energy, variance and $\alpha$ values near the minimum point.}
-\end{center}
 \label{table:AlphaMinimum_omega1}
+\end{center}
 \end{table}
 We obtain similar results for the cases with $\omega = 0.5$ and $\omega = 0.01$. The energy, for both cases, are also not at its minimum when $\alpha = 1$, but shifted to a slightly larger $\alpha$ value. However, the variance is once again zero (almost zero for $\omega = 0.01$) when $\alpha = 1$, so we can also safely say that the optimal variational parameter is $\alpha = 1$ for both cases. The plots of these can be found in the appendix.
+
+One might wonder, how stable is the Metropolis algorithm? We know that the results are better when we increase the number of Monte Carlo cycles. However, this is not exactly the case for the first trial wave function when we use the analytical local energy. If we run our previous tests with different Monte Carlo cycles, we will see that our algorithm is very, very stable, even for lower number of Monte Carlo cycles.
+
+An example of this can be found in figure \ref{fig:Stability_1}, with $\omega = 1$. As we see, even with lower number of Monte Carlo cycles, the results are incredibly stable. It should, again, be noted that we have used the analytic local energy in the calculations, which may be the reason for such a stable results. However, we will see later, when we test the virial problem, that lower number of Monte Carlo cycles will give less table/exact results. \footnote{We were asked to plot the stability as a function of Monte Carlo cycles. However, I was not sure what to plot, as the computed of the energies were exactly the same for every Monte Carlo cycle.}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{Plots/Stability_check.pdf}
+\caption{Example of the stability of the Metropolis algorithm.}
+\label{fig:Stability_1}
+\end{figure}
+
 \FloatBarrier
 \subsubsection{The mean distance}
-Now that we have found the optimal variational parameter, we can use it to calculate the mean distance $r_{12}$ between the two electrons at the energy minimum. Using the frequency values $\omega = 0.01, 0.5, 1$, the calculated mean distance is found in the output below.
-\begin{lstlisting}
-@Omega = 0.01
-Mean distance = 16.5251
-Omega = 0.5
-Mean distance = 2.34729
-Omega = 1
-Mean distance = 1.65877@
-\end{lstlisting}
+Now that we have found the optimal variational parameter, we can use it to calculate the mean distance $r_{12}$ between the two electrons at the energy minimum. Using the frequency values $\omega = 0.01, 0.5, 1$, the calculated mean distance  can be found in table \ref{table:Mean_Distance}.
+\begin{table}
+\begin{center}
+	\begin{tabular}{| l | c |}
+	\hline 
+	$\omega$ & Mean distance \\ \hline
+	1 & 1.55877 \\ 
+	0.5 & 2.34729 \\
+	0.01 & 16.5251 \\ \hline
+	\end{tabular}
+\caption{The mean distance of between the electrons for different frequencies, using the first trial wave function $\psi_{T_1}$.}
+\label{table:Mean_Distance}
+\end{center}
+\end{table}
+
 Let us quickly go back to project 2, where we used the analogy where two electrons are bound by a spring. The electrons now oscillate back and forth due to the oscillation of the spring. 
 
 For smaller frequencies, we can imagine that the spring is not very stiff, which means that the electrons can be drawn further apart before they get pulled back in by the spring. Because they can be further apart, the average distance between these two electrons will therefore be larger, which is exactly what we see from the computed results above.
@@ -395,8 +412,8 @@ Standard deviation =  0.0171850807388@
 	 1 & 0.98 & 0.52 \\ \hline
 	\end{tabular}
 \caption{Optimal values of $\alpha$ and $\beta$ for the different frequencies.}
-\end{center}
 \label{table:Optimal_AlphaBeta}
+\end{center}
 \end{table}
 
 We can also plot how the energy evolves as we change the variational parameters. I will only plot the one for $\omega = 1$, as the other frequencies will give similar results. The plot can be found in \ref{fig:3DPlot_AlphaBeta_Optimal}.  One may think, when looking at the plot, that we have not quite reached the minimum energy. However, I have tested this multiple times for different ranges of $\alpha$ and $\beta$, and I can safely say that there is a minimum in that plot.
@@ -407,11 +424,9 @@ We can also plot how the energy evolves as we change the variational parameters.
 \label{fig:3DPlot_AlphaBeta_Optimal}
 \end{figure}
 
-
-
 \FloatBarrier
 \subsubsection{The Jastrow factor}
-We are also interested on how important the correlations are when we introduce the Jastrow factor. Using the optimal variational parameter values, we can calculate the energy, variance as well as the mean distance for the wave function, with and without the Jastrow factor. Table \ref{table:Non-Jastrow-Result} and \ref{table:Jastrow-Result} shows the computed values, with and without the Jastrow factor respectively.
+We are also interested on how important the correlations are when we introduce the Jastrow factor. Using the optimal variational parameter values, we can calculate the energy, variance as well as the mean distance for the wave function, with and without the Jastrow factor. Table \ref{table:Jastrow-Result} and \ref{table:Non-Jastrow-Result} shows the computed values, with and without the Jastrow factor respectively.
 
 \begin{table}
 \begin{center}
@@ -423,8 +438,8 @@ We are also interested on how important the correlations are when we introduce t
 	 1 & 3.7269 & 0.0125113 & 1.81991 \\ \hline
 	\end{tabular}
 \caption{Computed energy, variance and mean distance for different frequencies with the Jastrow factor.}
-\end{center}
 \label{table:Jastrow-Result}
+\end{center}
 \end{table}
 
 \begin{table}
@@ -437,10 +452,10 @@ We are also interested on how important the correlations are when we introduce t
 	 1 & 3.75114 & 0.01486 & 1.67748 \\ \hline
 	\end{tabular}
 \caption{Computed energy, variance and mean distance for different frequencies without the Jastrow factor.}
-\end{center}
 \label{table:Non-Jastrow-Result}
+\end{center}
 \end{table}
-We see from the tables that the energies, as well as the mean distance, is smaller once we introduce the Jastrow factor. 
+We see from the tables that the energies, as well as the mean distance, is smaller once we introduce the Jastrow factor. The Jastrow factor serves as an attempt to give a lower energy ground state for our trial wave function. The advantage of this factor is that it only introduces one extra variational parameter. One could introduce many more variational parameters, and possibly obtain a lower energy ground state. However, too many variational parameters is not exactly ideal, as we would have too many free parameters to determine.
 
 \FloatBarrier
 \subsection{Testing the virial theorem}
@@ -450,16 +465,50 @@ We now want to test the virial theorem with the optimal values of $\alpha$ and $
 \end{align*}
 We will use our optimal results of the variational parameters, for $\omega = 0.01$, $\omega = 0.5$ and $\omega=1$, to compute the expectation values of the kinetic and potential energy in the frequency range $\omega \in [0.01, 1]$. \footnote{I was not sure if the task was to calculate an optimal $\alpha$ and $\beta$ for every single frequency in this range or just use the optimal variational parameters to compute our results for $\omega \in [0.01, 1]$. I went ahead and did the latter, as calculating an optimal variational parameter for every frequency would take a lot of CPU time.}
 
-Let us first consider the case where the electrons do not interact. In this case, we will have a pure harmonic oscillator system. Figure \ref{fig:Virial_NoCoulomb} shows the plot of $\langle T \rangle / \langle V \rangle$ as a function of $\omega$. We note that, for all different cases of optimal variational parameter, the ratio of the kinetic and potential energy is almost constant. However, since we have a pure harmonic oscillator, we would expect that $\langle T \rangle / \langle V \rangle = 1$, which is clearly not the case here. 
-
+Let us first consider the case where the electrons do not interact. In this case, we will have a pure harmonic oscillator system. Figure \ref{fig:Virial_NoCoulomb} shows the plot of $\langle T \rangle / \langle V \rangle$ as a function of $\omega$. We note that, for all different cases of optimal variational parameter, the ratio of the kinetic and potential energy is almost constant. However, since we have a pure harmonic oscillator, we would expect that $\langle T \rangle / \langle V \rangle = 1$, which is clearly not the case here. Exact reason for this is unknown, but the variational parameter could have played a big role here. It appears that the kinetic energy is a lot smaller than the potential energy, when $\alpha$ is smaller.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{Plots/Virial_Plot_NoCoulombInt.pdf}
-\caption{Plot of the ratio $\langle T \rangle / \langle V \rangle$ as a function of frequency $\omega$}
+\caption{Plot of the ratio $\langle T \rangle / \langle V \rangle$ as a function of frequency $\omega$ with no Coulomb interaction}
 \label{fig:Virial_NoCoulomb}
 \end{figure}
 
 
+Let us now include Coulomb interaction between the electrons. A plot for this case can be found in figure \ref{fig:Virial_Plot}. We see here that the kinetic energy is larger for higher frequencies, and decreases as the frequency decreases. 
+
+What this plot is telling us, is that the electrons have very small velocities (small kinetic energy) when the frequency is small. On top of that, when the frequency is smaller, the mean distance increases. What the plot shows is that the electrons, while being far away from each other, have very little movement. 
+
+The harmonic oscillator potential is small when the frequency is smaller because $V(r) \propto \omega^2r^2$. When the potential is small, the electrons will roll 'slowly' down the potential well. This corresponds to the electrons having small kinetic energies. At the same time, the Coulomb force will push the electrons away from each other. The Coulomb force is stronger when the electrons are closer to each other, and weaker when they are further apart.
+
+What this means, is that the electrons will never reach the bottom of the harmonic oscillator potential, due to the Coulomb force. However, the Coulomb force will not act on the electrons very strongly because they are so far away from each other. In other words, when $r_{12}$ is large, the Coulomb force will be small.
+
+When the Coulomb force is weak and the electrons are slowly rolling down the potential well, the electrons will in the end not move a whole lot. The acceleration (or velocity) caused by the Coulomb force, and the acceleration that arises when the electrons are rolling down the potential, will sort of cancel each other out. Because of that, the electrons will not have a lot of movement, and is therefore bound to a very specific spot. An illustration of this can be found in figure \ref{fig:Virial_Example}. \footnote{Similar analogy was used in Project 2.}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{Plots/Virial_Plot.pdf}
+\caption{Plot of the ratio $\langle T \rangle / \langle V \rangle$ as a function of frequency $\omega$ with Coulomb interaction}
+\label{fig:Virial_Plot}
+\end{figure}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{Virial-example.png}
+\caption{Illustration of two electrons rolling down a small potential. The Coulomb pushes the electrons away from each other. However, the force will be very small because they are already far away from each other. The velocities from the Coulomb force will therefore 'cancel' out the velocity the electron is rolling down with.}
+\label{fig:Virial_Example}
+\end{figure}
+
+Once again, we see that the kinetic energy is very small , with respect to the potential energy, when $\alpha$ is small. The variational parameter of $\alpha$ definitely plays a role to the kinetic energy, but the exact reasons is unknown to me.
+
+Let us once again look at the stability of the Metropolis algorithm. In this example, we will plot the ratio $\langle T \rangle / \langle V \rangle$ with Coulomb interaction with $\alpha = 0.98$ and $\beta = 0.48$. An example of this can be found in figure \ref{fig:Stability_virial}. I have decided to cut out $N_{mc} = 100, 1000$ out of this plot as it cluttered the whole plot, thus making it harder to read. As we see from this figure, when we lower the number of Monte Carlo cycles, the results tend to 'jump' a little bit. That is, the algorithm is slightly less stable. Even though they are less stable, the results are still incredibly good.
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{Plots/Virial_stability_test.pdf}
+\caption{Stability test using the virial problem.}
+\label{fig:Stability_virial}
+\end{figure}
+\FloatBarrier
 \section{Conclusion}\label{section:conclusion}
 
 \FloatBarrier
