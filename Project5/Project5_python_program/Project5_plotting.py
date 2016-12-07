@@ -231,7 +231,7 @@ class Plotter():
 		plt.xlabel(r'$\omega$')
 		plt.ylabel(r'$\langle T \rangle/\langle V \rangle$')
 		plt.title(r'Plot of $\langle T \rangle/\langle V \rangle$ as a function of $\omega$')
-		ax.legend(loc='upper center', bbox_to_anchor=(0.6,0.5), ncol=1, fancybox=True)
+		ax.legend(loc='upper center', bbox_to_anchor=(0.6,0.6), ncol=1, fancybox=True)
 
 		fig2 = plt.figure()
 		ax1 = plt.subplot(111)
