@@ -34,6 +34,7 @@ moredelim=**[is][\color{blue}]{@}{@}
 \begin{document}
 \maketitle
 \begin{abstract}
+This project is a continuation of project 2. We will, once again, consider two electrons within the harmonic oscillator potential. For this project, instead of using the Jacobi's method, which we used in project 2, we will use variational Monte Carlo methods to solve our quantum mechanical system. We will consider two different wave functions in our calculations and compare the differences between their results. We will also have a look at the virial theorem, with and without the Coulomb interaction.
 \end{abstract}
 \newpage
 \tableofcontents
@@ -41,7 +42,9 @@ moredelim=**[is][\color{blue}]{@}{@}
 \section{Introduction} \label{section:intro}
 In project 2, we studied the behaviour of two electrons interacting in a three dimensional harmonic oscillator potential. In that project, we had a look at the so called \emph{Eigenvalue problem} and used Jacobi's method to solve this problem. From that, we noted that Jacobi's method was not an optimal way to solve our quantum mechanical system, as it used a lot of CPU time to finish its calculations.
 
-For this project, we will revisit this three dimensional harmonic oscillator with two electrons. This time, we will use a variational Monte Carlo method (VMC) method known as the Metropolis algorithm, which we also used in project 4, to solve this quantum mechanical system.
+For this project, we will revisit this three dimensional harmonic oscillator with two electrons. This time, we will use a variational Monte Carlo method (VMC) method known as the Metropolis algorithm, which we also used in project 4, to solve this quantum mechanical system. We will have a look at two different wave functions, where the difference is only an exponential factor, and see how the results will differ from this factor. We will also have a look at the virial theorem, with and without Coulomb interaction.
+
+An overview of the mathematical and theoretical discussion is found in section \ref{section:method}. Here, we will discuss the energy solutions of the Schrödinger equation using our wave functions, discuss the Metropolis algorithm and more. In section \ref{section:implement}, we will briefly discuss how this is implemented in our program and do a quick test of the Metropolis algorithm. In section \ref{section:results} we will look at our computed results, and finally in section \ref{section:conclusion} we will summarize and conclude our results.
 
 All relevant files used in this project can be found in the this GitHub page:
 \url{https://github.com/AHo94/FYS3150_Projects/tree/master/Project5}
@@ -52,7 +55,7 @@ We will consider two electrons in a quantum dot with a frequency $\hbar \omega =
 \begin{align*}
 H_0 = -\frac{1}{2}(\nabla_1^2 + \nabla_2^2) + \frac{1}{2}\omega^2(r_1^2 + r_2^2)
 \end{align*}
-The wave function for one electron in a harmonic oscillator potential is
+The wave function for one electron in a harmonic oscillator potential is given as
 \begin{align*}
 \phi_{n_x, n_y, n_z}(x,y,z) = \frac{A}{2}H_{n_x}(\sqrt{\omega} x)H_{n_y}(\sqrt{\omega}y)H_{n_z}(\sqrt{\omega}z)e^{-\frac{\omega}{2}(x^2+y^2+z^2)}
 \end{align*}
@@ -60,11 +63,11 @@ Where $H_{n_x}$ are Hermite polynomials and $A$ is a normalization constant. $n_
 \begin{align*}
 H_0\phi_{n_x, n_y, n_z} &= \epsilon_{n_x, n_y, n_z}\phi_{n_x, n_y, n_z}
 \end{align*}
-with the energy given as
+with the energy, for a harmonic oscillator, given as
 \begin{align*}
 \epsilon_{n_x, n_y, n_z} &= \omega\left(n_x + n_y + n_z + \frac{3}{2} \right)
 \end{align*}
-For the ground state, $n_x = n_y = n_z = 0$, the energy of the single electron is
+For the ground state, $n_x = n_y = n_z = 0$, the energy of the single electron is then
 \begin{align*}
 \epsilon_{0,0,0} = \frac{3}{2}\omega
 \end{align*}
@@ -72,14 +75,12 @@ Let us now consider two electrons, so we have $\phi_{n_x, n_y, n_z}^1$ and $\phi
 \begin{align*}
 H_0(\phi_{n_x, n_y, n_z}^1 + \phi_{n_x, n_y, n_z}^2) &= \epsilon_{n_x, n_y, n_z}^1\phi_{n_x, n_y, n_z}^1 + \epsilon_{n_x, n_y, n_z}^2\phi_{n_x, n_y, n_z}^2 
 \end{align*}
-The total energy for these two electrons, when we consider the ground state, is then
+The total energy for these two electrons, when we consider the ground state, is therefore
 \begin{align*}
 \epsilon_{0,0,0}^{\text{tot}} &= \epsilon_{0,0,0}^1 + \epsilon_{0,0,0}^2 \\
 &= \omega\left(\frac{3}{2} \right) + \omega\left(\frac{3}{2} \right)\\
 &= 3\omega
 \end{align*}
-
-%% Add stuff for unperturbed case
 The unperturbed wave function for the ground state of the two electron system is given as
 \begin{align}
 \Phi (\mathbf{r}_1, \mathbf{r}_2) = C\exp(-\omega(r_1^2 + r_2^2)/2)
@@ -110,13 +111,13 @@ where $r_{12} = \sqrt{r_1 - r_2}$ and $\alpha$ and $\beta$ are variational param
 
 Let us find the energy of the first trial function. First, we should rewrite the Hamiltonian in spherical coordinates. Our system does not depend on the radial coordinates, so the $\nabla$ operator, for electron $i$ in spherical coordinates, becomes
 \begin{align*}
-\nabla^2_i = -\frac{1}{2} \frac{d^2}{dr^2_i} - \frac{1}{r_i}\frac{d}{dr_i}
+\nabla^2_i = -\frac{d^2}{dr^2_i} - \frac{2}{r_i}\frac{d}{dr_i}
 \end{align*}
 By acting the Hamiltonian on $\psi_{T_1}$, we get
 \begin{align*}
-H_0\psi_{T_1} = \left(-\frac{d^2}{dr^2_1} - \frac{1}{r_1}\frac{d}{dr_1} -\frac{d^2}{dr^2_2} - \frac{1}{r_2}\frac{d}{dr_2} + \frac{1}{2}\omega(r_1^2+r_2^2)\right)\psi_{T_1}
+H_0\psi_{T_1} = \frac{1}{2}\left(-\frac{d^2}{dr^2_1} - \frac{2}{r_1}\frac{d}{dr_1} -\frac{d^2}{dr^2_2} - \frac{2}{r_2}\frac{d}{dr_2} + \omega(r_1^2+r_2^2)\right)\psi_{T_1}
 \end{align*}
-There will be a lot of derivatives to keep track of here, so I will take this step by step. Let us first differentiate with respect to $r_1$ first. The first derivative is
+There will be a lot of derivatives to keep track of here, so I will do this step by step. Let us first differentiate with respect to $r_1$ first. The first derivative is
 \begin{align*}
 \frac{d}{dr_1}\exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right) &= \left( -\alpha \omega r_1 \right)\exp\left(-\frac{\alpha \omega}{2}(r^2_1 + r^2_2)\right) \\
 &= -\alpha \omega r_1 \psi_{T_1}
@@ -129,7 +130,7 @@ The second derivative then becomes
 \end{align*}
 In short, the kinetic term is
 \begin{align}
-\nabla_1^2 \psi_{T_1} =-\frac{1}{2}(\alpha^2\omega^2r_1^2 -3 \alpha \omega)\psi_{T_1}
+\nabla_1^2 \psi_{T_1} =-(\alpha^2\omega^2r_1^2 -3 \alpha \omega)\psi_{T_1}
 \label{eq:Kinetic_psi1}
 \end{align}
 I will skip the calculation for the derivative with respect to $r_2$, but the results are
@@ -139,7 +140,7 @@ I will skip the calculation for the derivative with respect to $r_2$, but the re
 \end{align*}
 which gives
 \begin{align*}
-\nabla_1^2 \psi_{T_1} =-\frac{1}{2}(\alpha^2\omega^2r_2^2 -3 \alpha \omega)\psi_{T_1}
+\nabla_1^2 \psi_{T_1} =-(\alpha^2\omega^2r_2^2 -3 \alpha \omega)\psi_{T_1}
 \end{align*}
 The local energy, for this trial function, is then
 \begin{align}
@@ -149,7 +150,7 @@ E_{L_1} &= -\frac{1}{2} (\alpha^2 \omega^2 r_1^2 - 3\alpha \omega)  - \frac{1}{2
 &= 3 \alpha \omega +  \frac{1}{2}\omega^2(1-\alpha^2)(r_1^2 + r_2^2)
 \label{eq:Energy_T1}
 \end{align}
-which is exactly what we wanted to show. We will skip the derivation of the analytical local energy for the second trial wave function. If we add Coulomb interaction, the Hamiltonian now becomes
+which is exactly what we wanted to show. I will skip the derivation of the analytical local energy for the second trial wave function. If we add Coulomb interaction, the Hamiltonian now becomes
 \begin{align*}
 H_0 = \displaystyle \sum_{i=1}^N\left(-\frac{1}{2}\nabla_i^2 + \frac{1}{2}\omega^2r_i^2 \right) + \sum_{i<j}\frac{1}{r_{ij}}
 \end{align*}
@@ -158,30 +159,43 @@ and the local energy for the first trial wave function is then
 E_{L1} = 3 \alpha \omega +  \frac{1}{2}\omega^2(1-\alpha^2)(r_1^2 + r_2^2) + \frac{1}{r_{12}}
 \label{eq:Energy_T1_Coulomb}
 \end{align}
-where $r_{12}= |\mathbf{r}_1 - \mathbf{r}_2|$. The analytical expression for the second trial wave function, with Coulomb interaction, is then
+The analytical expression for the second trial wave function, with Coulomb interaction, is then
 \begin{align}
 E_{L2} = E_{L1} + \frac{1}{2(1+\beta r_{12})^2}\left[\alpha \omega r_{12} - \frac{1}{2(1+\beta r_{12})} - \frac{2}{r_{12}} + \frac{2\beta}{1+\beta r_{12}} \right]
 \label{eq:Energy_T2_Coulomb}
 \end{align}
-with $E_{L1}$ given in equation \ref{eq:Energy_T1_Coulomb}.
+with $E_{L1}$ given in equation \ref{eq:Energy_T1_Coulomb}. These expressions will later be used to compute the energy of our harmonic oscillator system.
 
+What happens when $r_{12} \to 0$? This is not a concern for the case without Coulomb interaction. However, when we look at the local energies given in equation \ref{eq:Energy_T1_Coulomb} and \ref{eq:Energy_T2_Coulomb}, it appears that the energies will be infinite as the distance between the electrons becomes small. In order to remove these kinds of singularities, one has to choose a wave function, with certain constraints, such that these singularities does not occur in our energies. These constraints are called 'cusp conditions'.
+
+Fortunately, both of our trial wave functions already satisfy these cusp conditions. The first wave function does not have any $r_{12}$ dependence, so singularities is not a concern. The second wave function, as mentioned earlier, appears to have some singularities in its local energy, when  $r_{12} \to 0$. Is that really the case? Let us write out the second local energy. We have
+\begin{align*}
+E_{L2} &= 3 \alpha \omega +  \frac{1}{2}\omega^2(1-\alpha^2)(r_1^2 + r_2^2) + \frac{1}{r_{12}} \\
+&+ \frac{1}{2(1+\beta r_{12})^2}\left[\alpha \omega r_{12} - \frac{1}{2(1+\beta r_{12})} - \frac{2}{r_{12}} + \frac{2\beta}{1+\beta r_{12}} \right]
+\end{align*}
+There are only two terms that may give singularities, that is
+\begin{align*}
+E_{L2} &= \frac{1}{r_{12}} - \frac{1}{r_{12}(1+\beta r_12)^2} + \text{other terms} \\
+&= \frac{1}{r_{12}}\left(1 - \frac{1}{(1+\beta r_{12})^2} \right) +\text{other terms}
+\end{align*}
+By taking the limit $r_{12}\to 0$, we see that the factors inside the parenthesis gives zero. Because of this, we do not have any singularities as $r_{12}\to 0$. Our trial wave functions therefore satisfy the cusp conditions! 
 \subsection{The Metropolis Algorithm}
-We will once again, like in project 4, use the Metropolis algorithm to solve our quantum mechanical system. The algorithm is as follows: for every Monte Carlo cycle we 
+We will once again, like in project 4, use the Metropolis algorithm to solve our quantum mechanical system. We first have to start the electrons at an arbitrary position. We let the electron start at the position $x,y,z \in [-1,1]$, which we get from a normal distribution. We can then proceed with the Metropolis method. The algorithm is as follows: for every Monte Carlo cycle we 
 \begin{itemize}
-\item \textbf{1)} Start the electrons at an arbitrary position. We let the electron start at the position $x,y,z \in [-1,1]$, which we get from a normal distribution.
-
-\item \textbf{2)} Give the electrons a new position determined by $\mathbf{R}' = \mathbf{R} + \delta\times s$, where $\mathbf{R} = (\mathbf{r}_1, \mathbf{r}_2, ..., \mathbf{r}_N)$, $s$ is a random number generated from a normal distribution such that $s\in [-1,1]$ and $\delta$ is a small step length. Note that $\delta \times r$ is different for every component, e.g
+\item \textbf{1)} Give the electrons a new position determined by $\mathbf{R}' = \mathbf{R} + \delta\times s$, where $\mathbf{R} = (\mathbf{r}_1, \mathbf{r}_2, ..., \mathbf{r}_N)$, $s$ is a random number generated from a normal distribution such that $s\in [-1,1]$ and $\delta$ is a small step length. Note that $\delta \times s$ is different for every component, e.g
 \begin{align*}
 \mathbf{r_1}' = (x_1 + \delta\times s_1, y_1 + \delta\times s_2, z_1 + \delta\times s_3)
 \end{align*} For this project we will consider $N=2$ electrons.
 
-\item \textbf{3)} Calculate $w = P(\mathbf{R}')/P(\mathbf{R}) = |\Psi(\mathbf{R}')|^2/|\Psi(\mathbf{R})|^2$, where $\Psi$ is the wave function we will consider (i.e the trial wave functions $\psi_{T1}$ and $\psi_{T2}$ mentioned previously). Pick a random number $p\in [0,1]$, also given from a normal distribution function. We now have to consider these two cases
+\item \textbf{2)} Calculate $w = P(\mathbf{R}')/P(\mathbf{R}) = |\Psi(\mathbf{R}')|^2/|\Psi(\mathbf{R})|^2$, where $\Psi$ is the wave function we will consider (i.e the trial wave functions $\psi_{T1}$ and $\psi_{T2}$ mentioned previously). Pick a random number $p\in [0,1]$, also given from a normal distribution function. We now have to consider these two cases
 
 \item \textbf{Case 1}: If $p <= w$, we accept this new position change and use the calculated $\mathbf{R}'$ to calculate the local energy. The system has now reached a lower energy state.
 
 \item \textbf{Case 2}: If $p > w$, we do not accept this new position and use the old position $\mathbf{R}$ to calculate the local energy.
 
-\item \textbf{4)} Use the new or old position (depending on whatever case above hits) to calculate the local energy $E_L = \frac{1}{\Psi} H_0\Psi$. 
+\item \textbf{3)} Use the new or old position (depending on whatever case above hits) to calculate the local energy $E_L = \frac{1}{\Psi} H_0\Psi$. 
+
+\item \textbf{3.1)} Alternatively, we can instead use our analytical expressions of the local energies to calculate the energy. This will save a lot of CPU time because we do not have to calculate the derivatives.
 \end{itemize}
 By calculating the fraction $|\Psi(\mathbf{R}')|^2/|\Psi(\mathbf{R})|^2$, we eliminate the requirement to compute the integral given in
 \begin{align*}
@@ -195,10 +209,10 @@ Once again, by running this for $N_{mc}$ Monte Carlo cycles, we find the energy 
 \end{align*}
 where $E_i$ is all the energy samples calculated from the Metropolis algorithm. One can also find the expectation value of the mean distance at the energy minimum $r_{12} = |\mathbf{r}_1 - \mathbf{r}_2|$ in the same way.
 
-One of the main advantages of using variational Monte Carlo methods is that we can carry out our calculations using cartesian coordinates. If we look back to project 2, we had to define new variables in order to solve the eigenvalue problem.
-
+One of the main advantages of using variational Monte Carlo methods is that we can carry out our calculations using cartesian coordinates. If we look back to project 2, we had to define new variables in order to solve the eigenvalue problem. Another advantage (that we will see later), is the significant decrease in CPU time when we use the Metropolis algorithm, compared to the Jacobi's method which often times used up to 5 minutes.
+ 
 \subsection{Algorithm that determines the step length}
-We would like to find an algorithm that, for a given value of $\alpha$, uses an optimal value of the step length $\delta$. This should ideally result to roughly 50\% accepted moves in the metropolis algorithm. One can run the program multiple times to determine the step length. However, one can also find an analytical solution, which would automatize the optimal step length.
+We would like to find an algorithm that, for a given value of $\alpha$, uses an optimal value of the step length $\delta$. This should ideally result to roughly 50\% accepted moves in the metropolis algorithm. One can run the program multiple times to determine the step length. However, one can also find a mathematical expression, which would automatize the optimal step length.
 
 Since we are looking at accepted moves, we will take a look at the equation
 \begin{align*}
@@ -235,6 +249,25 @@ This is just a second order equation for $\delta$. We require that $\delta$ is a
 \end{align}
 Implementing this in the program \emph{should} ideally result to roughly 50\% of the configurations being accepted. However, this will not be the case. We will see that the the number of accepted configurations will float around 65\% for most cases. This is a little far away from the 50\% we wanted, but it should suffice.
 
+\subsection{Computing the variance in the virial problem}
+In this project, we will have a look at the virial theorem. For a pure harmonic oscillator, it is given as
+\begin{align*}
+\langle T \rangle = \langle V \rangle
+\end{align*}
+The total energy is just the kinetic plus the potential energy. In the Hamiltonian, we already have an expression of the potential and since we already calculate the local energy with their analytical expression, we can compute the expectation value of the kinetic energy as
+\begin{align*}
+\langle T \rangle = \langle E \rangle - \langle V \rangle
+\end{align*}
+The expectation value of the kinetic energy squared can be obtained in a similar way. We have that
+\begin{align*}
+\langle E^2 \rangle &= \langle T^2 + 2TV + V^2 \rangle\\
+&= \langle T^2 \rangle + 2 \langle T \rangle \langle V \rangle + \langle V^2 \rangle
+\end{align*}
+The kinetic energy squared is then
+\begin{align*}
+\langle T^2 \rangle = \langle E^2 \rangle - \langle V^2\rangle - 2 \langle T \rangle \langle V \rangle
+\end{align*}
+However, the extra factor of $2 \langle T \rangle \langle V \rangle$ gave negative variances, which cannot be correct. I have therefore neglected this extra term in my calculations.
 \subsection{Results from project 2}
 It is a good idea to note down some relations from project 2, since we will compare a lot of our results with that project. Previously, we found that an electron in a harmonic oscillator potential had the energy
 \begin{align*}
@@ -244,17 +277,17 @@ Using natural units we have $\hbar = 1$. We also neglect the angular movements, 
 \section{Implementation} \label{section:implement}
 Like in the previous projects, I will do all the calculations in C++ and plot the results in Python.
 
-For this project, I have object oriented the whole program. The class\\ \texttt{Wavefunctions} initializes a so called \emph{functor}. The idea here is to create the wave functions as an object that acts as a (c++) function. This will make the program a lot more flexible, as we can choose whether we want to use the first or the second trial wave function.
+For this project, I have object oriented the whole program. The class\\ \texttt{Wavefunctions} initializes a so called \emph{functor}. The idea here is to create the wave functions as an object that acts as a (c++) function. This will make the program a lot more flexible, as we can choose whether we want to use the first or the second trial wave function (or any wave function).
 
 I have also made a class called \texttt{Metropolis\_quantum}. This class contains three different Metropolis solving functions. The first one uses the local energy $E_{L1}$ in the calculation, the second uses the local energy $E_{L2}$ and the final one is made specifically to test the virial problem.
 
-I have also used the class \texttt{vec3}, which we developed in project 3. This class will make it easier to keep track of all the components contained within the radius variable $\mathbf{r} = (x, y, z)$, as it contains methods to do certain vector calculations, e.g finding vector length and vector addition. 
+I will also reuse the class \texttt{vec3}, which we developed in project 3. This class will make it easier to keep track of all the components contained within the variable $\mathbf{r} = (x, y, z)$, as it contains methods to do certain vector calculations, e.g finding vector length and vector addition. 
 
 
 \subsection{Testing the Metropolis algorithm}
 Before we proceed with the results, we should check if the Metropolis algorithm works as it should. When calculating the local energy, we should use a numerical approach to calculate the kinetic term $\nabla^2\psi$. However, we already have the analytical expression of the local energy $E_{L1}$, given in equation \ref{eq:Energy_T1}. From that, we also know which terms contributes to the kinetic energy. In fact, the kinetic energy is given in equation \ref{eq:Kinetic_psi1}, which we can use to test the Metropolis algorithm.
 
-By implementing this term as its own function \texttt{LaplaceAnalytic}, we run the program with the analytical kinetic energy. Using $10^6$ Monte Carlo cycles, $\alpha = 1$, $\omega = 1$ and no Coulomb interaction, the result is:
+By implementing this term as its own function \texttt{LaplaceAnalytic} (found in the \texttt{Metropolis\_quantum} class), we run the program with the analytical kinetic energy. Using $10^6$ Monte Carlo cycles, $\alpha = 1$, $\omega = 1$ and no Coulomb interaction, the result is:
 \begin{lstlisting}
 @Monte Monte Carlo cycles = 1000000
 Kinetic numeric = 3
@@ -262,7 +295,7 @@ Variance = 0
 Accepted configs (percentage) = 0.62867
 Time elapsed: 1.576s@
 \end{lstlisting}
-So the numerical energy, using the analytical expression of the kinetic energy, is exactly 3! The variance is exactly zero as well, which is what we would expect from this test. Also note the number of accepted configurations. The algorithm for an optimal step length, given in equation \ref{eq:step_length_algo}, gives roughly 63\% accepted configurations. Not exactly perfect, but good enough.
+So the calculated energy, using the analytical expression of the kinetic energy, is exactly 3! The variance is exactly zero as well, which is what we would expect from this test. Also note the number of accepted configurations. The algorithm for an optimal step length, given in equation \ref{eq:step_length_algo}, gives roughly 63\% accepted configurations. Not exactly perfect, but good enough.
 
 We can now also test, with the same values of $\alpha$ and $\omega$, if the numerical derivation of the kinetic term works. The discretized numerical second derivative is given as
 \begin{align*}
@@ -272,7 +305,7 @@ The Laplace operator for all three dimensions is thus
 \begin{align*}
 \nabla^2 f = \displaystyle \sum_{i=1}^3 \frac{f(x_i + \Delta x) + f(x_i - \Delta x) - 2f(x_i)}{\Delta x^2} 
 \end{align*}
-where $i=1,2,3$ corresponds to the $x,y,z$ components and $\Delta x$ is the same for every direction. We let $\Delta x = 10^{-5}$ and running this for the first trial function gives
+where $i=1,2,3$ corresponds to the $x,y,z$ components and $\Delta x$ is the same for every direction. This will be implemented in the function \texttt{LaplaceOperator}. We let $\Delta x = 10^{-5}$ and running this for the first trial function gives
 \begin{lstlisting}
 @Monte Monte Carlo cycles = 1000000
 Kinetic numeric = 3
@@ -286,13 +319,13 @@ However, we should also note down the time it took for the Metropolis algorithm 
 
 \section{Results}\label{section:results}
 \subsection{The first trial wave function}
-We will first consider the first trial wave function given in \ref{eq:First_TrialFunc}. 
+We will first consider the first trial wave function given in \ref{eq:First_TrialFunc}. The local energy used for the calculations in this section, is given in equation \ref{eq:Energy_T1}.
 \subsubsection{Finding the optimal $\alpha$}
-Let us now plot the energy (expectation value) and variance as a function of of the variational parameter $\alpha$. We can use these determine the optimal value of $\alpha$, which we can use to compare with our results from project 2. One thing to note is that the optimal variational parameter may be different for different frequencies $\omega$.
+Let us first find the optimal value of $\alpha$. We do that by plotting the energy (expectation value) and variance as a function of of the variational parameter $\alpha$. We can use these determine the optimal value of $\alpha$, which we can use to compare with our results from project 2. One thing to note is that the optimal variational parameter may be different for different frequencies $\omega$.
 
 Plots of the energy and variance, as a function of $\alpha$, using $\omega = 1$, can be found in figure \ref{fig:Energy_alpha_omega1} and \ref{fig:Variance_alpha_omega1} respectively. We can see that both of them has a minimum, but oddly enough at different values of $\alpha$. We would expect that the energy should be at its minimum when $\alpha = 1$ or smaller. However, the plot in figure \ref{fig:Energy_alpha_omega1} says that it is not quite the case. The minimum is shifted to a slightly larger $\alpha$ value, where the minimum is now at $\alpha = 1.08$.
 
-However, if we look at the plot of variance in \ref{fig:Variance_alpha_omega1}, we see that the minimum is at $\alpha = 1$. Also note that the variance here is exactly zero, which also means that the standard deviation is also zero. Because of this, the calculated energy at $\alpha = 1$ is exact, i.e there are no errors here. On the other hand, if we look at table \ref{table:AlphaMinimum_omega1} \footnote{Full data set, for this case, can be found at \url{https://github.com/AHo94/FYS3150_Projects/blob/master/Project5/build-Project5_cpp_program-Desktop_Qt_5_7_0_MinGW_32bit-Release/Energy_Alpha_Mdistance_omega_1.00.txt}}, the calculated minimum at $\alpha=1.08$ has a variance of $\sigma_E^2 = 0.0196079$, or $\sigma_E = 0.14002$, which means that the calculated energy at $\alpha = 1.08$ has a small margin of error which also means that it may not actually be the minimum. We can therefore safely say that the optimal value of the variational parameter, using the first trial wave function at $\omega = 1$ is $\alpha = 1$.
+However, if we look at the plot of variance in \ref{fig:Variance_alpha_omega1}, we see that the minimum is at $\alpha = 1$. Also note that the variance here is exactly zero, which also means that the standard deviation is also zero. Because of this, the calculated energy at $\alpha = 1$ is exact, i.e there are no errors here. On the other hand, if we look at table \ref{table:AlphaMinimum_omega1} \footnote{Full data set, for this case, can be found at \url{https://github.com/AHo94/FYS3150_Projects/blob/master/Project5/build-Project5_cpp_program-Desktop_Qt_5_7_0_MinGW_32bit-Release/Energy_Alpha_Mdistance_omega_1.00.txt}}, the calculated minimum at $\alpha=1.08$ has a variance of $\sigma_E^2 = 0.0196079$, or $\sigma_E = 0.14002$, which means that the calculated energy at $\alpha = 1.08$ has a small margin of error. This error implies that the energy minimum might actually not be at $\alpha = 1.08$. We can therefore (with a certain confidence) say that the optimal value of the variational parameter, using the first trial wave function at $\omega = 1$ is $\alpha = 1$.
 
 \begin{figure}[h]
 \centering
@@ -331,7 +364,7 @@ We obtain similar results for the cases with $\omega = 0.5$ and $\omega = 0.01$.
 
 One might wonder, how stable is the Metropolis algorithm? We know that the results are better when we increase the number of Monte Carlo cycles. However, this is not exactly the case for the first trial wave function when we use the analytical local energy. If we run our previous tests with different Monte Carlo cycles, we will see that our algorithm is very, very stable, even for lower number of Monte Carlo cycles.
 
-An example of this can be found in figure \ref{fig:Stability_1}, with $\omega = 1$. As we see, even with lower number of Monte Carlo cycles, the results are incredibly stable. It should, again, be noted that we have used the analytic local energy in the calculations, which may be the reason for such a stable results. However, we will see later, when we test the virial problem, that lower number of Monte Carlo cycles will give less table/exact results. \footnote{We were asked to plot the stability as a function of Monte Carlo cycles. However, I was not sure what to plot, as the computed of the energies were exactly the same for every Monte Carlo cycle.}
+An example of this can be found in figure \ref{fig:Stability_1}, with $\omega = 1$. As we see, even with lower number of Monte Carlo cycles, the results are incredibly stable. It should, again, be noted that we have used the analytic local energy in the calculations, which may be the reason for such a stable results. However, we will see later, when we test the virial problem, that lower number of Monte Carlo cycles will give slightly less table/exact results. \footnote{We were asked to plot the stability as a function of Monte Carlo cycles. However, I was not sure what to plot, as the computed of the energies were exactly the same for every Monte Carlo cycle.}
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{Plots/Stability_check.pdf}
@@ -416,10 +449,10 @@ Standard deviation =  0.0171850807388@
 \end{center}
 \end{table}
 
-We can also plot how the energy evolves as we change the variational parameters. I will only plot the one for $\omega = 1$, as the other frequencies will give similar results. The plot can be found in \ref{fig:3DPlot_AlphaBeta_Optimal}.  One may think, when looking at the plot, that we have not quite reached the minimum energy. However, I have tested this multiple times for different ranges of $\alpha$ and $\beta$, and I can safely say that there is a minimum in that plot.
+We can also plot how the energy evolves as we change the variational parameters. I will only plot the one for $\omega = 1$, as the other frequencies will give similar results. The plot can be found in \ref{fig:3DPlot_AlphaBeta_Optimal}. The form of this 3D plot is similar to the one in figure \ref{fig:Energy_alpha_omega1}. One may think, when looking at the plot, that we have not quite reached the minimum energy. However, I have tested this multiple times for different ranges of $\alpha$ and $\beta$, and I can safely say that there is a minimum in that plot.
 \begin{figure}[h]
 \centering
-%\includegraphics[width=\linewidth]{Plots/OptimalAlphaBeta_3DPlot.pdf}
+\includegraphics[width=\linewidth]{Plots/OptimalAlphaBeta_3DPlot.pdf}
 \caption{3D plot of the energy expectation values as a function of $\alpha$ and $\beta$.}
 \label{fig:3DPlot_AlphaBeta_Optimal}
 \end{figure}
@@ -456,7 +489,6 @@ We are also interested on how important the correlations are when we introduce t
 \end{center}
 \end{table}
 We see from the tables that the energies, as well as the mean distance, is smaller once we introduce the Jastrow factor. The Jastrow factor serves as an attempt to give a lower energy ground state for our trial wave function. The advantage of this factor is that it only introduces one extra variational parameter. One could introduce many more variational parameters, and possibly obtain a lower energy ground state. However, too many variational parameters is not exactly ideal, as we would have too many free parameters to determine.
-
 \FloatBarrier
 \subsection{Testing the virial theorem}
 We now want to test the virial theorem with the optimal values of $\alpha$ and $\beta$ that we found in the previous  task. The virial theorem states that the expectation of the total kinetic value is proportional to the expectation value of the total potential energy, i.e $\langle T \rangle \propto \langle V \rangle$. If we consider a pure harmonic oscillator potential, the virial theorem states
@@ -473,16 +505,17 @@ Let us first consider the case where the electrons do not interact. In this case
 \label{fig:Virial_NoCoulomb}
 \end{figure}
 
-
 Let us now include Coulomb interaction between the electrons. A plot for this case can be found in figure \ref{fig:Virial_Plot}. We see here that the kinetic energy is larger for higher frequencies, and decreases as the frequency decreases. 
 
-What this plot is telling us, is that the electrons have very small velocities (small kinetic energy) when the frequency is small. On top of that, when the frequency is smaller, the mean distance increases. What the plot shows is that the electrons, while being far away from each other, have very little movement. 
+What this plot is telling us, is that the electrons have very small velocities (small kinetic energy) when the frequency is small. On top of that, when the frequency is smaller, the mean distance increases, which we discussed from table \ref{table:Mean_Distance}. What the plot shows is that the electrons, while being far away from each other, have very little movement. 
 
 The harmonic oscillator potential is small when the frequency is smaller because $V(r) \propto \omega^2r^2$. When the potential is small, the electrons will roll 'slowly' down the potential well. This corresponds to the electrons having small kinetic energies. At the same time, the Coulomb force will push the electrons away from each other. The Coulomb force is stronger when the electrons are closer to each other, and weaker when they are further apart.
 
-What this means, is that the electrons will never reach the bottom of the harmonic oscillator potential, due to the Coulomb force. However, the Coulomb force will not act on the electrons very strongly because they are so far away from each other. In other words, when $r_{12}$ is large, the Coulomb force will be small.
+What this means, is that the electrons will never reach the bottom of the harmonic oscillator potential, due to the Coulomb force. However, the Coulomb force will not act on the electrons very strongly because they are so far away from each other already. 
 
-When the Coulomb force is weak and the electrons are slowly rolling down the potential well, the electrons will in the end not move a whole lot. The acceleration (or velocity) caused by the Coulomb force, and the acceleration that arises when the electrons are rolling down the potential, will sort of cancel each other out. Because of that, the electrons will not have a lot of movement, and is therefore bound to a very specific spot. An illustration of this can be found in figure \ref{fig:Virial_Example}. \footnote{Similar analogy was used in Project 2.}
+The electrons will slowly roll down the potential, but the Coulomb force will weakly push the electrons away from each other. The velocity (or acceleration) caused by the Coulomb force, and the velocity that arises when the electrons are rolling down the potential, will sort of cancel each other out. Because of that, the electrons will not have a lot of movement, and is therefore bound to a very specific spot. An illustration of this can be found in figure \ref{fig:Virial_Example}. \footnote{Similar analogy was used in Project 2.}
+
+The electrons are therefore very well defined at their respective positions. That is, they have a very high probability of staying at said location. This can be seen when we look at the variance of the kinetic energies. If we look at the data set for the virial problem (found in GitHub, under the filenames \texttt{Virial\_data}), we see that the variance becomes larger as we increase the frequency. The variance is smallest when $\omega = 0.01$, which means that the energy expectation value has a large 'peak', thus well defined and have a high probability of being at that specific energy.\footnote{One weird thing about the variance is that it increase quite significantly, going upwards $\sigma^2 = 5$. The calculation of $\langle T^2 \rangle$ may therefore not be 100\% correct.}
 
 \begin{figure}[h]
 \centering
@@ -512,9 +545,9 @@ Let us once again look at the stability of the Metropolis algorithm. In this exa
 \section{Conclusion}\label{section:conclusion}
 From the results, we saw that using the Metropolis algorithm (a variational Monte Carlo method) to compute our harmonic oscillator system gave incredibly stable, and also fairly precise, results. If we look back to project 2, we used Jacobi's method to solve this system. The results back then were also very good, but the computation time for Jacobi's method was/is significantly longer than the Metropolis algorithm.
 
-The physical results were fairly similar to project 2 as well. One example of this is the computed mean distance between the electrons. We knew that the electrons would be further apart when the frequency is smaller, and the results from this project agrees with what we observed in project 2. 
+The physical results were fairly similar to project 2 as well. One example of this is the computed mean distance between the electrons. We knew that the electrons would be further apart when the frequency is smaller, and the results from this project agrees with what we observed in project 2.  We also looked at the virial theorem, and with Coulomb interaction, we got the interesting result where both electrons had low velocities and had very little movement around a set location.
 
-Of course, like any Monte Carlo method, increasing the number of Monte Carlo cycles could possibly give even more stable results, compared to what we obtained. However, we saw that, even with a lower number of Monte Carlo cycles, the results were incredibly stable.  
+Of course, like any Monte Carlo method, increasing the number of Monte Carlo cycles could possibly give even more stable results, compared to what we obtained. However, we saw that, even with a lower number of Monte Carlo cycles, the results were incredibly stable.
 \FloatBarrier
 \section{Appendix}
 \begin{figure}[h]
