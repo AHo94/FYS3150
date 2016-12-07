@@ -168,7 +168,7 @@ int main()
 
     // Use optimal alpha, beta
     double AlphaOptimal[] = {0.58, 0.98, 0.98};
-    double BetaOptimal[] = {0.2, 0.3, 0.52};
+    double BetaOptimal[] = {0.2, 0.36, 0.52};
     ofile_global.open("Optimal_Energy_SecondTrialWaveFunc.txt");
     initialize_outfile();
     for (int i=0; i<3; i++){
