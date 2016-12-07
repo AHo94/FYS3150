@@ -204,8 +204,8 @@ void Metropolis_Quantum::Metropolis_Virial(int MC_cycles, Wavefunctions &WaveFun
     vec3 r2(distr(generator),distr(generator),distr(generator));
     double E_pot = 0;
     double E_tot = 0;
-    double KineticSum = 0;
-    double KineticSquaredSum = 0;
+    double TotalEnergySum = 0;
+    double TotalEnergySquaredSum = 0;
     double PotentialSum = 0;
     double PotentialSquaredSum = 0;
     double MeanDistance = 0;
@@ -248,16 +248,16 @@ void Metropolis_Quantum::Metropolis_Virial(int MC_cycles, Wavefunctions &WaveFun
                 - 2/r_12 + 2*beta/(1+beta*r_12));
         E_pot = + 0.5*omega2*(r1.lengthSquared() + r2.lengthSquared()) + CoulombInt*(1.0/r_12);
 
-        KineticSum += E_tot;
-        KineticSquaredSum += E_tot*E_tot;
+        TotalEnergySum += E_tot;
+        TotalEnergySquaredSum += E_tot*E_tot;
         PotentialSum += E_pot;
         PotentialSquaredSum += E_pot*E_pot;
         MeanDistance += r_12;
     }
 
     // Adding the energies and mean distance in their arrays
-    ExpectationValues[0] = KineticSum - PotentialSum;
-    ExpectationValues[1] = KineticSquaredSum - PotentialSquaredSum;
+    ExpectationValues[0] = TotalEnergySum;
+    ExpectationValues[1] = TotalEnergySquaredSum;
     ExpectationValues[2] = PotentialSum;
     ExpectationValues[3] = PotentialSquaredSum;
     ExpectationValues[4] = MeanDistance;
