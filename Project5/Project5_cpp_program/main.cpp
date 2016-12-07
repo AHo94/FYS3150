@@ -26,11 +26,14 @@ void write_file(int MC_cycles, double *ExpectationValues, double alpha, double b
 
 void write_file_virial(int MC_cycles, double *ExpectationValues, double alpha, double beta, double omega){
     // Writes out data to the output file. Function made specific for the parallellization part.
-    double Kinetic = ExpectationValues[0]/MC_cycles;
-    double KineticVariance = ExpectationValues[1]/MC_cycles - Kinetic*Kinetic;
+    double EnergyTotal = ExpectationValues[0]/MC_cycles;
+    double EnergyTotalSquared = ExpectationValues[1]/MC_cycles;
     double Potential = ExpectationValues[2]/MC_cycles;
-    double PotentialVariance = ExpectationValues[3]/MC_cycles - Potential*Potential;
-
+    double PotentialSquared = ExpectationValues[3]/MC_cycles;
+    double PotentialVariance = PotentialSquared - Potential*Potential;
+    double Kinetic = EnergyTotal - Potential;
+    double KineticSquared = EnergyTotalSquared - PotentialSquared;
+    double KineticVariance = KineticSquared - Kinetic*Kinetic;
     double MeanDistance = ExpectationValues[4]/MC_cycles;
     ofile_global << setw(15) << alpha;
     ofile_global << setw(15) << beta;
