@@ -180,23 +180,24 @@ E_{L2} &= \frac{1}{r_{12}} - \frac{1}{r_{12}(1+\beta r_12)^2} + \text{other term
 \end{align*}
 By taking the limit $r_{12}\to 0$, we see that the factors inside the parenthesis gives zero. Because of this, we do not have any singularities as $r_{12}\to 0$. Our trial wave functions therefore satisfy the cusp conditions! 
 \subsection{The Metropolis Algorithm}
-We will once again, like in project 4, use the Metropolis algorithm to solve our quantum mechanical system. We first have to start the electrons at an arbitrary position. We let the electron start at the position $x,y,z \in [-1,1]$, which we get from a normal distribution. We can then proceed with the Metropolis method. The algorithm is as follows: for every Monte Carlo cycle we 
-\begin{itemize}
-\item \textbf{1)} Give the electrons a new position determined by $\mathbf{R}' = \mathbf{R} + \delta\times s$, where $\mathbf{R} = (\mathbf{r}_1, \mathbf{r}_2, ..., \mathbf{r}_N)$, $s$ is a random number generated from a normal distribution such that $s\in [-1,1]$ and $\delta$ is a small step length. Note that $\delta \times s$ is different for every component, e.g
+We will once again, like in project 4, use the Metropolis algorithm to solve our quantum mechanical system. We first have to start the electrons at an arbitrary position. We let the electron start at the position $x,y,z \in [-1,1]$, which we get from a normal distribution. 
+
+Then, for every Monte Carlo cycle, we have to give the electrons a new position determined by $\mathbf{R}' = \mathbf{R} + \delta\times s$, where $\mathbf{R} = (\mathbf{r}_1, \mathbf{r}_2, ..., \mathbf{r}_N)$, $s$ is a random number generated from a normal distribution such that $s\in [-1,1]$ and $\delta$ is a small step length. Note that $\delta \times s$ is different for every component, e.g
 \begin{align*}
 \mathbf{r_1}' = (x_1 + \delta\times s_1, y_1 + \delta\times s_2, z_1 + \delta\times s_3)
 \end{align*} For this project we will consider $N=2$ electrons.
 
-\item \textbf{2)} Calculate $w = P(\mathbf{R}')/P(\mathbf{R}) = |\Psi(\mathbf{R}')|^2/|\Psi(\mathbf{R})|^2$, where $\Psi$ is the wave function we will consider (i.e the trial wave functions $\psi_{T1}$ and $\psi_{T2}$ mentioned previously). Pick a random number $p\in [0,1]$, also given from a normal distribution function. We now have to consider these two cases
+We can then proceed with the Metropolis algorithm, which is given as follows: 
+\begin{itemize}
+\item  Calculate $w = P(\mathbf{R}')/P(\mathbf{R}) = |\Psi(\mathbf{R}')|^2/|\Psi(\mathbf{R})|^2$, where $\Psi$ is the wave function we will consider for the calculation (i.e the trial wave functions $\psi_{T1}$ and/or $\psi_{T2}$ mentioned previously). Pick a random number $p\in [0,1]$, also given from a normal distribution function. We now have to consider these two cases
 
 \item \textbf{Case 1}: If $p <= w$, we accept this new position change and use the calculated $\mathbf{R}'$ to calculate the local energy. The system has now reached a lower energy state.
 
 \item \textbf{Case 2}: If $p > w$, we do not accept this new position and use the old position $\mathbf{R}$ to calculate the local energy.
-
-\item \textbf{3)} Use the new or old position (depending on whatever case above hits) to calculate the local energy $E_L = \frac{1}{\Psi} H_0\Psi$. 
-
-\item \textbf{3.1)} Alternatively, we can instead use our analytical expressions of the local energies to calculate the energy. This will save a lot of CPU time because we do not have to calculate the derivatives.
 \end{itemize}
+
+We then use the new or old position (depending on whatever case above hits) to calculate the local energy $E_L = \frac{1}{\Psi} H_0\Psi$. Alternatively, we can instead use our analytical expressions of the local energies to calculate the energy. This will save a lot of CPU time because we do not have to calculate the Laplace operator $\nabla^2$. Once that is done, we repeat the process.
+
 By calculating the fraction $|\Psi(\mathbf{R}')|^2/|\Psi(\mathbf{R})|^2$, we eliminate the requirement to compute the integral given in
 \begin{align*}
 P(\mathbf{R}) = \frac{|\Psi(\mathbf{R})|^2}{\int |\Psi(\mathbf{R})|^2 d\mathbf{R}}
@@ -356,7 +357,7 @@ However, if we look at the plot of variance in \ref{fig:Variance_alpha_omega1}, 
 	1.14 & 2.99289 & 0.0572603 \\
 	1.16 & 3.00114 & 0.0713725 \\ \hline
 	\end{tabular}
-\caption{The energy, variance and $\alpha$ values near the minimum point.}
+\caption{The energy, variance and $\alpha$ values near the minimum point. Data set for $\omega = 1$.}
 \label{table:AlphaMinimum_omega1}
 \end{center}
 \end{table}
