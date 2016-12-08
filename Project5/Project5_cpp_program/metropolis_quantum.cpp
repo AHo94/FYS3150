@@ -54,7 +54,7 @@ void Metropolis_Quantum::Metropolis_T1(int MC_cycles, Wavefunctions &WaveFunc, d
         cout << "Try: ExactEne = 0 or 1" << endl;
         exit(1);
     }
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
+    long seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
     std::default_random_engine generator(seed);
     std::uniform_real_distribution<double> distrUniform(0, 1.0);
     std::uniform_real_distribution<double> distr(-1.0, 1.0);
@@ -127,7 +127,7 @@ void Metropolis_Quantum::Metropolis_T2(int MC_cycles, Wavefunctions &WaveFunc, d
 {
     // Function that solves the Metropolis method for the second trial wave function.
 
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
+    long seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
     std::default_random_engine generator(seed);
     std::uniform_real_distribution<double> distrUniform(0, 1.0);
     std::uniform_real_distribution<double> distr(-1.0, 1.0);
@@ -195,7 +195,7 @@ void Metropolis_Quantum::Metropolis_Virial(int MC_cycles, Wavefunctions &WaveFun
         cout << "Invalid value, try CoulombInt = 1 or CoulombInt = 0" << endl;
         exit(1);
     }
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
+    long seed = std::chrono::system_clock::now().time_since_epoch().count(); // Time dependent seed
     std::default_random_engine generator(seed);
     std::uniform_real_distribution<double> distrUniform(0, 1.0);
     std::uniform_real_distribution<double> distr(-1.0, 1.0);
