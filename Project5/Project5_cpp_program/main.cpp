@@ -253,5 +253,6 @@ int main()
         }
         ofile_global.close();
     }
+
     return 0;
 }
